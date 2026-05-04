@@ -10,8 +10,7 @@ import '../services/api/provider_request_headers.dart';
 import '../services/model_override_payload_parser.dart';
 import '../services/api/google_service_account_auth.dart';
 import '../models/model_types.dart';
-import '../../../src/rust/api/modal_provider_api.dart'
-    as rust_modal_provider_api;
+import '../../src/rust/api/modal_provider_api.dart' as rust_modal_provider_api;
 
 class ModelRegistry {
   // Updated model groups to reflect new series
