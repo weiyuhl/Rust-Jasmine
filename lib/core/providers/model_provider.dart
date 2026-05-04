@@ -306,12 +306,17 @@ class ProviderManager {
     );
     // Delegate to Rust for OpenAI / Claude types
     if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
-      final configJson = jsonEncode(cfg.toJson());
-      final modelsJson = await rust_api.listModels(configJson: configJson);
-      final List<dynamic> list = jsonDecode(modelsJson);
-      return list
-          .map((e) => ModelInfo.fromJson(e as Map<String, dynamic>))
-          .toList();
+      try {
+        final configJson = jsonEncode(cfg.toJson());
+        final modelsJson = await rust_api.listModels(configJson: configJson);
+        final List<dynamic> list = jsonDecode(modelsJson);
+        return list
+            .map((e) => ModelInfo.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        // Rust panics or network errors fall back to empty list
+        return [];
+      }
     }
     // Google still handled by Dart
     return forConfig(cfg).listModels(cfg);
@@ -328,13 +333,19 @@ class ProviderManager {
     );
     // Delegate to Rust for OpenAI / Claude types
     if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
-      final configJson = jsonEncode(cfg.toJson());
-      await rust_api.testConnection(
-        configJson: configJson,
-        modelId: modelId,
-        useStream: useStream,
-      );
-      return;
+      try {
+        final configJson = jsonEncode(cfg.toJson());
+        await rust_api.testConnection(
+          configJson: configJson,
+          modelId: modelId,
+          useStream: useStream,
+        );
+        return;
+      } catch (e) {
+        throw HttpException(
+          e is String ? e : 'Connection test failed: $e',
+        );
+      }
     }
     // Google still handled by Dart
     final client = _Http.clientFor(cfg);
