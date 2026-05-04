@@ -70,8 +70,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
-        stem: 'kelivo_rust',
-        ioDirectory: 'rust-lib/kelivo-rust/target/release/',
+        stem: 'model_provider_rust',
+        ioDirectory: 'rust-lib/model-provider-rust/target/release/',
         webPrefix: 'pkg/',
         wasmBindgenName: 'wasm_bindgen',
       );
