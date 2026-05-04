@@ -1,6 +1,0 @@
-[workspace]
-members = [
-    "model-provider-rust",
-    "mcp-server-rust",
-]
-resolver = "2"

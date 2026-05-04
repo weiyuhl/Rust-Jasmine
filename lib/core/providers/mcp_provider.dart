@@ -7,6 +7,7 @@ import 'package:mcp_client/mcp_client.dart' as mcp;
 import '../services/mcp/kelivo_fetch/kelivo_fetch_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import '../../../src/rust/api/mcp_api.dart' as rust_mcp;
 
 /// Transport type: SSE, Streamable HTTP, and STDIO (desktop-only).
 enum McpTransportType { sse, http, stdio, inmemory }
@@ -355,235 +356,28 @@ class McpProvider extends ChangeNotifier {
   ///   }
   /// }
   String exportServersAsUiJson() {
-    // On mobile, skip stdio entries in exported JSON.
     final isDesktop = _isDesktopPlatform();
-    final map = <String, dynamic>{
-      'mcpServers': {
-        for (final s in _servers)
-          if (s.transport != McpTransportType.stdio || isDesktop)
-            s.id: {
-              'name': s.name,
-              if (s.transport == McpTransportType.http)
-                'type': 'streamableHttp',
-              if (s.transport == McpTransportType.sse) 'type': 'sse',
-              if (s.transport == McpTransportType.inmemory) 'type': 'inmemory',
-              'description': '',
-              'isActive': s.enabled,
-              if (s.transport != McpTransportType.stdio &&
-                  s.transport != McpTransportType.inmemory)
-                'baseUrl': s.url,
-              if (s.transport != McpTransportType.stdio &&
-                  s.transport != McpTransportType.inmemory &&
-                  s.headers.isNotEmpty)
-                'headers': s.headers,
-              // For stdio, include an optional type for compatibility
-              if (s.transport == McpTransportType.stdio) 'type': 'stdio',
-              // Include command/args/env
-              if (s.transport == McpTransportType.stdio &&
-                  (s.command ?? '').isNotEmpty)
-                'command': s.command,
-              if (s.transport == McpTransportType.stdio && s.args.isNotEmpty)
-                'args': s.args,
-              if (s.transport == McpTransportType.stdio && s.env.isNotEmpty)
-                'env': s.env,
-              if (s.transport == McpTransportType.stdio)
-                ...() {
-                  final reg =
-                      s.env['NPM_CONFIG_REGISTRY'] ??
-                      s.env['npm_config_registry'];
-                  return reg != null && reg.isNotEmpty
-                      ? {'registryUrl': reg}
-                      : <String, dynamic>{};
-                }(),
-              if (s.transport == McpTransportType.stdio &&
-                  (s.workingDirectory ?? '').isNotEmpty)
-                'workingDirectory': s.workingDirectory,
-            },
-      },
-    };
-    return const JsonEncoder.withIndent('  ').convert(map);
+    try {
+      final serversJson = jsonEncode(_servers.map((e) => e.toJson()).toList());
+      return rust_mcp.exportMcpServersUiJson(
+        serversJson: serversJson,
+        isDesktop: isDesktop,
+      );
+    } catch (_) {
+      return '{}';
+    }
   }
 
-  /// Replace all MCP servers from a JSON string.
-  /// Accepts either the UI JSON (with top-level `mcpServers`) or the internal list format.
   Future<void> replaceAllFromJson(String rawJson) async {
-    dynamic data;
-    try {
-      data = jsonDecode(rawJson);
-    } catch (e) {
-      throw FormatException('Invalid JSON: ${e.toString()}');
-    }
-
-    List<McpServerConfig> next = [];
-    try {
-      Map<String, dynamic>? serversFromMap;
-      if (data is Map && data.containsKey('mcpServers')) {
-        serversFromMap = (data['mcpServers'] as Map).cast<String, dynamic>();
-      } else if (data is Map && data.isNotEmpty) {
-        // Allow raw map format: { id: { ... } }
-        // Heuristically treat it as mcpServers format when values are maps.
-        final ok = data.values.every((v) => v is Map);
-        if (ok) serversFromMap = data.cast<String, dynamic>();
-      }
-
-      if (serversFromMap != null) {
-        final isDesktop = _isDesktopPlatform();
-        bool builtinSeen = false;
-        bool builtinEnabled = true;
-        serversFromMap.forEach((id, cfgAny) {
-          if (cfgAny is! Map) return;
-          final cfg = cfgAny.cast<String, dynamic>();
-          final typeLower = (cfg['type'] ?? '').toString().toLowerCase();
-          if (typeLower == 'inmemory') {
-            // Built-in @kelivo/fetch control via isActive; ignore name mismatches silently
-            builtinSeen = true;
-            builtinEnabled = (cfg['isActive'] as bool?) ?? true;
-            return;
-          }
-          final hasStdioShape =
-              cfg.containsKey('command') ||
-              cfg.containsKey('args') ||
-              cfg.containsKey('env') ||
-              (cfg['type']?.toString().toLowerCase() == 'stdio');
-          if (hasStdioShape) {
-            if (!isDesktop) {
-              // Mobile: skip stdio entries entirely
-              return;
-            }
-            final enabled = (cfg['isActive'] as bool?) ?? true;
-            final name = (cfg['name'] as String?)?.trim();
-            final cmd = (cfg['command'] as String?)?.trim();
-            if (cmd == null || cmd.isEmpty) {
-              // invalid stdio entry without command
-              return;
-            }
-            final argsAny = cfg['args'];
-            final envAny = cfg['env'];
-            final wd = (cfg['workingDirectory'] as String?)?.trim();
-            final registryUrl = (cfg['registryUrl'] as String?)?.trim();
-            Map<String, String> env = envAny is Map
-                ? envAny.map((k, v) => MapEntry(k.toString(), v.toString()))
-                : const <String, String>{};
-            if ((registryUrl != null) && registryUrl.isNotEmpty) {
-              if (!env.containsKey('NPM_CONFIG_REGISTRY') &&
-                  !env.containsKey('npm_config_registry')) {
-                env = {...env, 'NPM_CONFIG_REGISTRY': registryUrl};
-              }
-            }
-            next.add(
-              McpServerConfig(
-                id: id,
-                enabled: enabled,
-                name: (name == null || name.isEmpty) ? id : name,
-                transport: McpTransportType.stdio,
-                command: cmd,
-                args: argsAny is List
-                    ? argsAny.map((e) => e.toString()).toList()
-                    : const <String>[],
-                env: env,
-                workingDirectory: (wd != null && wd.isNotEmpty) ? wd : null,
-              ),
-            );
-            return;
-          }
-
-          // SSE/HTTP branch using legacy fields
-          final typeRaw = (cfg['type'] ?? '').toString().toLowerCase();
-          final transport = (typeRaw.contains('http'))
-              ? McpTransportType.http
-              : McpTransportType.sse;
-          final enabled = (cfg['isActive'] as bool?) ?? true;
-          final name = (cfg['name'] as String?)?.trim();
-          final url = (cfg['baseUrl'] as String?)?.trim();
-          final headersAny = cfg['headers'];
-          Map<String, String> headers = const {};
-          if (headersAny is Map) {
-            headers = headersAny.map(
-              (k, v) => MapEntry(k.toString(), v.toString()),
-            );
-          }
-          if ((url ?? '').isEmpty) {
-            // Skip invalid entries with empty URL
-            return;
-          }
-          next.add(
-            McpServerConfig(
-              id: id,
-              enabled: enabled,
-              name: (name == null || name.isEmpty) ? id : name,
-              transport: transport,
-              url: url!,
-              headers: headers,
-            ),
-          );
-        });
-        if (builtinSeen) {
-          // Append single built-in server with fixed id/name
-          next.add(
-            McpServerConfig(
-              id: 'kelivo_fetch',
-              enabled: builtinEnabled,
-              name: '@kelivo/fetch',
-              transport: McpTransportType.inmemory,
-            ),
-          );
-        }
-      } else if (data is List) {
-        // Attempt to parse internal list format. Be tolerant to transport string variants.
-        for (final item in data) {
-          if (item is! Map) continue;
-          final m = item.cast<String, dynamic>();
-          final t = (m['transport'] ?? '').toString().toLowerCase();
-          if (t == 'streamablehttp' || t.contains('http')) {
-            m['transport'] = 'http';
-          } else if (t == 'sse') {
-            m['transport'] = 'sse';
-          } else if (t == 'stdio') {
-            m['transport'] = 'stdio';
-          }
-          try {
-            final s = McpServerConfig.fromJson(m);
-            if (s.transport != McpTransportType.stdio &&
-                s.transport != McpTransportType.inmemory &&
-                s.url.trim().isEmpty) {
-              continue;
-            }
-            next.add(s);
-          } catch (_) {}
-        }
-      } else if (data is Map && data.containsKey('servers')) {
-        final list = data['servers'];
-        if (list is List) {
-          for (final item in list) {
-            if (item is! Map) continue;
-            final m = item.cast<String, dynamic>();
-            final t = (m['transport'] ?? '').toString().toLowerCase();
-            if (t == 'streamablehttp' || t.contains('http')) {
-              m['transport'] = 'http';
-            } else if (t == 'sse') {
-              m['transport'] = 'sse';
-            } else if (t == 'stdio') {
-              m['transport'] = 'stdio';
-            }
-            try {
-              final s = McpServerConfig.fromJson(m);
-              if (s.transport != McpTransportType.stdio &&
-                  s.transport != McpTransportType.inmemory &&
-                  s.url.trim().isEmpty) {
-                continue;
-              }
-              next.add(s);
-            } catch (_) {}
-          }
-        }
-      }
-    } catch (e) {
-      throw FormatException('Unrecognized or invalid MCP JSON');
-    }
-
-    if (next.isEmpty) {
-      throw FormatException('No valid MCP servers found in JSON');
-    }
+    final isDesktop = _isDesktopPlatform();
+    final parsedJson = rust_mcp.parseMcpImportJson(
+      rawJson: rawJson,
+      isDesktop: isDesktop,
+    );
+    final List<dynamic> list = jsonDecode(parsedJson);
+    final next = list
+        .map((e) => McpServerConfig.fromJson(e as Map<String, dynamic>))
+        .toList();
 
     // Disconnect all current
     for (final s in _servers) {
@@ -605,7 +399,6 @@ class McpProvider extends ChangeNotifier {
 
     // Auto-connect enabled servers
     for (final s in _servers.where((e) => e.enabled)) {
-      // fire and forget
       unawaited(connect(s.id));
     }
   }
@@ -964,271 +757,18 @@ class McpProvider extends ChangeNotifier {
       final cfg = _toolConfig(serverId, toolName);
       final schema = cfg?.schema;
       if (schema == null || schema.isEmpty) return args;
-      final cloned = jsonDecode(jsonEncode(args)) as Map<String, dynamic>;
-      var normalized = _normalizeBySchema(cloned, schema, propertyName: null);
-      if (normalized is! Map<String, dynamic>) return args;
-      normalized = _normalizeSpecialCases(toolName, normalized);
-      return normalized;
+      final schemaJson = jsonEncode(schema);
+      final argsJson = jsonEncode(args);
+      final resultJson = rust_mcp.normalizeToolArguments(
+        schemaJson: schemaJson,
+        argsJson: argsJson,
+      );
+      final result = jsonDecode(resultJson);
+      if (result is Map<String, dynamic>) return result;
+      return args;
     } catch (_) {
       return args;
     }
-  }
-
-  Map<String, dynamic> _normalizeSpecialCases(
-    String toolName,
-    Map<String, dynamic> args,
-  ) {
-    try {
-      if (toolName == 'firecrawl_search') {
-        // sources: ["web"] -> [{"type":"web"}]
-        final rawSources = args['sources'];
-        if (rawSources is List &&
-            rawSources.isNotEmpty &&
-            rawSources.every((e) => e is String)) {
-          args['sources'] = rawSources.map((e) => {'type': e}).toList();
-        }
-        // Provide pragmatic defaults for commonly required fields if absent
-        args.putIfAbsent('tbs', () => '0');
-        args.putIfAbsent('filter', () => '0');
-        args.putIfAbsent('location', () => 'us');
-        // If tbs/filter are present but empty, coerce to '0'
-        if ((args['tbs'] is String) && (args['tbs'] as String).isEmpty) {
-          args['tbs'] = '0';
-        }
-        if ((args['filter'] is String) && (args['filter'] as String).isEmpty) {
-          args['filter'] = '0';
-        }
-        if ((args['location'] is String) &&
-            (args['location'] as String).toLowerCase() == 'global') {
-          args['location'] = 'us';
-        }
-        final so = (args['scrapeOptions'] is Map)
-            ? (args['scrapeOptions'] as Map).cast<String, dynamic>()
-            : <String, dynamic>{};
-        so.putIfAbsent('waitFor', () => 0);
-        // formats normalization: server expects union of simple literals ["markdown"|"html"|"rawHtml"] OR an object only when type=="json"
-        final fm = so['formats'];
-        if (fm is List) {
-          final norm = <dynamic>[];
-          for (final f in fm) {
-            if (f is Map) {
-              final t = (f['type'] ?? '').toString();
-              if (t == 'markdown' || t == 'html' || t == 'rawHtml') {
-                norm.add(t);
-              } else if (t == 'json') {
-                norm.add(f); // keep object form for json
-              } else if (t.isNotEmpty) {
-                norm.add(t);
-              }
-            } else if (f is String) {
-              if (f == 'json') {
-                norm.add({'type': 'json'});
-              } else {
-                norm.add(f);
-              }
-            } else {
-              norm.add(f);
-            }
-          }
-          so['formats'] = norm;
-        }
-        args['scrapeOptions'] = so;
-      }
-    } catch (_) {}
-    return args;
-  }
-
-  dynamic _normalizeBySchema(
-    dynamic value,
-    Map<String, dynamic> schema, {
-    String? propertyName,
-  }) {
-    try {
-      // Handle anyOf/oneOf by choosing first matching branch; if value is null, attempt defaults
-      final List<Map<String, dynamic>> unions = _schemaUnions(schema);
-      if (unions.isNotEmpty) {
-        // Heuristic only for certain fields (e.g., sources) — DO NOT apply globally.
-        if (value is String && propertyName == 'sources') {
-          final objBranch = unions.firstWhere(
-            (m) =>
-                _schemaTypes(m).contains('object') &&
-                ((m['properties'] as Map?)?.containsKey('type') ?? false),
-            orElse: () => const {},
-          );
-          if (objBranch.isNotEmpty) {
-            return _normalizeBySchema(
-              {'type': value},
-              objBranch,
-              propertyName: propertyName,
-            );
-          }
-        }
-        for (final branch in unions) {
-          try {
-            return _normalizeBySchema(
-              value,
-              branch,
-              propertyName: propertyName,
-            );
-          } catch (_) {
-            // try next branch
-          }
-        }
-        // fallthrough to first branch
-        return _normalizeBySchema(
-          value,
-          unions.first,
-          propertyName: propertyName,
-        );
-      }
-
-      final declaredTypes = _schemaTypes(schema);
-      if (declaredTypes.contains('object')) {
-        final props =
-            (schema['properties'] as Map?)?.cast<String, dynamic>() ??
-            const <String, dynamic>{};
-        final req =
-            (schema['required'] as List?)?.map((e) => e.toString()).toSet() ??
-            const <String>{};
-        final out = <String, dynamic>{};
-        final input = (value is Map)
-            ? value.cast<String, dynamic>()
-            : const <String, dynamic>{};
-        // copy passthrough unknowns
-        input.forEach((k, v) {
-          if (!props.containsKey(k)) out[k] = v;
-        });
-        for (final entry in props.entries) {
-          final key = entry.key;
-          final propSchema = (entry.value is Map)
-              ? (entry.value as Map).cast<String, dynamic>()
-              : const <String, dynamic>{};
-          dynamic v = input.containsKey(key) ? input[key] : null;
-          if (v == null) {
-            if (propSchema.containsKey('default')) {
-              v = propSchema['default'];
-            } else if (req.contains(key)) {
-              // Only synthesize enum / waitFor defaults for required fields; optional
-              // omitted keys should stay absent (do not pick enum.first).
-              final enumVals = _schemaEnum(propSchema);
-              if (enumVals.isNotEmpty) {
-                v = enumVals.first;
-              } else if (key == 'waitFor' &&
-                  _schemaTypes(
-                    propSchema,
-                  ).any((t) => t == 'number' || t == 'integer')) {
-                v = 0; // pragmatic default often acceptable for waitFor
-              }
-            }
-          }
-          if (v != null) {
-            out[key] = _normalizeBySchema(v, propSchema, propertyName: key);
-          } else if (!req.contains(key)) {
-            // omit optional nulls
-          } else {
-            // keep as null for required to let server validate if still missing
-          }
-        }
-        return out;
-      }
-
-      if (declaredTypes.contains('array')) {
-        final items =
-            (schema['items'] as Map?)?.cast<String, dynamic>() ??
-            const <String, dynamic>{};
-        final list = (value is List) ? value : [value];
-        final out = [];
-        for (final item in list) {
-          dynamic iv = item;
-          // Heuristic only for sources array, not for other arrays like formats
-          final itemTypes = _schemaTypes(items);
-          if (propertyName == 'sources' &&
-              item is String &&
-              itemTypes.contains('object')) {
-            final itemProps =
-                (items['properties'] as Map?)?.cast<String, dynamic>() ??
-                const <String, dynamic>{};
-            if (itemProps.containsKey('type')) {
-              iv = {'type': item};
-            }
-          }
-          out.add(_normalizeBySchema(iv, items, propertyName: propertyName));
-        }
-        return out;
-      }
-
-      if (declaredTypes.contains('boolean')) {
-        if (value is bool) return value;
-        if (value is String) {
-          final s = value.toLowerCase();
-          if (s == 'true' || s == '1' || s == 'yes') return true;
-          if (s == 'false' || s == '0' || s == 'no') return false;
-        }
-        return value;
-      }
-
-      if (declaredTypes.contains('integer')) {
-        if (value is int) return value;
-        if (value is num) return value.toInt();
-        if (value is String) {
-          final p = int.tryParse(value);
-          if (p != null) return p;
-        }
-        return value;
-      }
-
-      if (declaredTypes.contains('number')) {
-        if (value is num) return value;
-        if (value is String) {
-          final p = double.tryParse(value);
-          if (p != null) return p;
-        }
-        return value;
-      }
-
-      if (declaredTypes.contains('string')) {
-        if (value == null) return value;
-        if (value is String) {
-          final enums = _schemaEnum(schema);
-          if (enums.isNotEmpty && !enums.contains(value)) {
-            // keep original; server will validate
-          }
-          return value;
-        }
-        return value.toString();
-      }
-
-      // no declared type: return as-is
-      return value;
-    } catch (_) {
-      return value;
-    }
-  }
-
-  List<Map<String, dynamic>> _schemaUnions(Map<String, dynamic> schema) {
-    final out = <Map<String, dynamic>>[];
-    final anyOf = schema['anyOf'];
-    final oneOf = schema['oneOf'];
-    if (anyOf is List) {
-      out.addAll(anyOf.whereType<Map>().map((e) => e.cast<String, dynamic>()));
-    }
-    if (oneOf is List) {
-      out.addAll(oneOf.whereType<Map>().map((e) => e.cast<String, dynamic>()));
-    }
-    return out;
-  }
-
-  List<String> _schemaTypes(Map<String, dynamic> schema) {
-    final t = schema['type'];
-    if (t is String) return [t];
-    if (t is List) return t.map((e) => e.toString()).toList();
-    return const [];
-  }
-
-  List<dynamic> _schemaEnum(Map<String, dynamic> schema) {
-    final e = schema['enum'];
-    if (e is List) return e;
-    return const [];
   }
 
   Future<void> refreshTools(String id) async {

@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/mcp_api.dart';
 import 'api/provider_api.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -66,7 +67,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1410334620;
+  int get rustContentHash => -1650807438;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -78,6 +79,54 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  Future<String> crateApiMcpApiBuildCallToolRequest({
+    required String idJson,
+    required String toolName,
+    String? argsJson,
+  });
+
+  Future<String> crateApiMcpApiBuildGetPromptRequest({
+    required String idJson,
+    required String promptName,
+    String? argsJson,
+  });
+
+  Future<String> crateApiMcpApiBuildHealthCheckRequest({
+    required String idJson,
+  });
+
+  Future<String> crateApiMcpApiBuildInitializeRequest({
+    required String clientName,
+    required String clientVersion,
+    String? protocolVersion,
+  });
+
+  Future<String> crateApiMcpApiBuildJsonRpcNotification({
+    required String method,
+    String? paramsJson,
+  });
+
+  Future<String> crateApiMcpApiBuildJsonRpcRequest({
+    required String idJson,
+    required String method,
+    String? paramsJson,
+  });
+
+  Future<String> crateApiMcpApiBuildListPromptsRequest({
+    required String idJson,
+  });
+
+  Future<String> crateApiMcpApiBuildListResourcesRequest({
+    required String idJson,
+  });
+
+  Future<String> crateApiMcpApiBuildListToolsRequest({required String idJson});
+
+  Future<String> crateApiMcpApiBuildReadResourceRequest({
+    required String idJson,
+    required String uri,
+  });
+
   Future<String> crateApiProviderApiClassifyProviderKind({
     required String providerId,
     String? explicitType,
@@ -88,9 +137,24 @@ abstract class RustLibApi extends BaseApi {
     String? displayName,
   });
 
+  Future<String> crateApiMcpApiCreateDefaultMcpConfig({
+    required String name,
+    required String transport,
+    required String url,
+  });
+
   Future<String> crateApiProviderApiDefaultBaseUrl({
     required String providerId,
   });
+
+  String crateApiMcpApiDefaultMcpVersion();
+
+  String crateApiMcpApiExportMcpServersUiJson({
+    required String serversJson,
+    required bool isDesktop,
+  });
+
+  String crateApiMcpApiGetMcpMethodNames();
 
   Future<String> crateApiProviderApiGetProviderDefaultHeaders({
     required String configJson,
@@ -98,9 +162,30 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiProviderApiInitApp();
 
+  bool crateApiMcpApiIsMcpVersionSupported({required String version});
+
+  String crateApiMcpApiJsonRpcErrorDetails({required int code});
+
   Future<String> crateApiProviderApiListModels({
     required String configJson,
     String? siliconflowFallbackKey,
+  });
+
+  String crateApiMcpApiLogLevelName({required String level});
+
+  String? crateApiMcpApiNegotiateMcpVersion({
+    required List<String> clientVersions,
+    required List<String> serverVersions,
+  });
+
+  String crateApiMcpApiNormalizeToolArguments({
+    String? schemaJson,
+    required String argsJson,
+  });
+
+  String crateApiMcpApiParseMcpImportJson({
+    required String rawJson,
+    required bool isDesktop,
   });
 
   Future<String> crateApiProviderApiResolveApiModelId({
@@ -108,11 +193,21 @@ abstract class RustLibApi extends BaseApi {
     required String modelId,
   });
 
+  Future<String> crateApiMcpApiSummarizeServerTools({
+    required String toolsJson,
+  });
+
+  List<String> crateApiMcpApiSupportedMcpVersions();
+
   Future<void> crateApiProviderApiTestConnection({
     required String configJson,
     required String modelId,
     required bool useStream,
     String? siliconflowFallbackKey,
+  });
+
+  Future<void> crateApiMcpApiValidateMcpServerConfig({
+    required String configJson,
   });
 
   Future<void> crateApiProviderApiValidateProviderConfig({
@@ -129,6 +224,354 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
+  Future<String> crateApiMcpApiBuildCallToolRequest({
+    required String idJson,
+    required String toolName,
+    String? argsJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          sse_encode_String(toolName, serializer);
+          sse_encode_opt_String(argsJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 1,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildCallToolRequestConstMeta,
+        argValues: [idJson, toolName, argsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildCallToolRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_call_tool_request",
+        argNames: ["idJson", "toolName", "argsJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildGetPromptRequest({
+    required String idJson,
+    required String promptName,
+    String? argsJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          sse_encode_String(promptName, serializer);
+          sse_encode_opt_String(argsJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 2,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildGetPromptRequestConstMeta,
+        argValues: [idJson, promptName, argsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildGetPromptRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_get_prompt_request",
+        argNames: ["idJson", "promptName", "argsJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildHealthCheckRequest({
+    required String idJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildHealthCheckRequestConstMeta,
+        argValues: [idJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildHealthCheckRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_health_check_request",
+        argNames: ["idJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildInitializeRequest({
+    required String clientName,
+    required String clientVersion,
+    String? protocolVersion,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(clientName, serializer);
+          sse_encode_String(clientVersion, serializer);
+          sse_encode_opt_String(protocolVersion, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 4,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildInitializeRequestConstMeta,
+        argValues: [clientName, clientVersion, protocolVersion],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildInitializeRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_initialize_request",
+        argNames: ["clientName", "clientVersion", "protocolVersion"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildJsonRpcNotification({
+    required String method,
+    String? paramsJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(method, serializer);
+          sse_encode_opt_String(paramsJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 5,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildJsonRpcNotificationConstMeta,
+        argValues: [method, paramsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildJsonRpcNotificationConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_json_rpc_notification",
+        argNames: ["method", "paramsJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildJsonRpcRequest({
+    required String idJson,
+    required String method,
+    String? paramsJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          sse_encode_String(method, serializer);
+          sse_encode_opt_String(paramsJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 6,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildJsonRpcRequestConstMeta,
+        argValues: [idJson, method, paramsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildJsonRpcRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_json_rpc_request",
+        argNames: ["idJson", "method", "paramsJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildListPromptsRequest({
+    required String idJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 7,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildListPromptsRequestConstMeta,
+        argValues: [idJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildListPromptsRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_list_prompts_request",
+        argNames: ["idJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildListResourcesRequest({
+    required String idJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 8,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildListResourcesRequestConstMeta,
+        argValues: [idJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildListResourcesRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_list_resources_request",
+        argNames: ["idJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildListToolsRequest({required String idJson}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 9,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildListToolsRequestConstMeta,
+        argValues: [idJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildListToolsRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_list_tools_request",
+        argNames: ["idJson"],
+      );
+
+  @override
+  Future<String> crateApiMcpApiBuildReadResourceRequest({
+    required String idJson,
+    required String uri,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(idJson, serializer);
+          sse_encode_String(uri, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 10,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiBuildReadResourceRequestConstMeta,
+        argValues: [idJson, uri],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiBuildReadResourceRequestConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_read_resource_request",
+        argNames: ["idJson", "uri"],
+      );
+
+  @override
   Future<String> crateApiProviderApiClassifyProviderKind({
     required String providerId,
     String? explicitType,
@@ -142,7 +585,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 1,
+            funcId: 11,
             port: port_,
           );
         },
@@ -177,7 +620,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 2,
+            funcId: 12,
             port: port_,
           );
         },
@@ -199,6 +642,43 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String> crateApiMcpApiCreateDefaultMcpConfig({
+    required String name,
+    required String transport,
+    required String url,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(name, serializer);
+          sse_encode_String(transport, serializer);
+          sse_encode_String(url, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 13,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiCreateDefaultMcpConfigConstMeta,
+        argValues: [name, transport, url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiCreateDefaultMcpConfigConstMeta =>
+      const TaskConstMeta(
+        debugName: "create_default_mcp_config",
+        argNames: ["name", "transport", "url"],
+      );
+
+  @override
   Future<String> crateApiProviderApiDefaultBaseUrl({
     required String providerId,
   }) {
@@ -210,7 +690,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 3,
+            funcId: 14,
             port: port_,
           );
         },
@@ -232,6 +712,80 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  String crateApiMcpApiDefaultMcpVersion() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiDefaultMcpVersionConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiDefaultMcpVersionConstMeta =>
+      const TaskConstMeta(debugName: "default_mcp_version", argNames: []);
+
+  @override
+  String crateApiMcpApiExportMcpServersUiJson({
+    required String serversJson,
+    required bool isDesktop,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(serversJson, serializer);
+          sse_encode_bool(isDesktop, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiExportMcpServersUiJsonConstMeta,
+        argValues: [serversJson, isDesktop],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiExportMcpServersUiJsonConstMeta =>
+      const TaskConstMeta(
+        debugName: "export_mcp_servers_ui_json",
+        argNames: ["serversJson", "isDesktop"],
+      );
+
+  @override
+  String crateApiMcpApiGetMcpMethodNames() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiGetMcpMethodNamesConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiGetMcpMethodNamesConstMeta =>
+      const TaskConstMeta(debugName: "get_mcp_method_names", argNames: []);
+
+  @override
   Future<String> crateApiProviderApiGetProviderDefaultHeaders({
     required String configJson,
   }) {
@@ -243,7 +797,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 18,
             port: port_,
           );
         },
@@ -273,7 +827,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 5,
+            funcId: 19,
             port: port_,
           );
         },
@@ -292,6 +846,58 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "init_app", argNames: []);
 
   @override
+  bool crateApiMcpApiIsMcpVersionSupported({required String version}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(version, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiIsMcpVersionSupportedConstMeta,
+        argValues: [version],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiIsMcpVersionSupportedConstMeta =>
+      const TaskConstMeta(
+        debugName: "is_mcp_version_supported",
+        argNames: ["version"],
+      );
+
+  @override
+  String crateApiMcpApiJsonRpcErrorDetails({required int code}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_i_32(code, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiJsonRpcErrorDetailsConstMeta,
+        argValues: [code],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiJsonRpcErrorDetailsConstMeta =>
+      const TaskConstMeta(
+        debugName: "json_rpc_error_details",
+        argNames: ["code"],
+      );
+
+  @override
   Future<String> crateApiProviderApiListModels({
     required String configJson,
     String? siliconflowFallbackKey,
@@ -305,7 +911,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 6,
+            funcId: 22,
             port: port_,
           );
         },
@@ -327,6 +933,119 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  String crateApiMcpApiLogLevelName({required String level}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(level, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiLogLevelNameConstMeta,
+        argValues: [level],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiLogLevelNameConstMeta =>
+      const TaskConstMeta(debugName: "log_level_name", argNames: ["level"]);
+
+  @override
+  String? crateApiMcpApiNegotiateMcpVersion({
+    required List<String> clientVersions,
+    required List<String> serverVersions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(clientVersions, serializer);
+          sse_encode_list_String(serverVersions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiNegotiateMcpVersionConstMeta,
+        argValues: [clientVersions, serverVersions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiNegotiateMcpVersionConstMeta =>
+      const TaskConstMeta(
+        debugName: "negotiate_mcp_version",
+        argNames: ["clientVersions", "serverVersions"],
+      );
+
+  @override
+  String crateApiMcpApiNormalizeToolArguments({
+    String? schemaJson,
+    required String argsJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_opt_String(schemaJson, serializer);
+          sse_encode_String(argsJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiNormalizeToolArgumentsConstMeta,
+        argValues: [schemaJson, argsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiNormalizeToolArgumentsConstMeta =>
+      const TaskConstMeta(
+        debugName: "normalize_tool_arguments",
+        argNames: ["schemaJson", "argsJson"],
+      );
+
+  @override
+  String crateApiMcpApiParseMcpImportJson({
+    required String rawJson,
+    required bool isDesktop,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(rawJson, serializer);
+          sse_encode_bool(isDesktop, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiParseMcpImportJsonConstMeta,
+        argValues: [rawJson, isDesktop],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiParseMcpImportJsonConstMeta =>
+      const TaskConstMeta(
+        debugName: "parse_mcp_import_json",
+        argNames: ["rawJson", "isDesktop"],
+      );
+
+  @override
   Future<String> crateApiProviderApiResolveApiModelId({
     required String configJson,
     required String modelId,
@@ -340,7 +1059,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 7,
+            funcId: 27,
             port: port_,
           );
         },
@@ -362,6 +1081,61 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String> crateApiMcpApiSummarizeServerTools({
+    required String toolsJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(toolsJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 28,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiSummarizeServerToolsConstMeta,
+        argValues: [toolsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiSummarizeServerToolsConstMeta =>
+      const TaskConstMeta(
+        debugName: "summarize_server_tools",
+        argNames: ["toolsJson"],
+      );
+
+  @override
+  List<String> crateApiMcpApiSupportedMcpVersions() {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiMcpApiSupportedMcpVersionsConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiSupportedMcpVersionsConstMeta =>
+      const TaskConstMeta(debugName: "supported_mcp_versions", argNames: []);
+
+  @override
   Future<void> crateApiProviderApiTestConnection({
     required String configJson,
     required String modelId,
@@ -379,7 +1153,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 30,
             port: port_,
           );
         },
@@ -406,6 +1180,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiMcpApiValidateMcpServerConfig({
+    required String configJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 31,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiMcpApiValidateMcpServerConfigConstMeta,
+        argValues: [configJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiMcpApiValidateMcpServerConfigConstMeta =>
+      const TaskConstMeta(
+        debugName: "validate_mcp_server_config",
+        argNames: ["configJson"],
+      );
+
+  @override
   Future<void> crateApiProviderApiValidateProviderConfig({
     required String configJson,
   }) {
@@ -417,7 +1224,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 9,
+            funcId: 32,
             port: port_,
           );
         },
@@ -448,6 +1255,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool dco_decode_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
+  }
+
+  @protected
+  int dco_decode_i_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
+  List<String> dco_decode_list_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_String).toList();
   }
 
   @protected
@@ -488,6 +1307,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  int sse_decode_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt32();
+  }
+
+  @protected
+  List<String> sse_decode_list_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <String>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_String(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
@@ -517,12 +1354,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  int sse_decode_i_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getInt32();
-  }
-
-  @protected
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
@@ -532,6 +1363,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
+  }
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt32(self);
+  }
+
+  @protected
+  void sse_encode_list_String(List<String> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_String(item, serializer);
+    }
   }
 
   @protected
@@ -563,11 +1409,5 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-  }
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putInt32(self);
   }
 }
