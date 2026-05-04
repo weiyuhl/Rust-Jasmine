@@ -5,16 +5,16 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "model_provider_rust")
+set(PROJECT_NAME "jasmine_agent")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 include("../cargokit/cmake/cargokit.cmake")
-apply_cargokit(${PROJECT_NAME} ../../../../../../rust-lib/model-provider-rust model_provider_rust "")
+apply_cargokit(${PROJECT_NAME} ../../../../../../rust-lib/jasmine-agent jasmine_agent "")
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(model_provider_rust_bundled_libraries
+set(jasmine_agent_bundled_libraries
   "${${PROJECT_NAME}_cargokit_lib}"
   PARENT_SCOPE
 )

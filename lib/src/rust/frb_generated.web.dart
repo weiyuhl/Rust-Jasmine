@@ -7,7 +7,7 @@
 // ignore_for_file: argument_type_not_assignable
 
 import 'api/mcp_api.dart';
-import 'api/provider_api.dart';
+import 'api/modal_provider_api.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';

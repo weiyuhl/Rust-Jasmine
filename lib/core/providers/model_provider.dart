@@ -10,7 +10,8 @@ import '../services/api/provider_request_headers.dart';
 import '../services/model_override_payload_parser.dart';
 import '../services/api/google_service_account_auth.dart';
 import '../models/model_types.dart';
-import '../../../src/rust/api/provider_api.dart' as rust_api;
+import '../../../src/rust/api/modal_provider_api.dart'
+    as rust_modal_provider_api;
 
 class ModelRegistry {
   // Updated model groups to reflect new series
@@ -127,7 +128,7 @@ class _Http {
 }
 
 // OpenAIProvider and ClaudeProvider have been migrated to Rust.
-// See rust-lib/model-provider-rust/src/providers/
+// See rust-lib/jasmine-agent/src/modal_provider/providers/
 
 class GoogleProvider extends BaseProvider {
   String _buildUrl(ProviderConfig cfg) {
@@ -308,7 +309,8 @@ class ProviderManager {
     if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
       try {
         final configJson = jsonEncode(cfg.toJson());
-        final modelsJson = await rust_api.listModels(configJson: configJson);
+        final modelsJson = await rust_modal_provider_api
+            .modalProviderListModels(configJson: configJson);
         final List<dynamic> list = jsonDecode(modelsJson);
         return list
             .map((e) => ModelInfo.fromJson(e as Map<String, dynamic>))
@@ -335,16 +337,14 @@ class ProviderManager {
     if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
       try {
         final configJson = jsonEncode(cfg.toJson());
-        await rust_api.testConnection(
+        await rust_modal_provider_api.modalProviderTestConnection(
           configJson: configJson,
           modelId: modelId,
           useStream: useStream,
         );
         return;
       } catch (e) {
-        throw HttpException(
-          e is String ? e : 'Connection test failed: $e',
-        );
+        throw HttpException(e is String ? e : 'Connection test failed: $e');
       }
     }
     // Google still handled by Dart

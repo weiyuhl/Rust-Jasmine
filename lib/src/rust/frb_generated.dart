@@ -4,7 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'api/mcp_api.dart';
-import 'api/provider_api.dart';
+import 'api/modal_provider_api.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -56,7 +56,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   @override
   Future<void> executeRustInitializers() async {
-    await api.crateApiProviderApiInitApp();
+    await api.crateApiModalProviderApiInitApp();
   }
 
   @override
@@ -67,12 +67,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1650807438;
+  int get rustContentHash => 410386512;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
-        stem: 'model_provider_rust',
-        ioDirectory: 'rust-lib/model-provider-rust/target/release/',
+        stem: 'jasmine_agent',
+        ioDirectory: 'rust-lib/jasmine-agent/target/release/',
         webPrefix: 'pkg/',
         wasmBindgenName: 'wasm_bindgen',
       );
@@ -127,24 +127,10 @@ abstract class RustLibApi extends BaseApi {
     required String uri,
   });
 
-  Future<String> crateApiProviderApiClassifyProviderKind({
-    required String providerId,
-    String? explicitType,
-  });
-
-  Future<String> crateApiProviderApiCreateDefaultConfig({
-    required String providerId,
-    String? displayName,
-  });
-
   Future<String> crateApiMcpApiCreateDefaultMcpConfig({
     required String name,
     required String transport,
     required String url,
-  });
-
-  Future<String> crateApiProviderApiDefaultBaseUrl({
-    required String providerId,
   });
 
   String crateApiMcpApiDefaultMcpVersion();
@@ -156,22 +142,53 @@ abstract class RustLibApi extends BaseApi {
 
   String crateApiMcpApiGetMcpMethodNames();
 
-  Future<String> crateApiProviderApiGetProviderDefaultHeaders({
-    required String configJson,
-  });
-
-  Future<void> crateApiProviderApiInitApp();
+  Future<void> crateApiModalProviderApiInitApp();
 
   bool crateApiMcpApiIsMcpVersionSupported({required String version});
 
   String crateApiMcpApiJsonRpcErrorDetails({required int code});
 
-  Future<String> crateApiProviderApiListModels({
+  String crateApiMcpApiLogLevelName({required String level});
+
+  Future<String> crateApiModalProviderApiModalProviderClassifyProviderKind({
+    required String providerId,
+    String? explicitType,
+  });
+
+  Future<String> crateApiModalProviderApiModalProviderCreateDefaultConfig({
+    required String providerId,
+    String? displayName,
+  });
+
+  Future<String> crateApiModalProviderApiModalProviderDefaultBaseUrl({
+    required String providerId,
+  });
+
+  Future<String>
+  crateApiModalProviderApiModalProviderGetProviderDefaultHeaders({
+    required String configJson,
+  });
+
+  Future<String> crateApiModalProviderApiModalProviderListModels({
     required String configJson,
     String? siliconflowFallbackKey,
   });
 
-  String crateApiMcpApiLogLevelName({required String level});
+  Future<String> crateApiModalProviderApiModalProviderResolveApiModelId({
+    required String configJson,
+    required String modelId,
+  });
+
+  Future<void> crateApiModalProviderApiModalProviderTestConnection({
+    required String configJson,
+    required String modelId,
+    required bool useStream,
+    String? siliconflowFallbackKey,
+  });
+
+  Future<void> crateApiModalProviderApiModalProviderValidateProviderConfig({
+    required String configJson,
+  });
 
   String? crateApiMcpApiNegotiateMcpVersion({
     required List<String> clientVersions,
@@ -188,29 +205,13 @@ abstract class RustLibApi extends BaseApi {
     required bool isDesktop,
   });
 
-  Future<String> crateApiProviderApiResolveApiModelId({
-    required String configJson,
-    required String modelId,
-  });
-
   Future<String> crateApiMcpApiSummarizeServerTools({
     required String toolsJson,
   });
 
   List<String> crateApiMcpApiSupportedMcpVersions();
 
-  Future<void> crateApiProviderApiTestConnection({
-    required String configJson,
-    required String modelId,
-    required bool useStream,
-    String? siliconflowFallbackKey,
-  });
-
   Future<void> crateApiMcpApiValidateMcpServerConfig({
-    required String configJson,
-  });
-
-  Future<void> crateApiProviderApiValidateProviderConfig({
     required String configJson,
   });
 }
@@ -572,76 +573,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiProviderApiClassifyProviderKind({
-    required String providerId,
-    String? explicitType,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(providerId, serializer);
-          sse_encode_opt_String(explicitType, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 11,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateApiProviderApiClassifyProviderKindConstMeta,
-        argValues: [providerId, explicitType],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiClassifyProviderKindConstMeta =>
-      const TaskConstMeta(
-        debugName: "classify_provider_kind",
-        argNames: ["providerId", "explicitType"],
-      );
-
-  @override
-  Future<String> crateApiProviderApiCreateDefaultConfig({
-    required String providerId,
-    String? displayName,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(providerId, serializer);
-          sse_encode_opt_String(displayName, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 12,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiProviderApiCreateDefaultConfigConstMeta,
-        argValues: [providerId, displayName],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiCreateDefaultConfigConstMeta =>
-      const TaskConstMeta(
-        debugName: "create_default_config",
-        argNames: ["providerId", "displayName"],
-      );
-
-  @override
   Future<String> crateApiMcpApiCreateDefaultMcpConfig({
     required String name,
     required String transport,
@@ -657,7 +588,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 13,
+            funcId: 11,
             port: port_,
           );
         },
@@ -679,45 +610,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiProviderApiDefaultBaseUrl({
-    required String providerId,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(providerId, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 14,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: null,
-        ),
-        constMeta: kCrateApiProviderApiDefaultBaseUrlConstMeta,
-        argValues: [providerId],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiDefaultBaseUrlConstMeta =>
-      const TaskConstMeta(
-        debugName: "default_base_url",
-        argNames: ["providerId"],
-      );
-
-  @override
   String crateApiMcpApiDefaultMcpVersion() {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -744,7 +642,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(serversJson, serializer);
           sse_encode_bool(isDesktop, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -769,7 +667,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -786,40 +684,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "get_mcp_method_names", argNames: []);
 
   @override
-  Future<String> crateApiProviderApiGetProviderDefaultHeaders({
-    required String configJson,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(configJson, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 18,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiProviderApiGetProviderDefaultHeadersConstMeta,
-        argValues: [configJson],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiGetProviderDefaultHeadersConstMeta =>
-      const TaskConstMeta(
-        debugName: "get_provider_default_headers",
-        argNames: ["configJson"],
-      );
-
-  @override
-  Future<void> crateApiProviderApiInitApp() {
+  Future<void> crateApiModalProviderApiInitApp() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -827,7 +692,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 19,
+            funcId: 15,
             port: port_,
           );
         },
@@ -835,14 +700,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: null,
         ),
-        constMeta: kCrateApiProviderApiInitAppConstMeta,
+        constMeta: kCrateApiModalProviderApiInitAppConstMeta,
         argValues: [],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiProviderApiInitAppConstMeta =>
+  TaskConstMeta get kCrateApiModalProviderApiInitAppConstMeta =>
       const TaskConstMeta(debugName: "init_app", argNames: []);
 
   @override
@@ -852,7 +717,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(version, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_bool,
@@ -878,7 +743,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_i_32(code, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -898,48 +763,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiProviderApiListModels({
-    required String configJson,
-    String? siliconflowFallbackKey,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(configJson, serializer);
-          sse_encode_opt_String(siliconflowFallbackKey, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 22,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiProviderApiListModelsConstMeta,
-        argValues: [configJson, siliconflowFallbackKey],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiListModelsConstMeta =>
-      const TaskConstMeta(
-        debugName: "list_models",
-        argNames: ["configJson", "siliconflowFallbackKey"],
-      );
-
-  @override
   String crateApiMcpApiLogLevelName({required String level}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(level, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -956,6 +786,304 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "log_level_name", argNames: ["level"]);
 
   @override
+  Future<String> crateApiModalProviderApiModalProviderClassifyProviderKind({
+    required String providerId,
+    String? explicitType,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(providerId, serializer);
+          sse_encode_opt_String(explicitType, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 19,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderClassifyProviderKindConstMeta,
+        argValues: [providerId, explicitType],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderClassifyProviderKindConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_classify_provider_kind",
+        argNames: ["providerId", "explicitType"],
+      );
+
+  @override
+  Future<String> crateApiModalProviderApiModalProviderCreateDefaultConfig({
+    required String providerId,
+    String? displayName,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(providerId, serializer);
+          sse_encode_opt_String(displayName, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 20,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderCreateDefaultConfigConstMeta,
+        argValues: [providerId, displayName],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderCreateDefaultConfigConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_create_default_config",
+        argNames: ["providerId", "displayName"],
+      );
+
+  @override
+  Future<String> crateApiModalProviderApiModalProviderDefaultBaseUrl({
+    required String providerId,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(providerId, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 21,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderDefaultBaseUrlConstMeta,
+        argValues: [providerId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderDefaultBaseUrlConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_default_base_url",
+        argNames: ["providerId"],
+      );
+
+  @override
+  Future<String>
+  crateApiModalProviderApiModalProviderGetProviderDefaultHeaders({
+    required String configJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 22,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderGetProviderDefaultHeadersConstMeta,
+        argValues: [configJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderGetProviderDefaultHeadersConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_get_provider_default_headers",
+        argNames: ["configJson"],
+      );
+
+  @override
+  Future<String> crateApiModalProviderApiModalProviderListModels({
+    required String configJson,
+    String? siliconflowFallbackKey,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          sse_encode_opt_String(siliconflowFallbackKey, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 23,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiModalProviderApiModalProviderListModelsConstMeta,
+        argValues: [configJson, siliconflowFallbackKey],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiModalProviderApiModalProviderListModelsConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_list_models",
+        argNames: ["configJson", "siliconflowFallbackKey"],
+      );
+
+  @override
+  Future<String> crateApiModalProviderApiModalProviderResolveApiModelId({
+    required String configJson,
+    required String modelId,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          sse_encode_String(modelId, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 24,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderResolveApiModelIdConstMeta,
+        argValues: [configJson, modelId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderResolveApiModelIdConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_resolve_api_model_id",
+        argNames: ["configJson", "modelId"],
+      );
+
+  @override
+  Future<void> crateApiModalProviderApiModalProviderTestConnection({
+    required String configJson,
+    required String modelId,
+    required bool useStream,
+    String? siliconflowFallbackKey,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          sse_encode_String(modelId, serializer);
+          sse_encode_bool(useStream, serializer);
+          sse_encode_opt_String(siliconflowFallbackKey, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 25,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderTestConnectionConstMeta,
+        argValues: [configJson, modelId, useStream, siliconflowFallbackKey],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderTestConnectionConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_test_connection",
+        argNames: [
+          "configJson",
+          "modelId",
+          "useStream",
+          "siliconflowFallbackKey",
+        ],
+      );
+
+  @override
+  Future<void> crateApiModalProviderApiModalProviderValidateProviderConfig({
+    required String configJson,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(configJson, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 26,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiModalProviderApiModalProviderValidateProviderConfigConstMeta,
+        argValues: [configJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiModalProviderApiModalProviderValidateProviderConfigConstMeta =>
+      const TaskConstMeta(
+        debugName: "modal_provider_validate_provider_config",
+        argNames: ["configJson"],
+      );
+
+  @override
   String? crateApiMcpApiNegotiateMcpVersion({
     required List<String> clientVersions,
     required List<String> serverVersions,
@@ -966,7 +1094,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_String(clientVersions, serializer);
           sse_encode_list_String(serverVersions, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_String,
@@ -996,7 +1124,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_opt_String(schemaJson, serializer);
           sse_encode_String(argsJson, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -1026,7 +1154,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(rawJson, serializer);
           sse_encode_bool(isDesktop, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -1046,41 +1174,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiProviderApiResolveApiModelId({
-    required String configJson,
-    required String modelId,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(configJson, serializer);
-          sse_encode_String(modelId, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 27,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_String,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiProviderApiResolveApiModelIdConstMeta,
-        argValues: [configJson, modelId],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiResolveApiModelIdConstMeta =>
-      const TaskConstMeta(
-        debugName: "resolve_api_model_id",
-        argNames: ["configJson", "modelId"],
-      );
-
-  @override
   Future<String> crateApiMcpApiSummarizeServerTools({
     required String toolsJson,
   }) {
@@ -1092,7 +1185,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 28,
+            funcId: 30,
             port: port_,
           );
         },
@@ -1119,7 +1212,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_String,
@@ -1136,84 +1229,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "supported_mcp_versions", argNames: []);
 
   @override
-  Future<void> crateApiProviderApiTestConnection({
-    required String configJson,
-    required String modelId,
-    required bool useStream,
-    String? siliconflowFallbackKey,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(configJson, serializer);
-          sse_encode_String(modelId, serializer);
-          sse_encode_bool(useStream, serializer);
-          sse_encode_opt_String(siliconflowFallbackKey, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 30,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiProviderApiTestConnectionConstMeta,
-        argValues: [configJson, modelId, useStream, siliconflowFallbackKey],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiProviderApiTestConnectionConstMeta =>
-      const TaskConstMeta(
-        debugName: "test_connection",
-        argNames: [
-          "configJson",
-          "modelId",
-          "useStream",
-          "siliconflowFallbackKey",
-        ],
-      );
-
-  @override
   Future<void> crateApiMcpApiValidateMcpServerConfig({
-    required String configJson,
-  }) {
-    return handler.executeNormal(
-      NormalTask(
-        callFfi: (port_) {
-          final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(configJson, serializer);
-          pdeCallFfi(
-            generalizedFrbRustBinding,
-            serializer,
-            funcId: 31,
-            port: port_,
-          );
-        },
-        codec: SseCodec(
-          decodeSuccessData: sse_decode_unit,
-          decodeErrorData: sse_decode_String,
-        ),
-        constMeta: kCrateApiMcpApiValidateMcpServerConfigConstMeta,
-        argValues: [configJson],
-        apiImpl: this,
-      ),
-    );
-  }
-
-  TaskConstMeta get kCrateApiMcpApiValidateMcpServerConfigConstMeta =>
-      const TaskConstMeta(
-        debugName: "validate_mcp_server_config",
-        argNames: ["configJson"],
-      );
-
-  @override
-  Future<void> crateApiProviderApiValidateProviderConfig({
     required String configJson,
   }) {
     return handler.executeNormal(
@@ -1232,16 +1248,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeSuccessData: sse_decode_unit,
           decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiProviderApiValidateProviderConfigConstMeta,
+        constMeta: kCrateApiMcpApiValidateMcpServerConfigConstMeta,
         argValues: [configJson],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiProviderApiValidateProviderConfigConstMeta =>
+  TaskConstMeta get kCrateApiMcpApiValidateMcpServerConfigConstMeta =>
       const TaskConstMeta(
-        debugName: "validate_provider_config",
+        debugName: "validate_mcp_server_config",
         argNames: ["configJson"],
       );
 

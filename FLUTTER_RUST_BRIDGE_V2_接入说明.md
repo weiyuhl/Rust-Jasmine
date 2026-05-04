@@ -7,7 +7,7 @@
 当前 Rust crate 已生成在：
 
 ```text
-rust-lib/model-provider-rust/
+rust-lib/jasmine-agent/
 ```
 
 当前桥接配置位于：
@@ -20,7 +20,7 @@ flutter_rust_bridge.yaml
 
 ```yaml
 rust_input: crate::api
-rust_root: rust-lib/model-provider-rust/
+rust_root: rust-lib/jasmine-agent/
 dart_output: lib/src/rust
 ```
 
@@ -33,7 +33,7 @@ lib/src/rust/
 当前 Flutter 侧本地依赖：
 
 ```yaml
-model_provider_rust:
+jasmine_agent:
   path: rust_builder
 flutter_rust_bridge: 2.12.0
 ```
@@ -42,12 +42,12 @@ flutter_rust_bridge: 2.12.0
 
 ## 下一步接入方式
 
-1. 在 `rust-lib/model-provider-rust/src/api/` 中编写需要暴露给 Flutter 的 Rust API。
+1. 在 `rust-lib/jasmine-agent/src/api/` 中编写需要暴露给 Flutter 的 Rust API。
 
-2. 如果新增 Rust 文件，需要在 `rust-lib/model-provider-rust/src/api/mod.rs` 中导出模块，例如：
+2. 如果新增 Rust 暴露文件，需要在 `rust-lib/jasmine-agent/src/api/mod.rs` 中导出模块，例如：
 
 ```rust
-pub mod provider;
+pub mod modal_provider_api;
 ```
 
 3. 修改 Rust API 后，在项目根目录运行代码生成：
@@ -64,7 +64,7 @@ flutter_rust_bridge_codegen generate --watch
 
 4. Dart 侧从 `lib/src/rust/api/` 下的生成文件调用 Rust API。生成文件不要手动修改。
 
-5. 接入实际模型供应商能力时，建议先把 Rust 侧职责限定为模型供应商相关的底层能力，例如 provider 列表、请求签名、流式解析、协议适配或性能敏感逻辑；Flutter 侧继续负责 UI、状态管理和本地化文本。
+5. 接入实际能力时，`Jasmine-agent` 作为唯一 Rust/FRB 主模块；模型供应商能力放在 `modal_provider/`，MCP / 工具能力放在 `mcp_server/`，Flutter 侧继续负责 UI、状态管理和本地化文本。
 
 6. Rust 代码改动后至少确认：
 
@@ -75,7 +75,7 @@ cargo check
 运行目录：
 
 ```text
-rust-lib/model-provider-rust/
+rust-lib/jasmine-agent/
 ```
 
 涉及 Flutter 调用链后，再在项目根目录运行：

@@ -1,4 +1,4 @@
-name: model_provider_rust
+name: jasmine_agent
 description: "Utility to build Rust code"
 version: 0.0.1
 publish_to: none
