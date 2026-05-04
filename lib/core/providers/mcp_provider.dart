@@ -363,7 +363,8 @@ class McpProvider extends ChangeNotifier {
         serversJson: serversJson,
         isDesktop: isDesktop,
       );
-    } catch (_) {
+    } catch (e, st) {
+      _logError('exportServersAsUiJson', e, st);
       return '{}';
     }
   }
@@ -920,6 +921,11 @@ class McpProvider extends ChangeNotifier {
       tools.addAll(s.tools.where((t) => t.enabled));
     }
     return tools;
+  }
+
+  void _logError(String method, Object e, StackTrace st) {
+    // Log to debug console for development; production builds strip these.
+    debugPrint('[MCP/Error] $method failed: $e\n$st');
   }
 
   @override
