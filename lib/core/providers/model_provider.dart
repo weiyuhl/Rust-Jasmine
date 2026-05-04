@@ -8,9 +8,9 @@ import '../services/network/dio_http_client.dart';
 import '../services/api_key_manager.dart';
 import '../services/api/provider_request_headers.dart';
 import '../services/model_override_payload_parser.dart';
-import 'package:Kelivo/secrets/fallback.dart';
 import '../services/api/google_service_account_auth.dart';
 import '../models/model_types.dart';
+import '../../../src/rust/api/provider_api.dart' as rust_api;
 
 class ModelRegistry {
   // Updated model groups to reflect new series
@@ -126,68 +126,8 @@ class _Http {
   }
 }
 
-class OpenAIProvider extends BaseProvider {
-  @override
-  Future<List<ModelInfo>> listModels(ProviderConfig cfg) async {
-    final key = ProviderManager._effectiveApiKey(cfg);
-    final client = _Http.clientFor(cfg);
-    try {
-      final uri = Uri.parse('${cfg.baseUrl}/models');
-      final headers = <String, String>{};
-      if (key.isNotEmpty) headers['Authorization'] = 'Bearer $key';
-      final res = await client.get(uri, headers: headers);
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        final data = (jsonDecode(res.body)['data'] as List?) ?? [];
-        return [
-          for (final e in data)
-            if (e is Map && e['id'] is String)
-              ModelRegistry.infer(
-                ModelInfo(
-                  id: e['id'] as String,
-                  displayName: e['id'] as String,
-                ),
-              ),
-        ];
-      }
-      return [];
-    } finally {
-      client.close();
-    }
-  }
-}
-
-class ClaudeProvider extends BaseProvider {
-  static const String anthropicVersion = '2023-06-01';
-  @override
-  Future<List<ModelInfo>> listModels(ProviderConfig cfg) async {
-    final key = ProviderManager._effectiveApiKey(cfg);
-    final client = _Http.clientFor(cfg);
-    try {
-      final uri = Uri.parse('${cfg.baseUrl}/models');
-      final headers = <String, String>{'anthropic-version': anthropicVersion};
-      if (key.isNotEmpty) headers['x-api-key'] = key;
-      final res = await client.get(uri, headers: headers);
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        final obj = jsonDecode(res.body) as Map<String, dynamic>;
-        final data = (obj['data'] as List?) ?? [];
-        return [
-          for (final e in data)
-            if (e is Map && e['id'] is String)
-              ModelRegistry.infer(
-                ModelInfo(
-                  id: e['id'] as String,
-                  displayName:
-                      (e['display_name'] as String?) ?? (e['id'] as String),
-                ),
-              ),
-        ];
-      }
-      return [];
-    } finally {
-      client.close();
-    }
-  }
-}
+// OpenAIProvider and ClaudeProvider have been migrated to Rust.
+// See rust-lib/model-provider-rust/src/providers/
 
 class GoogleProvider extends BaseProvider {
   String _buildUrl(ProviderConfig cfg) {
@@ -352,14 +292,28 @@ class ProviderManager {
     switch (kind) {
       case ProviderKind.google:
         return GoogleProvider();
-      case ProviderKind.claude:
-        return ClaudeProvider();
-      case ProviderKind.openai:
-        return OpenAIProvider();
+      // OpenAI / Claude providers are now handled by Rust
+      // via listModels() and testConnection() below.
+      default:
+        return GoogleProvider(); // fallback — not used for Rust-managed kinds
     }
   }
 
-  static Future<List<ModelInfo>> listModels(ProviderConfig cfg) {
+  static Future<List<ModelInfo>> listModels(ProviderConfig cfg) async {
+    final kind = ProviderConfig.classify(
+      cfg.id,
+      explicitType: cfg.providerType,
+    );
+    // Delegate to Rust for OpenAI / Claude types
+    if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
+      final configJson = jsonEncode(cfg.toJson());
+      final modelsJson = await rust_api.listModels(configJson: configJson);
+      final List<dynamic> list = jsonDecode(modelsJson);
+      return list
+          .map((e) => ModelInfo.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    // Google still handled by Dart
     return forConfig(cfg).listModels(cfg);
   }
 
@@ -372,124 +326,22 @@ class ProviderManager {
       cfg.id,
       explicitType: cfg.providerType,
     );
+    // Delegate to Rust for OpenAI / Claude types
+    if (kind == ProviderKind.openai || kind == ProviderKind.claude) {
+      final configJson = jsonEncode(cfg.toJson());
+      await rust_api.testConnection(
+        configJson: configJson,
+        modelId: modelId,
+        useStream: useStream,
+      );
+      return;
+    }
+    // Google still handled by Dart
     final client = _Http.clientFor(cfg);
     try {
-      if (kind == ProviderKind.openai) {
-        final base = cfg.baseUrl.endsWith('/')
-            ? cfg.baseUrl.substring(0, cfg.baseUrl.length - 1)
-            : cfg.baseUrl;
-        final path = (cfg.useResponseApi == true)
-            ? '/responses'
-            : (cfg.chatPath ?? '/chat/completions');
-        final url = Uri.parse('$base$path');
-        final ov = _modelOverride(cfg, modelId);
-        String upstreamId = modelId;
-        try {
-          final raw = (ov['apiModelId'] ?? ov['api_model_id'])
-              ?.toString()
-              .trim();
-          if (raw != null && raw.isNotEmpty) upstreamId = raw;
-        } catch (_) {}
-        final body = cfg.useResponseApi == true
-            ? {
-                'model': upstreamId,
-                'input': [
-                  {'role': 'user', 'content': 'hello'},
-                ],
-                if (useStream) 'stream': true,
-              }
-            : {
-                'model': upstreamId,
-                'messages': [
-                  {'role': 'user', 'content': 'hello'},
-                ],
-                if (useStream) 'stream': true,
-              };
-        // Merge custom body overrides
-        final extra = _customBody(cfg, modelId);
-        if (extra.isNotEmpty) (body as Map<String, dynamic>).addAll(extra);
-        // Merge custom headers overrides
-        // SiliconFlow fallback key for built-in free models when no API key provided
-        String apiKey = _effectiveApiKey(cfg);
-        try {
-          if ((cfg.id) == 'SiliconFlow') {
-            final host = Uri.tryParse(cfg.baseUrl)?.host.toLowerCase() ?? '';
-            if (host.contains('siliconflow') && apiKey.trim().isEmpty) {
-              final m = upstreamId.toLowerCase();
-              final allowed =
-                  m == 'thudm/glm-4-9b-0414' || m == 'qwen/qwen3-8b';
-              final fb = siliconflowFallbackKey.trim();
-              if (allowed && fb.isNotEmpty) apiKey = fb;
-            }
-          }
-        } catch (_) {}
-        final headers = <String, String>{
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        };
-        headers.addAll(_customHeaders(cfg, modelId));
-        final res = await client.post(
-          url,
-          headers: headers,
-          body: jsonEncode(body),
-        );
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          throw HttpException('HTTP ${res.statusCode}: ${res.body}');
-        }
-        // For streaming, verify the response contains SSE data
-        if (useStream) {
-          final contentType = res.headers['content-type'] ?? '';
-          if (!contentType.contains('text/event-stream') && res.body.isEmpty) {
-            throw HttpException('Stream response expected but not received');
-          }
-        }
-        return;
-      } else if (kind == ProviderKind.claude) {
-        final base = cfg.baseUrl.endsWith('/')
-            ? cfg.baseUrl.substring(0, cfg.baseUrl.length - 1)
-            : cfg.baseUrl;
-        final url = Uri.parse('$base/messages');
-        final ov = _modelOverride(cfg, modelId);
-        String upstreamId = modelId;
-        try {
-          final raw = (ov['apiModelId'] ?? ov['api_model_id'])
-              ?.toString()
-              .trim();
-          if (raw != null && raw.isNotEmpty) upstreamId = raw;
-        } catch (_) {}
-        final body = {
-          'model': upstreamId,
-          'max_tokens': 8,
-          'messages': [
-            {'role': 'user', 'content': 'hello'},
-          ],
-          if (useStream) 'stream': true,
-        };
-        final extra = _customBody(cfg, modelId);
-        if (extra.isNotEmpty) (body as Map<String, dynamic>).addAll(extra);
-        final headers = <String, String>{
-          'x-api-key': _effectiveApiKey(cfg),
-          'anthropic-version': ClaudeProvider.anthropicVersion,
-          'Content-Type': 'application/json',
-        };
-        headers.addAll(_customHeaders(cfg, modelId));
-        final res = await client.post(
-          url,
-          headers: headers,
-          body: jsonEncode(body),
-        );
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          throw HttpException('HTTP ${res.statusCode}: ${res.body}');
-        }
-        // For streaming, verify the response contains SSE data
-        if (useStream) {
-          final contentType = res.headers['content-type'] ?? '';
-          if (!contentType.contains('text/event-stream') && res.body.isEmpty) {
-            throw HttpException('Stream response expected but not received');
-          }
-        }
-        return;
-      } else if (kind == ProviderKind.google) {
+      // OpenAI / Claude cases handled by Rust earlier in this function.
+      // Only Google reaches here.
+      if (kind == ProviderKind.google) {
         // Generative Language API (default) or Vertex AI when vertexAI == true
         final ov = _modelOverride(cfg, modelId);
         // Resolve upstream/api model id for this logical key when present.

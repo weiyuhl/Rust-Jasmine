@@ -44,6 +44,7 @@ import 'dart:io'
 import 'core/services/android_background.dart';
 import 'core/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'src/rust/frb_generated.dart';
 
 final RouteObserver<ModalRoute<dynamic>> routeObserver =
     RouteObserver<ModalRoute<dynamic>>();
@@ -79,6 +80,8 @@ Future<void> main() async {
       await SandboxPathResolver.init();
       // Enable edge-to-edge to allow content under system bars (Android)
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      // Initialize Rust bridge (model provider FFI)
+      await RustLib.init();
       // Start app (Flutter log capture is toggleable and off by default)
       runApp(const MyApp());
     },

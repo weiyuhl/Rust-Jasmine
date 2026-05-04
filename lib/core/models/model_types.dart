@@ -56,6 +56,17 @@ class ModelInfo {
     );
   }
 
+  factory ModelInfo.fromJson(Map<String, dynamic> json) {
+    return ModelInfo(
+      id: json['id'] as String? ?? '',
+      displayName: json['displayName'] as String? ?? '',
+      type: _parseModelType(json['type']),
+      input: _parseModalities(json['input']),
+      output: _parseModalities(json['output']),
+      abilities: _parseAbilities(json['abilities']),
+    );
+  }
+
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
@@ -78,4 +89,34 @@ class ModelInfo {
     Object.hashAll(output),
     Object.hashAll(abilities),
   );
+}
+
+ModelType _parseModelType(dynamic v) {
+  final s = v?.toString().toLowerCase() ?? '';
+  return s == 'embedding' ? ModelType.embedding : ModelType.chat;
+}
+
+List<Modality> _parseModalities(dynamic v) {
+  if (v is! List) return [Modality.text];
+  return v
+      .map((e) {
+        final s = e.toString().toLowerCase();
+        return s == 'image' ? Modality.image : Modality.text;
+      })
+      .toSet()
+      .toList();
+}
+
+List<ModelAbility> _parseAbilities(dynamic v) {
+  if (v is! List) return [];
+  return v
+      .map((e) {
+        final s = e.toString().toLowerCase();
+        if (s == 'tool') return ModelAbility.tool;
+        if (s == 'reasoning') return ModelAbility.reasoning;
+        return null;
+      })
+      .whereType<ModelAbility>()
+      .toSet()
+      .toList();
 }
