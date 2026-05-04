@@ -65,3 +65,6 @@ internationalization.md
 /skills-lock.json
 /android/build/
 /ios/build/
+
+# Rust workspace build artifacts
+/rust-lib/target/
