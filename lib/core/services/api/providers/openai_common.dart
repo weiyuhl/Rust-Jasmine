@@ -643,6 +643,11 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
 
     // Built-in web search for Responses API when enabled on supported models
     bool isResponsesWebSearchSupported(String id) {
+      try {
+        if (rust_chat.chatIsBuiltinSearchSupported(modelId: id, providerType: 'openai')) {
+          return true;
+        }
+      } catch (_) {}
       if (BuiltInToolsHelper.isOpenAIResponsesBuiltInSearchSupportedModel(id)) {
         return true;
       }

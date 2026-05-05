@@ -437,6 +437,10 @@ class McpProvider extends ChangeNotifier {
           ? workingDirectory!.trim()
           : null,
     );
+    // Validate config via Rust
+    try {
+      await rust_mcp.validateMcpServerConfig(configJson: jsonEncode(cfg.toJson()));
+    } catch (_) {}
     _servers = [..._servers, cfg];
     _status[id] = McpStatus.idle;
     await _persist();
