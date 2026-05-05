@@ -42,9 +42,9 @@ pub fn mcp_list_tools(
     url: String,
     headers_json: Option<String>,
     transport: String,
-    _timeout_ms: u64,
+    timeout_ms: u64,
 ) -> Result<String, String> {
-    let config = build_config(url, headers_json, transport)?;
+    let config = build_config(url, headers_json, transport, timeout_ms)?;
     let tools = connection::list_tools(&config)?;
     serde_json::to_string(&tools).map_err(|e| format!("Serialize: {}", e))
 }
@@ -57,9 +57,9 @@ pub fn mcp_call_tool(
     transport: String,
     tool_name: String,
     args_json: Option<String>,
-    _timeout_ms: u64,
+    timeout_ms: u64,
 ) -> Result<String, String> {
-    let config = build_config(url, headers_json, transport)?;
+    let config = build_config(url, headers_json, transport, timeout_ms)?;
     let args = args_json
         .map(|s| serde_json::from_str(&s))
         .transpose()
@@ -75,9 +75,9 @@ pub fn mcp_list_resources(
     url: String,
     headers_json: Option<String>,
     transport: String,
-    _timeout_ms: u64,
+    timeout_ms: u64,
 ) -> Result<String, String> {
-    let config = build_config(url, headers_json, transport)?;
+    let config = build_config(url, headers_json, transport, timeout_ms)?;
     let resources = connection::list_resources(&config)?;
     serde_json::to_string(&resources).map_err(|e| format!("Serialize: {}", e))
 }
@@ -88,9 +88,9 @@ pub fn mcp_list_prompts(
     url: String,
     headers_json: Option<String>,
     transport: String,
-    _timeout_ms: u64,
+    timeout_ms: u64,
 ) -> Result<String, String> {
-    let config = build_config(url, headers_json, transport)?;
+    let config = build_config(url, headers_json, transport, timeout_ms)?;
     let prompts = connection::list_prompts(&config)?;
     serde_json::to_string(&prompts).map_err(|e| format!("Serialize: {}", e))
 }
@@ -124,6 +124,7 @@ fn build_config(
     url: String,
     headers_json: Option<String>,
     transport: String,
+    timeout_ms: u64,
 ) -> Result<McpTransportConfig, String> {
     let transport_type = match transport.as_str() {
         "sse" => McpTransportType::Sse,
@@ -135,7 +136,7 @@ fn build_config(
         transport_type,
         url,
         headers,
-        timeout_ms: 30000,
+        timeout_ms,
     })
 }
 

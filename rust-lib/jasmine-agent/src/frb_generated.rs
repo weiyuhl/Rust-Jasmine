@@ -1584,7 +1584,7 @@ fn wire__crate__api__mcp_client_api__mcp_call_tool_impl(
             let api_transport = <String>::sse_decode(&mut deserializer);
             let api_tool_name = <String>::sse_decode(&mut deserializer);
             let api_args_json = <Option<String>>::sse_decode(&mut deserializer);
-            let api__timeout_ms = <u64>::sse_decode(&mut deserializer);
+            let api_timeout_ms = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::mcp_client_api::mcp_call_tool(
@@ -1593,7 +1593,7 @@ fn wire__crate__api__mcp_client_api__mcp_call_tool_impl(
                     api_transport,
                     api_tool_name,
                     api_args_json,
-                    api__timeout_ms,
+                    api_timeout_ms,
                 )?;
                 Ok(output_ok)
             })())
@@ -1662,14 +1662,14 @@ fn wire__crate__api__mcp_client_api__mcp_list_prompts_impl(
             let api_url = <String>::sse_decode(&mut deserializer);
             let api_headers_json = <Option<String>>::sse_decode(&mut deserializer);
             let api_transport = <String>::sse_decode(&mut deserializer);
-            let api__timeout_ms = <u64>::sse_decode(&mut deserializer);
+            let api_timeout_ms = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::mcp_client_api::mcp_list_prompts(
                     api_url,
                     api_headers_json,
                     api_transport,
-                    api__timeout_ms,
+                    api_timeout_ms,
                 )?;
                 Ok(output_ok)
             })())
@@ -1700,14 +1700,14 @@ fn wire__crate__api__mcp_client_api__mcp_list_resources_impl(
             let api_url = <String>::sse_decode(&mut deserializer);
             let api_headers_json = <Option<String>>::sse_decode(&mut deserializer);
             let api_transport = <String>::sse_decode(&mut deserializer);
-            let api__timeout_ms = <u64>::sse_decode(&mut deserializer);
+            let api_timeout_ms = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::mcp_client_api::mcp_list_resources(
                     api_url,
                     api_headers_json,
                     api_transport,
-                    api__timeout_ms,
+                    api_timeout_ms,
                 )?;
                 Ok(output_ok)
             })())
@@ -1738,14 +1738,14 @@ fn wire__crate__api__mcp_client_api__mcp_list_tools_impl(
             let api_url = <String>::sse_decode(&mut deserializer);
             let api_headers_json = <Option<String>>::sse_decode(&mut deserializer);
             let api_transport = <String>::sse_decode(&mut deserializer);
-            let api__timeout_ms = <u64>::sse_decode(&mut deserializer);
+            let api_timeout_ms = <u64>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, String>((move || {
                 let output_ok = crate::api::mcp_client_api::mcp_list_tools(
                     api_url,
                     api_headers_json,
                     api_transport,
-                    api__timeout_ms,
+                    api_timeout_ms,
                 )?;
                 Ok(output_ok)
             })())
