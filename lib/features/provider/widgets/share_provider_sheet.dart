@@ -23,11 +23,7 @@ String encodeProviderConfig(ProviderConfig cfg) {
     case ProviderKind.openai:
       type = 'openai';
   }
-  final map = <String, dynamic>{
-    'type': type,
-    'name': cfg.name,
-    'apiKey': cfg.apiKey,
-  };
+  final map = <String, dynamic>{'type': type, 'name': cfg.name};
   if (kind != ProviderKind.google) {
     map['baseUrl'] = cfg.baseUrl;
   }

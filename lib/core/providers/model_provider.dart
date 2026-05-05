@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 export '../models/model_types.dart';
 
 import 'dart:convert';

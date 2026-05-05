@@ -8,6 +8,11 @@ pub fn build_openai_url(base_url: &str, chat_path: Option<&str>, use_response_ap
         format!("{}/responses", base)
     } else {
         let path = chat_path.unwrap_or("/chat/completions");
+        let path = if path.starts_with('/') {
+            path.to_string()
+        } else {
+            format!("/{}", path)
+        };
         format!("{}{}", base, path)
     }
 }
@@ -219,6 +224,16 @@ mod tests {
     #[test]
     fn test_build_chat_url() {
         let url = build_openai_url("https://api.openai.com/v1", None, false);
+        assert_eq!(url, "https://api.openai.com/v1/chat/completions");
+    }
+
+    #[test]
+    fn test_build_chat_url_normalizes_custom_path() {
+        let url = build_openai_url(
+            "https://api.openai.com/v1",
+            Some("chat/completions"),
+            false,
+        );
         assert_eq!(url, "https://api.openai.com/v1/chat/completions");
     }
 

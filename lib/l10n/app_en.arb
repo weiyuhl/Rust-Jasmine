@@ -812,16 +812,16 @@
       }
     }
   },
-  "displaySettingsPageEnableDollarLatexTitle": "Inline $...$ Rendering",
-  "displaySettingsPageEnableDollarLatexSubtitle": "Render inline math inside $...$",
-  "displaySettingsPageEnableMathTitle": "Math Formula Rendering",
-  "displaySettingsPageEnableMathSubtitle": "Render LaTeX math (inline and block)",
-  "displaySettingsPageEnableUserMarkdownTitle": "Render user messages with Markdown",
-  "displaySettingsPageEnableReasoningMarkdownTitle": "Render reasoning (thinking) with Markdown",
-  "displaySettingsPageEnableAssistantMarkdownTitle": "Render assistant messages with Markdown",
-  "displaySettingsPageMobileCodeBlockWrapTitle": "Mobile Code Block Word Wrap",
+  "displaySettingsPageEnableDollarLatexTitle": "Enable $...$ Rendering",
+  "displaySettingsPageEnableDollarLatexSubtitle": "Render content between $...$ as inline math formulas",
+  "displaySettingsPageEnableMathTitle": "Enable Math Rendering",
+  "displaySettingsPageEnableMathSubtitle": "Render LaTeX math formulas (inline and block)",
+  "displaySettingsPageEnableUserMarkdownTitle": "User Message Markdown Rendering",
+  "displaySettingsPageEnableReasoningMarkdownTitle": "Chain of Thought Markdown Rendering",
+  "displaySettingsPageEnableAssistantMarkdownTitle": "Assistant Message Markdown Rendering",
+  "displaySettingsPageMobileCodeBlockWrapTitle": "Mobile Code Block Auto Wrap",
   "displaySettingsPageAutoCollapseCodeBlockTitle": "Auto-collapse Code Blocks",
-  "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "Auto-collapse threshold",
+  "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "Auto-collapse Lines Threshold",
   "displaySettingsPageAutoCollapseCodeBlockLinesUnit": "lines",
   "messageExportSheetFormatTitle": "Export Format",
   "messageExportSheetMarkdown": "Markdown",
@@ -1289,7 +1289,7 @@
   "importProviderSheetCancelButton": "Cancel",
   "importProviderSheetImportButton": "Import",
   "shareProviderSheetTitle": "Share Provider",
-  "shareProviderSheetDescription": "Copy or share via QR code.",
+  "shareProviderSheetDescription": "Copy or share via QR code. API Key is not included; fill it in after import.",
   "shareProviderSheetCopiedMessage": "Copied",
   "shareProviderSheetCopyButton": "Copy",
   "shareProviderSheetShareButton": "Share",
@@ -1437,17 +1437,6 @@
     }
   },
   "chainOfThoughtCollapse": "Collapse",
-  "displaySettingsPageEnableDollarLatexTitle": "Enable $...$ Rendering",
-  "displaySettingsPageEnableDollarLatexSubtitle": "Render content between $...$ as inline math formulas",
-  "displaySettingsPageEnableMathTitle": "Enable Math Rendering",
-  "displaySettingsPageEnableMathSubtitle": "Render LaTeX math formulas (inline and block)",
-  "displaySettingsPageEnableUserMarkdownTitle": "User Message Markdown Rendering",
-  "displaySettingsPageEnableReasoningMarkdownTitle": "Chain of Thought Markdown Rendering",
-  "displaySettingsPageEnableAssistantMarkdownTitle": "Assistant Message Markdown Rendering",
-  "displaySettingsPageMobileCodeBlockWrapTitle": "Mobile Code Block Auto Wrap",
-  "displaySettingsPageAutoCollapseCodeBlockTitle": "Auto-collapse Code Blocks",
-  "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "Auto-collapse Lines Threshold",
-  "displaySettingsPageAutoCollapseCodeBlockLinesUnit": "lines",
   "displaySettingsPageShowChatListDateTitle": "Show Chat List Dates",
   "displaySettingsPageShowChatListDateSubtitle": "Display date group labels in the conversation list",
   "displaySettingsPageEnableImageCropperTitle": "Enable Image Cropping",
@@ -1508,7 +1497,7 @@
   "desktopFontLoading": "Loading fonts…",
   "displaySettingsPageFontLocalFileLabel": "Local file",
   "displaySettingsPageFontResetLabel": "Reset font settings",
-  "displaySettingsPageOtherSettingsTitle": "Other",
+  "displaySettingsPageOtherSettingsTitle": "Other Settings",
   "themeSettingsPageDynamicColorSection": "Dynamic Color",
   "themeSettingsPageUseDynamicColorTitle": "System Dynamic Colors",
   "themeSettingsPageUseDynamicColorSubtitle": "Match system palette (Android 12+)",
@@ -1703,14 +1692,15 @@
   "displaySettingsPageBehaviorStartupTitle": "Behavior & startup",
   "displaySettingsPageHapticsSettingsTitle": "Haptics",
   "assistantSettingsNoPromptPlaceholder": "No prompt yet",
-  "providersPageMultiSelectTooltip": "Multi-select"
-  ,
+  "providersPageMultiSelectTooltip": "Multi-select",
   "providersPageDeleteSelectedConfirmContent": "Delete selected providers? This cannot be undone.",
   "providersPageDeleteSelectedSnackbar": "Deleted selected providers",
   "providersPageExportSelectedTitle": "Export {count} providers",
   "@providersPageExportSelectedTitle": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "providersPageExportCopyButton": "Copy",
@@ -1750,7 +1740,9 @@
   "networkProxyTestFailed": "Test failed: {error}",
   "@networkProxyTestFailed": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "networkProxyNoUrl": "Please enter a URL",
@@ -1768,9 +1760,8 @@
   "providerDetailPageDetectSuccess": "Detection successful",
   "providerDetailPageDetectFailed": "Detection failed",
   "providerDetailPageDeleteAllModelsWarning": "This action cannot be undone.",
-  "displaySettingsPageOtherSettingsTitle": "Other Settings",
   "requestLogSettingTitle": "Request Logging",
-  "requestLogSettingSubtitle": "When enabled, request/response details are written to logs/logs.txt (rotated daily).",
+  "requestLogSettingSubtitle": "Writes redacted request/response metadata to logs/logs.txt. Prompts, response output, and errors can still contain sensitive data; enable only for debugging.",
   "flutterLogSettingTitle": "Flutter Logging",
   "flutterLogSettingSubtitle": "When enabled, Flutter errors and print output are written to logs/flutter_logs.txt (rotated daily).",
   "logViewerTitle": "Request Logs",
@@ -1810,7 +1801,7 @@
   },
   "logSettingsTitle": "Log Settings",
   "logSettingsSaveOutput": "Save Response Output",
-  "logSettingsSaveOutputSubtitle": "Log response body content (may use significant storage)",
+  "logSettingsSaveOutputSubtitle": "Also logs response chunks. Output may contain private content or secrets and can use significant storage.",
   "logSettingsAutoDelete": "Auto-delete",
   "logSettingsAutoDeleteSubtitle": "Delete logs older than specified days",
   "logSettingsAutoDeleteDisabled": "Disabled",
@@ -1921,38 +1912,52 @@
   "tokenDetailPromptTokens": "{count} tokens",
   "@tokenDetailPromptTokens": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "tokenDetailPromptTokensWithCache": "{count} tokens ({cached} cached)",
   "@tokenDetailPromptTokensWithCache": {
     "placeholders": {
-      "count": {"type": "int"},
-      "cached": {"type": "int"}
+      "count": {
+        "type": "int"
+      },
+      "cached": {
+        "type": "int"
+      }
     }
   },
   "tokenDetailCompletionTokens": "{count} tokens",
   "@tokenDetailCompletionTokens": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "tokenDetailSpeed": "{value} tok/s",
   "@tokenDetailSpeed": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "tokenDetailDuration": "{value}s",
   "@tokenDetailDuration": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "tokenDetailTotalTokens": "{count} tokens",
   "@tokenDetailTotalTokens": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   }
 }

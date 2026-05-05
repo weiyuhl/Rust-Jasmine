@@ -176,7 +176,7 @@ class DioHttpClient extends http.BaseClient {
       RequestLogger.logLine('[REQ $reqId] $method $uri');
       if (reqHeaders.isNotEmpty) {
         RequestLogger.logLine(
-          '[REQ $reqId] headers=${RequestLogger.encodeObject(reqHeaders)}',
+          '[REQ $reqId] headers=${RequestLogger.encodeObject(RequestLogger.redactHeaders(reqHeaders))}',
         );
       }
       if (bodyBytes.isNotEmpty) {
@@ -185,7 +185,7 @@ class DioHttpClient extends http.BaseClient {
             ? decoded
             : 'base64:${base64Encode(bodyBytes)}';
         RequestLogger.logLine(
-          '[REQ $reqId] body=${RequestLogger.escape(bodyText)}',
+          '[REQ $reqId] body=${RequestLogger.escape(RequestLogger.redactBodyText(bodyText))}',
         );
       }
     }
@@ -216,7 +216,7 @@ class DioHttpClient extends http.BaseClient {
         RequestLogger.logLine('[RES $reqId] status=$statusCode');
         if (headers.isNotEmpty) {
           RequestLogger.logLine(
-            '[RES $reqId] headers=${RequestLogger.encodeObject(headers)}',
+            '[RES $reqId] headers=${RequestLogger.encodeObject(RequestLogger.redactHeaders(headers))}',
           );
         }
       }
@@ -234,7 +234,7 @@ class DioHttpClient extends http.BaseClient {
               final s = RequestLogger.safeDecodeUtf8(chunk);
               if (s.isNotEmpty) {
                 RequestLogger.logLine(
-                  '[RES $reqId] chunk=${RequestLogger.escape(s)}',
+                  '[RES $reqId] chunk=${RequestLogger.escape(RequestLogger.redactBodyText(s))}',
                 );
               }
             }

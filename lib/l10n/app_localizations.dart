@@ -5693,7 +5693,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareProviderSheetDescription.
   ///
   /// In en, this message translates to:
-  /// **'Copy or share via QR code.'**
+  /// **'Copy or share via QR code. API Key is not included; fill it in after import.'**
   String get shareProviderSheetDescription;
 
   /// No description provided for @shareProviderSheetCopiedMessage.
@@ -8033,7 +8033,7 @@ abstract class AppLocalizations {
   /// No description provided for @requestLogSettingSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'When enabled, request/response details are written to logs/logs.txt (rotated daily).'**
+  /// **'Writes redacted request/response metadata to logs/logs.txt. Prompts, response output, and errors can still contain sensitive data; enable only for debugging.'**
   String get requestLogSettingSubtitle;
 
   /// No description provided for @flutterLogSettingTitle.
@@ -8189,7 +8189,7 @@ abstract class AppLocalizations {
   /// No description provided for @logSettingsSaveOutputSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Log response body content (may use significant storage)'**
+  /// **'Also logs response chunks. Output may contain private content or secrets and can use significant storage.'**
   String get logSettingsSaveOutputSubtitle;
 
   /// No description provided for @logSettingsAutoDelete.

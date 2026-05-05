@@ -528,7 +528,7 @@ Stream<ChatStreamChunk> _sendClaudeStream(
         final line = lines[i].trim();
         if (line.isEmpty || !line.startsWith('data:')) continue;
 
-        final sseResult = rust_chat.chatParseSseLine(line: line);
+        final sseResult = _parseSseDataLine(line);
         final data = (sseResult != null)
             ? sseResult
             : line.substring(5).trimLeft();

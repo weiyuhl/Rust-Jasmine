@@ -26,12 +26,36 @@
   "settingsPageChatStorage": "聊天記錄儲存",
   "settingsPageCalculating": "統計中…",
   "settingsPageFilesCount": "共 {count} 個檔案 · {size}",
+  "@settingsPageFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpacePageTitle": "儲存空間",
   "storageSpaceRefreshTooltip": "重新整理",
   "storageSpaceLoadFailed": "載入失敗",
   "storageSpaceTotalLabel": "已用空間",
   "storageSpaceClearableLabel": "可清理：{size}",
+  "@storageSpaceClearableLabel": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearableHint": "共發現可清理空間 {size}",
+  "@storageSpaceClearableHint": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceCategoryImages": "圖片",
   "storageSpaceCategoryFiles": "檔案",
   "storageSpaceCategoryChatData": "聊天記錄",
@@ -40,6 +64,13 @@
   "storageSpaceCategoryLogs": "日誌",
   "storageSpaceCategoryOther": "應用",
   "storageSpaceFilesCount": "{count} 個檔案",
+  "@storageSpaceFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceSafeToClearHint": "可安全清理，不影響聊天記錄。",
   "storageSpaceNotSafeToClearHint": "可能影響聊天記錄，請謹慎刪除。",
   "storageSpaceBreakdownTitle": "明細",
@@ -56,21 +87,70 @@
   "storageSpaceSubLogsOther": "其他日誌",
   "storageSpaceClearConfirmTitle": "確認清理",
   "storageSpaceClearConfirmMessage": "確定要清理 {targetName} 嗎？",
+  "@storageSpaceClearConfirmMessage": {
+    "placeholders": {
+      "targetName": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearButton": "清理",
   "storageSpaceClearDone": "已清理 {targetName}",
+  "@storageSpaceClearDone": {
+    "placeholders": {
+      "targetName": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearFailed": "清理失敗：{error}",
+  "@storageSpaceClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearAvatarCacheButton": "清理頭像快取",
   "storageSpaceClearCacheButton": "清理快取",
   "storageSpaceClearLogsButton": "清理日誌",
   "storageSpaceViewLogsButton": "查看日誌",
   "storageSpaceDeleteConfirmTitle": "確認刪除",
   "storageSpaceDeleteUploadsConfirmMessage": "刪除 {count} 個項目？刪除後聊天記錄中的附件可能無法開啟。",
+  "@storageSpaceDeleteUploadsConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceDeletedUploadsDone": "已刪除 {count} 個項目",
+  "@storageSpaceDeletedUploadsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceNoUploads": "暫無內容",
   "storageSpaceSelectAll": "全選",
   "storageSpaceClearSelection": "清除選取",
   "storageSpaceSelectedCount": "已選 {count} 項",
+  "@storageSpaceSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceUploadsCount": "共 {count} 項",
+  "@storageSpaceUploadsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsPageAboutSection": "關於",
   "settingsPageAbout": "關於",
   "settingsPageStatistics": "統計",
@@ -259,7 +339,13 @@
   "providersPageDeleteSelectedConfirmContent": "確定要刪除選中的供應商嗎？此操作不可撤銷。",
   "providersPageDeleteSelectedSnackbar": "已刪除選中的供應商",
   "providersPageExportSelectedTitle": "匯出 {count} 個供應商",
-  "@providersPageExportSelectedTitle": {"placeholders": {"count": {"type": "int"}}},
+  "@providersPageExportSelectedTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "providersPageExportCopyButton": "複製",
   "providersPageExportShareButton": "分享",
   "providersPageExportCopiedSnackbar": "已複製匯出代碼",
@@ -320,6 +406,16 @@
   "assistantEditMcpNoServersMessage": "暫無已啟動的 MCP 伺服器",
   "assistantEditMcpConnectedTag": "已連線",
   "assistantEditMcpToolsCountTag": "工具: {enabled}/{total}",
+  "@assistantEditMcpToolsCountTag": {
+    "placeholders": {
+      "enabled": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "assistantEditModelUseGlobalDefault": "使用全域預設",
   "assistantSettingsPageTitle": "助理設定",
   "assistantSettingsDefaultTag": "預設",
@@ -480,6 +576,16 @@
   "backupPageImportFromChatbox": "從 Chatbox 匯入",
   "homePageClearContext": "清空上下文",
   "homePageClearContextWithCount": "清空上下文 ({actual}/{configured})",
+  "@homePageClearContextWithCount": {
+    "placeholders": {
+      "actual": {
+        "type": "String"
+      },
+      "configured": {
+        "type": "String"
+      }
+    }
+  },
   "homePageDefaultAssistant": "預設助理",
   "homePageDeleteMessage": "刪除本版本",
   "homePageDeleteMessageConfirm": "確定要刪除目前版本嗎？此操作不可撤銷。",
@@ -547,6 +653,13 @@
   "reasoningBudgetSheetXhigh": "極限推理",
   "reasoningBudgetSheetTitle": "思維鏈強度",
   "reasoningBudgetSheetCurrentLevel": "目前檔位：{level}",
+  "@reasoningBudgetSheetCurrentLevel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "reasoningBudgetSheetOffSubtitle": "關閉推理功能，直接回答",
   "reasoningBudgetSheetAutoSubtitle": "由模型自動決定推理級別",
   "reasoningBudgetSheetLightSubtitle": "使用少量推理來回答問題",
@@ -556,8 +669,29 @@
   "reasoningBudgetSheetCustomLabel": "自訂推理預算",
   "reasoningBudgetSheetCustomHint": "例如：2048 (-1 自動，0 關閉)",
   "chatMessageWidgetFileNotFound": "檔案不存在: {fileName}",
+  "@chatMessageWidgetFileNotFound": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetCannotOpenFile": "無法開啟檔案: {message}",
+  "@chatMessageWidgetCannotOpenFile": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetOpenFileError": "開啟檔案失敗: {error}",
+  "@chatMessageWidgetOpenFileError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetCopiedToClipboard": "已複製到剪貼簿",
   "chatMessageWidgetResendTooltip": "重新傳送",
   "chatMessageWidgetMoreTooltip": "更多",
@@ -566,8 +700,22 @@
   "chatMessageWidgetTranslating": "翻譯中...",
   "chatMessageWidgetCitationNotFound": "未找到引用來源",
   "chatMessageWidgetCannotOpenUrl": "無法開啟連結: {url}",
+  "@chatMessageWidgetCannotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetOpenLinkError": "開啟連結失敗",
   "chatMessageWidgetCitationsTitle": "引用（共{count}條）",
+  "@chatMessageWidgetCitationsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatMessageWidgetRegenerateTooltip": "重新生成",
   "chatMessageWidgetRegenerateConfirmTitle": "確認重新生成",
   "chatMessageWidgetRegenerateConfirmContent": "重新生成只會更新目前訊息，不會刪除下面的訊息。確定要繼續嗎？",
@@ -583,15 +731,50 @@
   "chatMessageWidgetEditMemory": "編輯記憶",
   "chatMessageWidgetDeleteMemory": "刪除記憶",
   "chatMessageWidgetWebSearch": "聯網檢索: {query}",
+  "@chatMessageWidgetWebSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetBuiltinSearch": "模型內建搜尋",
   "chatMessageWidgetToolCall": "呼叫工具: {name}",
+  "@chatMessageWidgetToolCall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetToolResult": "呼叫工具: {name}",
+  "@chatMessageWidgetToolResult": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetNoResultYet": "（暫無結果）",
   "chatMessageWidgetArguments": "參數",
   "chatMessageWidgetResult": "結果",
   "chatMessageWidgetImages": "圖片",
   "chatMessageWidgetCitationsCount": "共{count}條引用",
+  "@chatMessageWidgetCitationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatSelectionSelectedCountTitle": "已選擇{count}條訊息",
+  "@chatSelectionSelectedCountTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatSelectionExportTxt": "TXT",
   "chatSelectionExportMd": "MD",
   "chatSelectionExportImage": "圖片",
@@ -601,7 +784,21 @@
   "messageExportSheetDefaultTitle": "新對話",
   "messageExportSheetExporting": "正在匯出…",
   "messageExportSheetExportFailed": "匯出失敗: {error}",
+  "@messageExportSheetExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "messageExportSheetExportedAs": "已匯出為 {filename}",
+  "@messageExportSheetExportedAs": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
   "messageExportSheetFormatTitle": "匯出格式",
   "messageExportSheetMarkdown": "Markdown",
   "messageExportSheetSingleMarkdownSubtitle": "將該訊息匯出為 Markdown 檔案",
@@ -624,6 +821,13 @@
   "sideDrawerMenuMoveTo": "移動到",
   "sideDrawerMenuDelete": "刪除",
   "sideDrawerDeleteSnackbar": "已刪除「{title}」",
+  "@sideDrawerDeleteSnackbar": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "sideDrawerRenameHint": "輸入新名稱",
   "sideDrawerCancel": "取消",
   "sideDrawerOK": "確定",
@@ -654,7 +858,24 @@
     }
   },
   "sideDrawerUpdateTitle": "發現新版本：{version}",
+  "@sideDrawerUpdateTitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "sideDrawerUpdateTitleWithBuild": "發現新版本：{version} ({build})",
+  "@sideDrawerUpdateTitleWithBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "int"
+      }
+    }
+  },
   "sideDrawerLinkCopied": "已複製下載連結",
   "sideDrawerPinnedLabel": "置頂",
   "sideDrawerHistory": "聊天歷史",
@@ -704,6 +925,16 @@
   "mcpPageStatusDisconnected": "未連線",
   "mcpPageStatusDisabled": "已停用",
   "mcpPageToolsCount": "工具: {enabled}/{total}",
+  "@mcpPageToolsCount": {
+    "placeholders": {
+      "enabled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "mcpPageConnectionFailed": "連線失敗",
   "mcpPageDetails": "詳情",
   "mcpPageDelete": "刪除",
@@ -719,6 +950,16 @@
   "mcpConversationSheetNoRunning": "暫無已啟動的 MCP 伺服器",
   "mcpConversationSheetConnected": "已連線",
   "mcpConversationSheetToolsCount": "工具: {enabled}/{total}",
+  "@mcpConversationSheetToolsCount": {
+    "placeholders": {
+      "enabled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "mcpServerEditSheetEnabledLabel": "是否啟用",
   "mcpServerEditSheetNameLabel": "名稱",
   "mcpServerEditSheetTransportLabel": "傳輸類型",
@@ -776,12 +1017,52 @@
   "defaultModelPageResetDefault": "重設為預設",
   "defaultModelPageSave": "儲存",
   "defaultModelPageTitleVars": "變數: 對話內容: {contentVar}, 語言: {localeVar}",
+  "@defaultModelPageTitleVars": {
+    "placeholders": {
+      "contentVar": {
+        "type": "String"
+      },
+      "localeVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageTranslateVars": "變數：原始文本：{sourceVar}，目標語言：{targetVar}",
+  "@defaultModelPageTranslateVars": {
+    "placeholders": {
+      "sourceVar": {
+        "type": "String"
+      },
+      "targetVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageSummaryVars": "變數：舊摘要：{previousSummaryVar}，新訊息：{userMessagesVar}",
+  "@defaultModelPageSummaryVars": {
+    "placeholders": {
+      "previousSummaryVar": {
+        "type": "String"
+      },
+      "userMessagesVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageCompressModelTitle": "壓縮模型",
   "defaultModelPageCompressModelSubtitle": "用於壓縮對話上下文的模型，建議使用快速模型",
   "defaultModelPageCompressPromptHint": "輸入用於上下文壓縮的提示詞範本",
   "defaultModelPageCompressVars": "變數：對話內容：{contentVar}，語言：{localeVar}",
+  "@defaultModelPageCompressVars": {
+    "placeholders": {
+      "contentVar": {
+        "type": "String"
+      },
+      "localeVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageUseCurrentModel": "使用目前對話模型",
   "translatePagePasteButton": "貼上",
   "translatePageCopyResult": "複製結果",
@@ -796,6 +1077,13 @@
   "modelDetailSheetModelIdLabel": "模型 ID",
   "modelDetailSheetModelIdHint": "必填，建議小寫字母、數字、連字號",
   "modelDetailSheetModelIdDisabledHint": "{modelId}",
+  "@modelDetailSheetModelIdDisabledHint": {
+    "placeholders": {
+      "modelId": {
+        "type": "String"
+      }
+    }
+  },
   "modelDetailSheetModelNameLabel": "模型名稱",
   "modelDetailSheetModelTypeLabel": "模型類型",
   "modelDetailSheetChatType": "聊天",
@@ -945,13 +1233,27 @@
   "importProviderSheetScanQrTooltip": "掃碼匯入",
   "importProviderSheetFromGalleryTooltip": "從相簿匯入",
   "importProviderSheetImportSuccessMessage": "已匯入{count}個供應商",
+  "@importProviderSheetImportSuccessMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importProviderSheetImportFailedMessage": "匯入失敗: {error}",
+  "@importProviderSheetImportFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "importProviderSheetDescription": "貼上分享字串（可多行，每行一個）或 ChatBox JSON",
   "importProviderSheetInputHint": "ai-provider:v1:...",
   "importProviderSheetCancelButton": "取消",
   "importProviderSheetImportButton": "匯入",
   "shareProviderSheetTitle": "分享供應商設定",
-  "shareProviderSheetDescription": "複製下面的分享字串，或使用QR Code分享。",
+  "shareProviderSheetDescription": "????????????? QR Code ??????? API Key???????????",
   "shareProviderSheetCopiedMessage": "已複製",
   "shareProviderSheetCopyButton": "複製",
   "shareProviderSheetShareButton": "分享",
@@ -1166,6 +1468,13 @@
   "ttsServicesPageSystemTtsTitle": "系統TTS",
   "ttsServicesPageSystemTtsAvailableSubtitle": "使用系統內建語音合成",
   "ttsServicesPageSystemTtsUnavailableSubtitle": "不可用：{error}",
+  "@ttsServicesPageSystemTtsUnavailableSubtitle": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "ttsServicesPageSystemTtsUnavailableNotInitialized": "未初始化",
   "ttsServicesPageTestSpeechText": "你好，這是一次測試語音。",
   "ttsServicesPageConfigureTooltip": "設定",
@@ -1200,7 +1509,21 @@
   "ttsServicesDialogErrorTitle": "錯誤詳情",
   "ttsServicesCloseButton": "關閉",
   "imageViewerPageShareFailedOpenFile": "無法分享，已嘗試開啟檔案: {message}",
+  "@imageViewerPageShareFailedOpenFile": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
   "imageViewerPageShareFailed": "分享失敗: {error}",
+  "@imageViewerPageShareFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "imageViewerPageShareButton": "分享圖片",
   "imageViewerPageSaveButton": "儲存圖片",
   "imageViewerPageSaveSuccess": "已儲存到相簿",
@@ -1261,7 +1584,9 @@
   "displaySettingsPageEnableAssistantMarkdownTitle": "助手訊息 Markdown 渲染",
   "displaySettingsPageEnableMathSubtitle": "渲染 LaTeX 數學公式（行內與區塊）",
   "displaySettingsPageEnableImageCropperTitle": "啟用圖片裁剪",
+  "@displaySettingsPageEnableImageCropperTitle": {},
   "displaySettingsPageEnableImageCropperSubtitle": "從相簿或相機選擇圖片後，允許裁剪圖片",
+  "@displaySettingsPageEnableImageCropperSubtitle": {},
   "displaySettingsPageMobileCodeBlockWrapTitle": "行動端程式碼區塊自動換行",
   "displaySettingsPageAutoCollapseCodeBlockTitle": "自動摺疊程式碼區塊",
   "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "超過多少行自動摺疊",
@@ -1414,7 +1739,11 @@
   "networkProxyTestSuccess": "連線成功",
   "networkProxyTestFailed": "測試失敗：{error}",
   "@networkProxyTestFailed": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "networkProxyNoUrl": "請輸入測試地址",
   "networkProxyPriorityNote": "同時啟用全域代理與供應商代理時，將優先使用供應商代理。",
@@ -1430,9 +1759,8 @@
   "providerDetailPageDetectSuccess": "檢測成功",
   "providerDetailPageDetectFailed": "檢測失敗",
   "providerDetailPageDeleteAllModelsWarning": "此操作不可撤回",
-  "displaySettingsPageOtherSettingsTitle": "其他設定",
   "requestLogSettingTitle": "請求日誌列印",
-  "requestLogSettingSubtitle": "開啟後會將請求/回應詳細寫入 logs/logs.txt",
+  "requestLogSettingSubtitle": "????????/???????? logs/logs.txt??????????????????????????????",
   "flutterLogSettingTitle": "Flutter日誌列印",
   "flutterLogSettingSubtitle": "開啟後會將 Flutter 錯誤與 print 輸出寫入 logs/flutter_logs.txt",
   "logViewerTitle": "請求日誌",
@@ -1441,6 +1769,13 @@
   "logViewerExport": "匯出",
   "logViewerOpenFolder": "開啟日誌目錄",
   "logViewerRequestsCount": "{count} 個請求",
+  "@logViewerRequestsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logViewerFieldId": "ID",
   "logViewerFieldMethod": "方法",
   "logViewerFieldStatus": "狀態",
@@ -1456,13 +1791,27 @@
   "logViewerSectionWarnings": "警告",
   "logViewerErrorTitle": "錯誤",
   "logViewerMoreCount": "+{count} 條更多",
+  "@logViewerMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logSettingsTitle": "日誌設定",
   "logSettingsSaveOutput": "保存回應輸出",
-  "logSettingsSaveOutputSubtitle": "記錄回應本文內容（可能佔用較多儲存空間）",
+  "logSettingsSaveOutputSubtitle": "?????????????????????????????????",
   "logSettingsAutoDelete": "自動刪除",
   "logSettingsAutoDeleteSubtitle": "刪除超過指定天數的日誌",
   "logSettingsAutoDeleteDisabled": "不啟用",
   "logSettingsAutoDeleteDays": "{count} 天",
+  "@logSettingsAutoDeleteDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logSettingsMaxSize": "日誌大小上限",
   "logSettingsMaxSizeSubtitle": "超出後將刪除最早的日誌",
   "logSettingsMaxSizeUnlimited": "不限制",
@@ -1474,6 +1823,13 @@
   "assistantEditDeleteSummaryContent": "確定要清除此摘要嗎？",
   "fileUploadDuplicateTitle": "檔案已存在",
   "fileUploadDuplicateContent": "偵測到同名檔案 {fileName}，是否使用現有檔案？",
+  "@fileUploadDuplicateContent": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "fileUploadDuplicateUseExisting": "使用現有",
   "fileUploadDuplicateUploadNew": "重新上傳",
   "backupPageDeleteConfirmTitle": "確認刪除",
@@ -1554,9 +1910,54 @@
   "toolApprovalDenyHint": "原因（可選）",
   "toolApprovalDeniedMessage": "工具調用 \"{toolName}\" 已被使用者拒絕。原因：{reason}",
   "tokenDetailPromptTokens": "{count} tokens",
+  "@tokenDetailPromptTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailPromptTokensWithCache": "{count} tokens ({cached} cached)",
+  "@tokenDetailPromptTokensWithCache": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cached": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailCompletionTokens": "{count} tokens",
+  "@tokenDetailCompletionTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailSpeed": "{value} tok/s",
+  "@tokenDetailSpeed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "tokenDetailDuration": "{value}s",
-  "tokenDetailTotalTokens": "{count} tokens"
+  "@tokenDetailDuration": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tokenDetailTotalTokens": "{count} tokens",
+  "@tokenDetailTotalTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

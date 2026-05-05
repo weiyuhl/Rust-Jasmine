@@ -26,12 +26,36 @@
   "settingsPageChatStorage": "聊天记录存储",
   "settingsPageCalculating": "统计中…",
   "settingsPageFilesCount": "共 {count} 个文件 · {size}",
+  "@settingsPageFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpacePageTitle": "存储空间",
   "storageSpaceRefreshTooltip": "刷新",
   "storageSpaceLoadFailed": "加载失败",
   "storageSpaceTotalLabel": "已用空间",
   "storageSpaceClearableLabel": "可清理：{size}",
+  "@storageSpaceClearableLabel": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearableHint": "共发现可清理空间 {size}",
+  "@storageSpaceClearableHint": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceCategoryImages": "图片",
   "storageSpaceCategoryFiles": "文件",
   "storageSpaceCategoryChatData": "聊天记录",
@@ -40,6 +64,13 @@
   "storageSpaceCategoryLogs": "日志",
   "storageSpaceCategoryOther": "应用",
   "storageSpaceFilesCount": "{count} 个文件",
+  "@storageSpaceFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceSafeToClearHint": "可安全清理，不影响聊天记录。",
   "storageSpaceNotSafeToClearHint": "可能影响聊天记录，请谨慎删除。",
   "storageSpaceBreakdownTitle": "明细",
@@ -56,21 +87,70 @@
   "storageSpaceSubLogsOther": "其他日志",
   "storageSpaceClearConfirmTitle": "确认清理",
   "storageSpaceClearConfirmMessage": "确定要清理 {targetName} 吗？",
+  "@storageSpaceClearConfirmMessage": {
+    "placeholders": {
+      "targetName": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearButton": "清理",
   "storageSpaceClearDone": "已清理 {targetName}",
+  "@storageSpaceClearDone": {
+    "placeholders": {
+      "targetName": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearFailed": "清理失败：{error}",
+  "@storageSpaceClearFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "storageSpaceClearAvatarCacheButton": "清理头像缓存",
   "storageSpaceClearCacheButton": "清理缓存",
   "storageSpaceClearLogsButton": "清理日志",
   "storageSpaceViewLogsButton": "查看日志",
   "storageSpaceDeleteConfirmTitle": "确认删除",
   "storageSpaceDeleteUploadsConfirmMessage": "删除 {count} 个项目？删除后聊天记录中的附件可能无法打开。",
+  "@storageSpaceDeleteUploadsConfirmMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceDeletedUploadsDone": "已删除 {count} 个项目",
+  "@storageSpaceDeletedUploadsDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceNoUploads": "暂无内容",
   "storageSpaceSelectAll": "全选",
   "storageSpaceClearSelection": "清空选择",
   "storageSpaceSelectedCount": "已选 {count} 项",
+  "@storageSpaceSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "storageSpaceUploadsCount": "共 {count} 项",
+  "@storageSpaceUploadsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsPageAboutSection": "关于",
   "settingsPageAbout": "关于",
   "settingsPageStatistics": "统计",
@@ -246,7 +326,9 @@
   "providersPageExportSelectedTitle": "导出 {count} 个供应商",
   "@providersPageExportSelectedTitle": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "providersPageExportCopyButton": "复制",
@@ -337,6 +419,16 @@
   "assistantEditMcpNoServersMessage": "暂无已启动的 MCP 服务器",
   "assistantEditMcpConnectedTag": "已连接",
   "assistantEditMcpToolsCountTag": "工具: {enabled}/{total}",
+  "@assistantEditMcpToolsCountTag": {
+    "placeholders": {
+      "enabled": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
   "assistantEditModelUseGlobalDefault": "使用全局默认",
   "assistantSettingsPageTitle": "助手设置",
   "assistantSettingsDefaultTag": "默认",
@@ -478,6 +570,16 @@
   "backupPageImportFromChatbox": "从 Chatbox 导入",
   "homePageClearContext": "清空上下文",
   "homePageClearContextWithCount": "清空上下文 ({actual}/{configured})",
+  "@homePageClearContextWithCount": {
+    "placeholders": {
+      "actual": {
+        "type": "String"
+      },
+      "configured": {
+        "type": "String"
+      }
+    }
+  },
   "homePageDefaultAssistant": "默认助手",
   "mermaidExportPng": "导出 PNG",
   "mermaidExportFailed": "导出失败",
@@ -548,6 +650,13 @@
   "reasoningBudgetSheetXhigh": "极限推理",
   "reasoningBudgetSheetTitle": "思维链强度",
   "reasoningBudgetSheetCurrentLevel": "当前档位：{level}",
+  "@reasoningBudgetSheetCurrentLevel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "reasoningBudgetSheetOffSubtitle": "关闭推理功能，直接回答",
   "reasoningBudgetSheetAutoSubtitle": "由模型自动决定推理级别",
   "reasoningBudgetSheetLightSubtitle": "使用少量推理来回答问题",
@@ -557,8 +666,29 @@
   "reasoningBudgetSheetCustomLabel": "自定义推理预算",
   "reasoningBudgetSheetCustomHint": "例如：2048 (-1 自动，0 关闭)",
   "chatMessageWidgetFileNotFound": "文件不存在: {fileName}",
+  "@chatMessageWidgetFileNotFound": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetCannotOpenFile": "无法打开文件: {message}",
+  "@chatMessageWidgetCannotOpenFile": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetOpenFileError": "打开文件失败: {error}",
+  "@chatMessageWidgetOpenFileError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetCopiedToClipboard": "已复制到剪贴板",
   "chatMessageWidgetResendTooltip": "重新发送",
   "chatMessageWidgetMoreTooltip": "更多",
@@ -567,8 +697,22 @@
   "chatMessageWidgetTranslating": "翻译中...",
   "chatMessageWidgetCitationNotFound": "未找到引用来源",
   "chatMessageWidgetCannotOpenUrl": "无法打开链接: {url}",
+  "@chatMessageWidgetCannotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetOpenLinkError": "打开链接失败",
   "chatMessageWidgetCitationsTitle": "引用（共{count}条）",
+  "@chatMessageWidgetCitationsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatMessageWidgetRegenerateTooltip": "重新生成",
   "chatMessageWidgetRegenerateConfirmTitle": "确认重新生成",
   "chatMessageWidgetRegenerateConfirmContent": "重新生成只会更新当前消息，不会删除下面的消息。确定要继续吗？",
@@ -584,15 +728,50 @@
   "chatMessageWidgetEditMemory": "编辑记忆",
   "chatMessageWidgetDeleteMemory": "删除记忆",
   "chatMessageWidgetWebSearch": "联网检索: {query}",
+  "@chatMessageWidgetWebSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetBuiltinSearch": "模型内置搜索",
   "chatMessageWidgetToolCall": "调用工具: {name}",
+  "@chatMessageWidgetToolCall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetToolResult": "调用工具: {name}",
+  "@chatMessageWidgetToolResult": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chatMessageWidgetNoResultYet": "（暂无结果）",
   "chatMessageWidgetArguments": "参数",
   "chatMessageWidgetResult": "结果",
   "chatMessageWidgetImages": "图片",
   "chatMessageWidgetCitationsCount": "共{count}条引用",
+  "@chatMessageWidgetCitationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatSelectionSelectedCountTitle": "已选择{count}条消息",
+  "@chatSelectionSelectedCountTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chatSelectionExportTxt": "TXT",
   "chatSelectionExportMd": "MD",
   "chatSelectionExportImage": "图片",
@@ -602,7 +781,21 @@
   "messageExportSheetDefaultTitle": "新对话",
   "messageExportSheetExporting": "正在导出…",
   "messageExportSheetExportFailed": "导出失败: {error}",
+  "@messageExportSheetExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "messageExportSheetExportedAs": "已导出为 {filename}",
+  "@messageExportSheetExportedAs": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
   "messageExportSheetFormatTitle": "导出格式",
   "messageExportSheetMarkdown": "Markdown",
   "messageExportSheetSingleMarkdownSubtitle": "将该消息导出为 Markdown 文件",
@@ -635,6 +828,13 @@
   "sideDrawerMenuMoveTo": "移动到",
   "sideDrawerMenuDelete": "删除",
   "sideDrawerDeleteSnackbar": "已删除“{title}”",
+  "@sideDrawerDeleteSnackbar": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "sideDrawerRenameHint": "输入新名称",
   "sideDrawerCancel": "取消",
   "sideDrawerOK": "确定",
@@ -665,7 +865,24 @@
     }
   },
   "sideDrawerUpdateTitle": "发现新版本：{version}",
+  "@sideDrawerUpdateTitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "sideDrawerUpdateTitleWithBuild": "发现新版本：{version} ({build})",
+  "@sideDrawerUpdateTitleWithBuild": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "int"
+      }
+    }
+  },
   "sideDrawerLinkCopied": "已复制下载链接",
   "sideDrawerPinnedLabel": "置顶",
   "sideDrawerHistory": "聊天历史",
@@ -715,6 +932,16 @@
   "mcpPageStatusDisconnected": "未连接",
   "mcpPageStatusDisabled": "已禁用",
   "mcpPageToolsCount": "工具: {enabled}/{total}",
+  "@mcpPageToolsCount": {
+    "placeholders": {
+      "enabled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "mcpPageConnectionFailed": "连接失败",
   "mcpPageDetails": "详情",
   "mcpPageDelete": "删除",
@@ -730,6 +957,16 @@
   "mcpConversationSheetNoRunning": "暂无已启动的 MCP 服务器",
   "mcpConversationSheetConnected": "已连接",
   "mcpConversationSheetToolsCount": "工具: {enabled}/{total}",
+  "@mcpConversationSheetToolsCount": {
+    "placeholders": {
+      "enabled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "mcpServerEditSheetEnabledLabel": "是否启用",
   "mcpServerEditSheetNameLabel": "名称",
   "mcpServerEditSheetTransportLabel": "传输类型",
@@ -787,12 +1024,52 @@
   "defaultModelPageResetDefault": "重置为默认",
   "defaultModelPageSave": "保存",
   "defaultModelPageTitleVars": "变量: 对话内容: {contentVar}, 语言: {localeVar}",
+  "@defaultModelPageTitleVars": {
+    "placeholders": {
+      "contentVar": {
+        "type": "String"
+      },
+      "localeVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageTranslateVars": "变量：原始文本：{sourceVar}，目标语言：{targetVar}",
+  "@defaultModelPageTranslateVars": {
+    "placeholders": {
+      "sourceVar": {
+        "type": "String"
+      },
+      "targetVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageSummaryVars": "变量：旧摘要：{previousSummaryVar}，新消息：{userMessagesVar}",
+  "@defaultModelPageSummaryVars": {
+    "placeholders": {
+      "previousSummaryVar": {
+        "type": "String"
+      },
+      "userMessagesVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageCompressModelTitle": "压缩模型",
   "defaultModelPageCompressModelSubtitle": "用于压缩对话上下文的模型，推荐使用快速模型",
   "defaultModelPageCompressPromptHint": "输入用于上下文压缩的提示词模板",
   "defaultModelPageCompressVars": "变量：对话内容：{contentVar}，语言：{localeVar}",
+  "@defaultModelPageCompressVars": {
+    "placeholders": {
+      "contentVar": {
+        "type": "String"
+      },
+      "localeVar": {
+        "type": "String"
+      }
+    }
+  },
   "defaultModelPageUseCurrentModel": "使用当前对话模型",
   "translatePagePasteButton": "粘贴",
   "translatePageCopyResult": "复制结果",
@@ -807,6 +1084,13 @@
   "modelDetailSheetModelIdLabel": "模型 ID",
   "modelDetailSheetModelIdHint": "必填，建议小写字母、数字、连字符",
   "modelDetailSheetModelIdDisabledHint": "{modelId}",
+  "@modelDetailSheetModelIdDisabledHint": {
+    "placeholders": {
+      "modelId": {
+        "type": "String"
+      }
+    }
+  },
   "modelDetailSheetModelNameLabel": "模型名称",
   "modelDetailSheetModelTypeLabel": "模型类型",
   "modelDetailSheetChatType": "聊天",
@@ -956,13 +1240,27 @@
   "importProviderSheetScanQrTooltip": "扫码导入",
   "importProviderSheetFromGalleryTooltip": "从相册导入",
   "importProviderSheetImportSuccessMessage": "已导入{count}个供应商",
+  "@importProviderSheetImportSuccessMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importProviderSheetImportFailedMessage": "导入失败: {error}",
+  "@importProviderSheetImportFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "importProviderSheetDescription": "粘贴分享字符串（可多行，每行一个）或 ChatBox JSON",
   "importProviderSheetInputHint": "ai-provider:v1:...",
   "importProviderSheetCancelButton": "取消",
   "importProviderSheetImportButton": "导入",
   "shareProviderSheetTitle": "分享供应商配置",
-  "shareProviderSheetDescription": "复制下面的分享字符串，或使用二维码分享。",
+  "shareProviderSheetDescription": "???????????????????????? API Key???????????",
   "shareProviderSheetCopiedMessage": "已复制",
   "shareProviderSheetCopyButton": "复制",
   "shareProviderSheetShareButton": "分享",
@@ -1180,6 +1478,13 @@
   "ttsServicesPageSystemTtsTitle": "系统TTS",
   "ttsServicesPageSystemTtsAvailableSubtitle": "使用系统内置语音合成",
   "ttsServicesPageSystemTtsUnavailableSubtitle": "不可用：{error}",
+  "@ttsServicesPageSystemTtsUnavailableSubtitle": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "ttsServicesPageSystemTtsUnavailableNotInitialized": "未初始化",
   "ttsServicesPageTestSpeechText": "你好，这是一次测试语音。",
   "ttsServicesPageConfigureTooltip": "配置",
@@ -1214,7 +1519,21 @@
   "ttsServicesDialogErrorTitle": "错误详情",
   "ttsServicesCloseButton": "关闭",
   "imageViewerPageShareFailedOpenFile": "无法分享，已尝试打开文件: {message}",
+  "@imageViewerPageShareFailedOpenFile": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
   "imageViewerPageShareFailed": "分享失败: {error}",
+  "@imageViewerPageShareFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "imageViewerPageShareButton": "分享图片",
   "imageViewerPageSaveButton": "保存图片",
   "imageViewerPageSaveSuccess": "已保存到相册",
@@ -1272,7 +1591,9 @@
   "displaySettingsPageEnableAssistantMarkdownTitle": "助手消息 Markdown 渲染",
   "displaySettingsPageEnableMathSubtitle": "渲染 LaTeX 数学公式（行内与块级）",
   "displaySettingsPageEnableImageCropperTitle": "启用图片裁剪",
+  "@displaySettingsPageEnableImageCropperTitle": {},
   "displaySettingsPageEnableImageCropperSubtitle": "从相册或相机选择图片后，允许裁剪图片",
+  "@displaySettingsPageEnableImageCropperSubtitle": {},
   "displaySettingsPageMobileCodeBlockWrapTitle": "移动端代码块自动换行",
   "displaySettingsPageAutoCollapseCodeBlockTitle": "自动折叠代码块",
   "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "超过多少行自动折叠",
@@ -1364,8 +1685,7 @@
   "assistantEditPresetEmpty": "暂无预设消息",
   "assistantEditPresetEditDialogTitle": "编辑预设消息",
   "assistantEditPresetRoleUser": "用户",
-  "assistantEditPresetRoleAssistant": "助手"
-  ,
+  "assistantEditPresetRoleAssistant": "助手",
   "assistantTagsManageTitle": "管理标签",
   "assistantTagsCreateButton": "创建",
   "assistantTagsCreateDialogTitle": "创建标签",
@@ -1396,8 +1716,7 @@
   "mcpServerEditSheetStdioEnvValueLabel": "值",
   "mcpServerEditSheetStdioAddEnv": "添加环境变量",
   "mcpServerEditSheetStdioCommandRequired": "STDIO 需要填写命令",
-  "assistantTagsContextMenuDeleteAssistant": "删除助手"
-  ,
+  "assistantTagsContextMenuDeleteAssistant": "删除助手",
   "assistantTagsClearTag": "清除标签",
   "desktopTtsPleaseAddProvider": "请先在设置中添加语音服务商",
   "settingsPageNetworkProxy": "网络代理",
@@ -1421,7 +1740,11 @@
   "networkProxyTestSuccess": "连接成功",
   "networkProxyTestFailed": "测试失败：{error}",
   "@networkProxyTestFailed": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "networkProxyNoUrl": "请输入测试地址",
   "networkProxyPriorityNote": "当同时开启全局代理与供应商代理时，将优先使用供应商代理。",
@@ -1437,9 +1760,8 @@
   "providerDetailPageDetectSuccess": "检测成功",
   "providerDetailPageDetectFailed": "检测失败",
   "providerDetailPageDeleteAllModelsWarning": "此操作不可撤回",
-  "displaySettingsPageOtherSettingsTitle": "其他设置",
   "requestLogSettingTitle": "请求日志打印",
-  "requestLogSettingSubtitle": "开启后会将请求/响应详情写入 logs/logs.txt",
+  "requestLogSettingSubtitle": "????????/??????? logs/logs.txt??????????????????????????????",
   "flutterLogSettingTitle": "应用日志打印",
   "flutterLogSettingSubtitle": "开启后会将 Flutter 错误与 print 输出写入 logs/flutter_logs.txt",
   "logViewerTitle": "请求日志",
@@ -1448,6 +1770,13 @@
   "logViewerExport": "导出",
   "logViewerOpenFolder": "打开日志目录",
   "logViewerRequestsCount": "{count} 条请求",
+  "@logViewerRequestsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logViewerFieldId": "ID",
   "logViewerFieldMethod": "方法",
   "logViewerFieldStatus": "状态",
@@ -1463,13 +1792,27 @@
   "logViewerSectionWarnings": "警告",
   "logViewerErrorTitle": "错误",
   "logViewerMoreCount": "+{count} 条更多",
+  "@logViewerMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logSettingsTitle": "日志设置",
   "logSettingsSaveOutput": "保存响应输出",
-  "logSettingsSaveOutputSubtitle": "记录响应体内容（可能占用较多存储空间）",
+  "logSettingsSaveOutputSubtitle": "???????????????????????????????",
   "logSettingsAutoDelete": "自动删除",
   "logSettingsAutoDeleteSubtitle": "删除超过指定天数的日志",
   "logSettingsAutoDeleteDisabled": "不启用",
   "logSettingsAutoDeleteDays": "{count} 天",
+  "@logSettingsAutoDeleteDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "logSettingsMaxSize": "日志大小上限",
   "logSettingsMaxSizeSubtitle": "超出后将删除最早的日志",
   "logSettingsMaxSizeUnlimited": "不限制",
@@ -1482,6 +1825,13 @@
   "homePageProcessingFiles": "正在解析文件……",
   "fileUploadDuplicateTitle": "文件已存在",
   "fileUploadDuplicateContent": "检测到同名文件 {fileName}，是否使用已有文件？",
+  "@fileUploadDuplicateContent": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "fileUploadDuplicateUseExisting": "使用已有",
   "fileUploadDuplicateUploadNew": "重新上传",
   "settingsPageWorldBook": "世界书",
@@ -1560,9 +1910,54 @@
   "toolApprovalDenyHint": "原因（可选）",
   "toolApprovalDeniedMessage": "工具调用 \"{toolName}\" 已被用户拒绝。原因：{reason}",
   "tokenDetailPromptTokens": "{count} tokens",
+  "@tokenDetailPromptTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailPromptTokensWithCache": "{count} tokens ({cached} cached)",
+  "@tokenDetailPromptTokensWithCache": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cached": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailCompletionTokens": "{count} tokens",
+  "@tokenDetailCompletionTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tokenDetailSpeed": "{value} tok/s",
+  "@tokenDetailSpeed": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "tokenDetailDuration": "{value}s",
-  "tokenDetailTotalTokens": "{count} tokens"
+  "@tokenDetailDuration": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tokenDetailTotalTokens": "{count} tokens",
+  "@tokenDetailTotalTokens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:Kelivo/src/rust/frb_generated.dart';
 
 import 'package:Kelivo/core/providers/settings_provider.dart';
 import 'package:Kelivo/core/services/api/chat_api_service.dart';
@@ -20,14 +19,6 @@ ProviderConfig _openAiConfig(String baseUrl) {
 }
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await RustLib.init();
-  });
-  tearDownAll(() {
-    RustLib.dispose();
-  });
-
   group('ChatApiService custom image markers', () {
     test('encodes existing local custom image markers as data URLs', () async {
       final body = await _sendAndCaptureRequestBody((baseUrl) async {

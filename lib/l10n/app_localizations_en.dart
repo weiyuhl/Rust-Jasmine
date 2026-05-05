@@ -3020,7 +3020,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareProviderSheetTitle => 'Share Provider';
 
   @override
-  String get shareProviderSheetDescription => 'Copy or share via QR code.';
+  String get shareProviderSheetDescription =>
+      'Copy or share via QR code. API Key is not included; fill it in after import.';
 
   @override
   String get shareProviderSheetCopiedMessage => 'Copied';
@@ -4301,7 +4302,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestLogSettingSubtitle =>
-      'When enabled, request/response details are written to logs/logs.txt (rotated daily).';
+      'Writes redacted request/response metadata to logs/logs.txt. Prompts, response output, and errors can still contain sensitive data; enable only for debugging.';
 
   @override
   String get flutterLogSettingTitle => 'Flutter Logging';
@@ -4385,7 +4386,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logSettingsSaveOutputSubtitle =>
-      'Log response body content (may use significant storage)';
+      'Also logs response chunks. Output may contain private content or secrets and can use significant storage.';
 
   @override
   String get logSettingsAutoDelete => 'Auto-delete';

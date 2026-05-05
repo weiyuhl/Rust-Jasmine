@@ -12,7 +12,9 @@ class RequestLogger {
   static bool get enabled => _enabled;
   static bool _writeErrorReported = false;
 
-  static bool saveOutput = true;
+  static const String redactedValue = '[REDACTED]';
+
+  static bool saveOutput = false;
 
   static int _nextRequestId = 0;
   static int nextRequestId() => ++_nextRequestId;
@@ -161,6 +163,147 @@ class RequestLogger {
         .replaceAll('\r', r'\r')
         .replaceAll('\n', r'\n')
         .replaceAll('\t', r'\t');
+  }
+
+  static Map<String, String> redactHeaders(Map<String, String> headers) {
+    return headers.map((name, value) {
+      final safeValue = _isSensitiveHeaderName(name) ? redactedValue : value;
+      return MapEntry(name, safeValue);
+    });
+  }
+
+  static String redactBodyText(String input) {
+    final body = input.trim();
+    if (body.isEmpty) return input;
+    if (body.startsWith('base64:')) {
+      return '$redactedValue binary body';
+    }
+
+    final sse = _redactSseText(input);
+    if (sse != null) return sse;
+
+    try {
+      final decoded = jsonDecode(input);
+      return encodeObject(_redactJsonValue(decoded));
+    } catch (_) {
+      return '$redactedValue body ${input.length} chars';
+    }
+  }
+
+  static bool _isSensitiveHeaderName(String name) {
+    final normalized = _normalizeKey(name);
+    return normalized == 'authorization' ||
+        normalized == 'proxyauthorization' ||
+        normalized == 'xapikey' ||
+        normalized == 'apikey' ||
+        normalized == 'openaikey' ||
+        normalized == 'anthropickey' ||
+        normalized == 'cookie' ||
+        normalized == 'setcookie';
+  }
+
+  static String _normalizeKey(String key) =>
+      key.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  static bool _isSensitiveBodyKey(String key) {
+    final normalized = _normalizeKey(key);
+    return normalized == 'authorization' ||
+        normalized == 'proxyauthorization' ||
+        normalized == 'apikey' ||
+        normalized == 'apikeys' ||
+        normalized == 'xapikey' ||
+        normalized == 'token' ||
+        normalized.endsWith('token') ||
+        normalized == 'bearer' ||
+        normalized.contains('secret') ||
+        normalized.contains('password') ||
+        normalized == 'accesskeyid' ||
+        normalized == 'secretaccesskey' ||
+        normalized == 'serviceaccountjson' ||
+        normalized == 'privatekey' ||
+        normalized == 'credential' ||
+        normalized == 'credentials';
+  }
+
+  static bool _isSensitiveContentKey(String key) {
+    final normalized = _normalizeKey(key);
+    return normalized == 'messages' ||
+        normalized == 'message' ||
+        normalized == 'content' ||
+        normalized == 'input' ||
+        normalized == 'prompt' ||
+        normalized == 'prompts' ||
+        normalized == 'system' ||
+        normalized == 'instructions' ||
+        normalized == 'text' ||
+        normalized == 'query' ||
+        normalized == 'image' ||
+        normalized == 'images' ||
+        normalized == 'imageurl' ||
+        normalized == 'data' ||
+        normalized == 'source' ||
+        normalized == 'file' ||
+        normalized == 'files';
+  }
+
+  static Object? _redactJsonValue(Object? value, {String? key}) {
+    if (key != null &&
+        (_isSensitiveBodyKey(key) || _isSensitiveContentKey(key))) {
+      return redactedValue;
+    }
+
+    if (value is Map) {
+      return value.map((k, v) {
+        final field = k.toString();
+        return MapEntry(field, _redactJsonValue(v, key: field));
+      });
+    }
+    if (value is List) {
+      return value.map((v) => _redactJsonValue(v)).toList();
+    }
+    if (value is String && _looksLikeCredential(value)) {
+      return redactedValue;
+    }
+    return value;
+  }
+
+  static bool _looksLikeCredential(String value) {
+    final trimmed = value.trim();
+    if (trimmed.startsWith('Bearer ') || trimmed.startsWith('Basic ')) {
+      return true;
+    }
+    return RegExp(
+      r'^(sk-|sk_|xox|ya29\.|gh[opsu]_|eyJ)[A-Za-z0-9._\-]{8,}',
+      caseSensitive: false,
+    ).hasMatch(trimmed);
+  }
+
+  static String? _redactSseText(String input) {
+    final lines = input.split('\n');
+    var sawData = false;
+    final out = <String>[];
+    for (final line in lines) {
+      final trimmedLeft = line.trimLeft();
+      if (!trimmedLeft.startsWith('data:')) {
+        out.add(line);
+        continue;
+      }
+      sawData = true;
+      final indentLength = line.length - trimmedLeft.length;
+      final prefix = line.substring(0, indentLength);
+      final payload = trimmedLeft.substring(5).trimLeft();
+      if (payload == '[DONE]' || payload.isEmpty) {
+        out.add(line);
+        continue;
+      }
+      try {
+        final decoded = jsonDecode(payload);
+        out.add('${prefix}data: ${encodeObject(_redactJsonValue(decoded))}');
+      } catch (_) {
+        out.add('${prefix}data: $redactedValue event data');
+      }
+    }
+    return sawData ? out.join('\n') : null;
   }
 
   static Future<void> cleanupLogs({

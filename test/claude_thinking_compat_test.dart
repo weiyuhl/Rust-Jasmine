@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:Kelivo/src/rust/frb_generated.dart';
 
 import 'package:Kelivo/core/providers/settings_provider.dart';
 import 'package:Kelivo/core/services/api/builtin_tools.dart';
@@ -199,14 +198,6 @@ Future<Map<String, dynamic>> _captureClaudeBuiltInSearchBody({
 }
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await RustLib.init();
-  });
-  tearDownAll(() {
-    RustLib.dispose();
-  });
-
   group('Claude thinking compatibility', () {
     test(
       'Opus 4.7 uses adaptive thinking with effort and strips sampling',

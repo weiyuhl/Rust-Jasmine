@@ -10,15 +10,7 @@ Uri _openAICompatibleUrl(ProviderConfig config) {
       useResponseApi: config.useResponseApi ?? false,
     );
   } catch (_) {
-    final normalizedBase = config.baseUrl.trimRight().replaceAll(
-      RegExp(r'/$'),
-      '',
-    );
-    final chatPath = (config.chatPath?.trim().isNotEmpty == true)
-        ? config.chatPath!.trim()
-        : '/v1/chat/completions';
-    final normalizedPath = chatPath.startsWith('/') ? chatPath : '/$chatPath';
-    url = '$normalizedBase$normalizedPath';
+    url = _openAICompatibleFallbackUrl(config).toString();
   }
   // DashScope path correction (Rust returns standard URL; DashScope needs override)
   if (BuiltInToolsHelper.isDashScopeProvider(config) &&
@@ -33,6 +25,33 @@ Uri _openAICompatibleUrl(ProviderConfig config) {
     }
   }
   return Uri.parse(url);
+}
+
+Uri _openAICompatibleFallbackUrl(ProviderConfig config) {
+  final base = Uri.parse(config.baseUrl.trim());
+  final basePath = base.path.replaceAll(RegExp(r'/+$'), '');
+  final path = config.useResponseApi == true
+      ? '/responses'
+      : ((config.chatPath?.trim().isNotEmpty == true)
+            ? config.chatPath!.trim()
+            : '/chat/completions');
+  final normalizedPath = path.startsWith('/') ? path : '/$path';
+  return base.replace(
+    path: '$basePath$normalizedPath',
+    query: '',
+    fragment: '',
+  );
+}
+
+String? _parseSseDataLine(String line) {
+  try {
+    return rust_chat.chatParseSseLine(line: line);
+  } catch (_) {
+    final trimmed = line.trim();
+    if (!trimmed.startsWith('data:')) return null;
+    final data = trimmed.substring(5).trimLeft();
+    return data.isEmpty ? null : data;
+  }
 }
 
 void _applyCompatibleBuiltInSearch(
@@ -1628,7 +1647,7 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
       final line = lines[i].trim();
       if (line.isEmpty || !line.startsWith('data:')) continue;
 
-      final sseResult = rust_chat.chatParseSseLine(line: line);
+      final sseResult = _parseSseDataLine(line);
       final data = (sseResult != null)
           ? sseResult
           : line.substring(5).trimLeft();

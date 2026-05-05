@@ -3935,6 +3935,7 @@ class _AssistantInlineTileState extends State<_AssistantInlineTile> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final embedded = widget.embedded;
     final Color tileColor = _isDesktop
         ? (embedded
@@ -3990,7 +3991,7 @@ class _AssistantInlineTileState extends State<_AssistantInlineTile> {
                 padding: const EdgeInsets.all(8),
                 minSize: 36,
                 onTap: widget.onEditTap,
-                semanticLabel: 'Edit assistant',
+                semanticLabel: l10n.assistantTagsContextMenuEditAssistant,
               ),
             ],
           ],

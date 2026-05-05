@@ -891,7 +891,7 @@ class _DesktopBackupPaneState extends State<DesktopBackupPane> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  title: Text('Error'),
+                                  title: Text(l10n.logViewerErrorTitle),
                                   content: Text(e.toString()),
                                   actions: [
                                     TextButton(
@@ -975,7 +975,7 @@ class _DesktopBackupPaneState extends State<DesktopBackupPane> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  title: Text('Error'),
+                                  title: Text(l10n.logViewerErrorTitle),
                                   content: Text(e.toString()),
                                   actions: [
                                     TextButton(

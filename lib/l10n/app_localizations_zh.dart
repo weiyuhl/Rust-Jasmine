@@ -2924,7 +2924,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareProviderSheetTitle => '分享供应商配置';
 
   @override
-  String get shareProviderSheetDescription => '复制下面的分享字符串，或使用二维码分享。';
+  String get shareProviderSheetDescription =>
+      '???????????????????????? API Key???????????';
 
   @override
   String get shareProviderSheetCopiedMessage => '已复制';
@@ -4141,7 +4142,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get requestLogSettingTitle => '请求日志打印';
 
   @override
-  String get requestLogSettingSubtitle => '开启后会将请求/响应详情写入 logs/logs.txt';
+  String get requestLogSettingSubtitle =>
+      '????????/??????? logs/logs.txt??????????????????????????????';
 
   @override
   String get flutterLogSettingTitle => '应用日志打印';
@@ -4224,7 +4226,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get logSettingsSaveOutput => '保存响应输出';
 
   @override
-  String get logSettingsSaveOutputSubtitle => '记录响应体内容（可能占用较多存储空间）';
+  String get logSettingsSaveOutputSubtitle => '???????????????????????????????';
 
   @override
   String get logSettingsAutoDelete => '自动删除';
@@ -7405,7 +7407,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get shareProviderSheetTitle => '分享供应商配置';
 
   @override
-  String get shareProviderSheetDescription => '复制下面的分享字符串，或使用二维码分享。';
+  String get shareProviderSheetDescription =>
+      '???????????????????????? API Key???????????';
 
   @override
   String get shareProviderSheetCopiedMessage => '已复制';
@@ -8622,7 +8625,8 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get requestLogSettingTitle => '请求日志打印';
 
   @override
-  String get requestLogSettingSubtitle => '开启后会将请求/响应详情写入 logs/logs.txt';
+  String get requestLogSettingSubtitle =>
+      '????????/??????? logs/logs.txt??????????????????????????????';
 
   @override
   String get flutterLogSettingTitle => '应用日志打印';
@@ -8705,7 +8709,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get logSettingsSaveOutput => '保存响应输出';
 
   @override
-  String get logSettingsSaveOutputSubtitle => '记录响应体内容（可能占用较多存储空间）';
+  String get logSettingsSaveOutputSubtitle => '???????????????????????????????';
 
   @override
   String get logSettingsAutoDelete => '自动删除';
@@ -11884,7 +11888,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get shareProviderSheetTitle => '分享供應商設定';
 
   @override
-  String get shareProviderSheetDescription => '複製下面的分享字串，或使用QR Code分享。';
+  String get shareProviderSheetDescription =>
+      '????????????? QR Code ??????? API Key???????????';
 
   @override
   String get shareProviderSheetCopiedMessage => '已複製';
@@ -13103,7 +13108,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get requestLogSettingTitle => '請求日誌列印';
 
   @override
-  String get requestLogSettingSubtitle => '開啟後會將請求/回應詳細寫入 logs/logs.txt';
+  String get requestLogSettingSubtitle =>
+      '????????/???????? logs/logs.txt??????????????????????????????';
 
   @override
   String get flutterLogSettingTitle => 'Flutter日誌列印';
@@ -13186,7 +13192,8 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get logSettingsSaveOutput => '保存回應輸出';
 
   @override
-  String get logSettingsSaveOutputSubtitle => '記錄回應本文內容（可能佔用較多儲存空間）';
+  String get logSettingsSaveOutputSubtitle =>
+      '?????????????????????????????????';
 
   @override
   String get logSettingsAutoDelete => '自動刪除';
