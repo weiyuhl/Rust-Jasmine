@@ -8,6 +8,7 @@ import '../services/mcp/kelivo_fetch/kelivo_fetch_server.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../../../src/rust/api/mcp_api.dart' as rust_mcp;
+import '../../../src/rust/api/mcp_client_api.dart' as rust_client;
 
 /// Transport type: SSE, Streamable HTTP, and STDIO (desktop-only).
 enum McpTransportType { sse, http, stdio, inmemory }
@@ -865,17 +866,43 @@ class McpProvider extends ChangeNotifier {
   ) async {
     try {
       await ensureConnected(serverId);
-      var client = _clients[serverId];
-      if (client == null) return null;
       // Normalize arguments based on tool schema (best-effort)
       final normalized = _normalizeArgsForTool(serverId, toolName, args);
-      // if (normalized != args) {
-      //   debugPrint('[MCP/Call] serverId=$serverId tool=$toolName args(normalized)=${jsonEncode(normalized)}');
-      // } else {
-      //   debugPrint('[MCP/Call] serverId=$serverId tool=$toolName args=${jsonEncode(args)}');
-      // }
+
+      // Try Rust MCP client first (SSE/HTTP transports only)
+      final server = getById(serverId);
+      if (server != null &&
+          server.transport != McpTransportType.stdio &&
+          server.transport != McpTransportType.inmemory) {
+        try {
+          final headersJson = server.headers.isNotEmpty
+              ? jsonEncode(server.headers)
+              : null;
+          final transport = server.transport == McpTransportType.sse ? 'sse' : 'http';
+          final resultJson = rust_client.mcpCallTool(
+            url: server.url,
+            headersJson: headersJson,
+            transport: transport,
+            toolName: toolName,
+            argsJson: jsonEncode(normalized),
+            timeoutMs: BigInt.from(_requestTimeout.inMilliseconds),
+          );
+          final resultMap = jsonDecode(resultJson) as Map<String, dynamic>;
+          final contentList = (resultMap['content'] as List?) ?? [];
+          final isError = resultMap['is_error'] as bool? ?? false;
+          final contents = contentList
+              .map((c) => mcp.Content.fromJson(c as Map<String, dynamic>))
+              .toList();
+          return mcp.CallToolResult(contents, isError: isError);
+        } catch (_) {
+          // Fall through to mcp_client
+        }
+      }
+
+      // Fallback: mcp_client library
+      var client = _clients[serverId];
+      if (client == null) return null;
       final result = await client.callTool(toolName, normalized);
-      // Detailed call timing/content logging disabled
       return result;
     } catch (e) {
       // debugPrint('[MCP/Call/Error] serverId=$serverId tool=$toolName');
