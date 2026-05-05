@@ -1,7 +1,7 @@
 use serde_json::Value;
 
 /// A parsed SSE event extracted from a single line.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct SseEvent {
     /// The raw payload after the `data:` prefix.
     pub data: String,
