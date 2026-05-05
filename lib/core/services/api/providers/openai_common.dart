@@ -1586,6 +1586,8 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
   // Track potential tool calls (OpenAI Chat Completions)
   final Map<int, Map<String, String>> toolAcc =
       <int, Map<String, String>>{}; // index -> {id,name,args}
+  // Rust tool call aggregator state (serialized JSON)
+  String? toolAggregatorJson;
   // Track potential tool calls (OpenAI Responses API)
   final Map<String, Map<String, String>> toolAccResp =
       <String, Map<String, String>>{}; // id/name -> {name,args}
@@ -1614,24 +1616,50 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
           final calls = <Map<String, dynamic>>[];
           final callInfos = <ToolCallInfo>[];
           final toolMsgs = <Map<String, dynamic>>[];
-          toolAcc.forEach((idx, m) {
-            final id = (m['id'] ?? 'call_$idx');
-            final name = (m['name'] ?? '');
-            Map<String, dynamic> args;
+          // Try Rust finalize first
+          var finalized = false;
+          final aggJson = toolAggregatorJson;
+          if (aggJson != null) {
             try {
-              args = (jsonDecode(m['args'] ?? '{}') as Map)
-                  .cast<String, dynamic>();
-            } catch (_) {
-              args = <String, dynamic>{};
-            }
-            callInfos.add(ToolCallInfo(id: id, name: name, arguments: args));
-            calls.add({
-              'id': id,
-              'type': 'function',
-              'function': {'name': name, 'arguments': jsonEncode(args)},
+              final rustResult = jsonDecode(
+                rust_chat.chatFinalizeToolCalls(aggregatorJson: aggJson),
+              ) as List;
+              for (final rc in rustResult) {
+                if (rc is! Map) continue;
+                final id = (rc['id'] ?? '').toString();
+                final name = (rc['name'] ?? '').toString();
+                final args = rc['arguments'] is Map
+                    ? rc['arguments'] as Map<String, dynamic>
+                    : <String, dynamic>{};
+                callInfos.add(ToolCallInfo(id: id, name: name, arguments: args));
+                calls.add({
+                  'id': id, 'type': 'function',
+                  'function': {'name': name, 'arguments': jsonEncode(args)},
+                });
+                toolMsgs.add({'__name': name, '__id': id, '__args': args});
+              }
+              finalized = callInfos.isNotEmpty;
+            } catch (_) {}
+          }
+          if (!finalized) {
+            toolAcc.forEach((idx, m) {
+              final id = (m['id'] ?? 'call_$idx');
+              final name = (m['name'] ?? '');
+              Map<String, dynamic> args;
+              try {
+                args = (jsonDecode(m['args'] ?? '{}') as Map).cast<String, dynamic>();
+              } catch (_) {
+                args = <String, dynamic>{};
+              }
+              callInfos.add(ToolCallInfo(id: id, name: name, arguments: args));
+              calls.add({
+                'id': id,
+                'type': 'function',
+                'function': {'name': name, 'arguments': jsonEncode(args)},
+              });
+              toolMsgs.add({'__name': name, '__id': id, '__args': args});
             });
-            toolMsgs.add({'__name': name, '__id': id, '__args': args});
-          });
+          }
 
           if (callInfos.isNotEmpty) {
             final approxTotal =
@@ -2858,6 +2886,16 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   if (t['id'] != null) entry['id'] = t['id'].toString();
                   if (t['name'] != null) entry['name'] = t['name'].toString();
                   if (t['args_fragment'] != null) entry['args'] = (entry['args'] ?? '') + t['args_fragment'].toString();
+                  // Push to Rust aggregator
+                  try {
+                    toolAggregatorJson = rust_chat.chatAggregateToolCall(
+                      index: idx,
+                      id: entry['id']!.isNotEmpty ? entry['id'] : null,
+                      name: entry['name']!.isNotEmpty ? entry['name'] : null,
+                      argsFragment: t['args_fragment']?.toString(),
+                      aggregatorJson: toolAggregatorJson,
+                    );
+                  } catch (_) {}
                 }
               }
             } else if (delta != null) {
