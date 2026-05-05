@@ -6,6 +6,7 @@
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
+import 'api/agent_loop_api.dart';
 import 'api/chat_protocol_api.dart';
 import 'api/mcp_api.dart';
 import 'api/mcp_client_api.dart';

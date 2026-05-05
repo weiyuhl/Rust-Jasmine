@@ -1,3 +1,4 @@
+pub mod agent_loop_api;
 pub mod chat_protocol_api;
 pub mod mcp_api;
 pub mod mcp_client_api;

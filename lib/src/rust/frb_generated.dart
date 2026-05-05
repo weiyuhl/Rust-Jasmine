@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/agent_loop_api.dart';
 import 'api/chat_protocol_api.dart';
 import 'api/mcp_api.dart';
 import 'api/mcp_client_api.dart';
@@ -69,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 362660614;
+  int get rustContentHash => -1476575372;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -371,6 +372,34 @@ abstract class RustLibApi extends BaseApi {
   String crateApiMcpApiParseMcpImportJson({
     required String rawJson,
     required bool isDesktop,
+  });
+
+  String crateApiAgentLoopApiRunClaudeAgentLoop({
+    required String baseUrl,
+    required String apiKey,
+    required String modelId,
+    required String messagesJson,
+    String? systemPrompt,
+    String? toolsJson,
+    required bool stream,
+    required bool isReasoning,
+    int? thinkingBudget,
+    double? temperature,
+    int? maxTokens,
+  });
+
+  String crateApiAgentLoopApiRunOpenaiAgentLoop({
+    required String baseUrl,
+    required String apiKey,
+    required String modelId,
+    required String messagesJson,
+    String? toolsJson,
+    required bool stream,
+    required bool isReasoning,
+    int? thinkingBudget,
+    double? temperature,
+    int? maxTokens,
+    required bool useResponseApi,
   });
 
   Future<String> crateApiMcpApiSummarizeServerTools({
@@ -2373,6 +2402,150 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  String crateApiAgentLoopApiRunClaudeAgentLoop({
+    required String baseUrl,
+    required String apiKey,
+    required String modelId,
+    required String messagesJson,
+    String? systemPrompt,
+    String? toolsJson,
+    required bool stream,
+    required bool isReasoning,
+    int? thinkingBudget,
+    double? temperature,
+    int? maxTokens,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(baseUrl, serializer);
+          sse_encode_String(apiKey, serializer);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(messagesJson, serializer);
+          sse_encode_opt_String(systemPrompt, serializer);
+          sse_encode_opt_String(toolsJson, serializer);
+          sse_encode_bool(stream, serializer);
+          sse_encode_bool(isReasoning, serializer);
+          sse_encode_opt_box_autoadd_i_32(thinkingBudget, serializer);
+          sse_encode_opt_box_autoadd_f_64(temperature, serializer);
+          sse_encode_opt_box_autoadd_i_32(maxTokens, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 60)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiAgentLoopApiRunClaudeAgentLoopConstMeta,
+        argValues: [
+          baseUrl,
+          apiKey,
+          modelId,
+          messagesJson,
+          systemPrompt,
+          toolsJson,
+          stream,
+          isReasoning,
+          thinkingBudget,
+          temperature,
+          maxTokens,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAgentLoopApiRunClaudeAgentLoopConstMeta =>
+      const TaskConstMeta(
+        debugName: "run_claude_agent_loop",
+        argNames: [
+          "baseUrl",
+          "apiKey",
+          "modelId",
+          "messagesJson",
+          "systemPrompt",
+          "toolsJson",
+          "stream",
+          "isReasoning",
+          "thinkingBudget",
+          "temperature",
+          "maxTokens",
+        ],
+      );
+
+  @override
+  String crateApiAgentLoopApiRunOpenaiAgentLoop({
+    required String baseUrl,
+    required String apiKey,
+    required String modelId,
+    required String messagesJson,
+    String? toolsJson,
+    required bool stream,
+    required bool isReasoning,
+    int? thinkingBudget,
+    double? temperature,
+    int? maxTokens,
+    required bool useResponseApi,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(baseUrl, serializer);
+          sse_encode_String(apiKey, serializer);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(messagesJson, serializer);
+          sse_encode_opt_String(toolsJson, serializer);
+          sse_encode_bool(stream, serializer);
+          sse_encode_bool(isReasoning, serializer);
+          sse_encode_opt_box_autoadd_i_32(thinkingBudget, serializer);
+          sse_encode_opt_box_autoadd_f_64(temperature, serializer);
+          sse_encode_opt_box_autoadd_i_32(maxTokens, serializer);
+          sse_encode_bool(useResponseApi, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiAgentLoopApiRunOpenaiAgentLoopConstMeta,
+        argValues: [
+          baseUrl,
+          apiKey,
+          modelId,
+          messagesJson,
+          toolsJson,
+          stream,
+          isReasoning,
+          thinkingBudget,
+          temperature,
+          maxTokens,
+          useResponseApi,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiAgentLoopApiRunOpenaiAgentLoopConstMeta =>
+      const TaskConstMeta(
+        debugName: "run_openai_agent_loop",
+        argNames: [
+          "baseUrl",
+          "apiKey",
+          "modelId",
+          "messagesJson",
+          "toolsJson",
+          "stream",
+          "isReasoning",
+          "thinkingBudget",
+          "temperature",
+          "maxTokens",
+          "useResponseApi",
+        ],
+      );
+
+  @override
   Future<String> crateApiMcpApiSummarizeServerTools({
     required String toolsJson,
   }) {
@@ -2384,7 +2557,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 60,
+            funcId: 62,
             port: port_,
           );
         },
@@ -2411,7 +2584,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 61)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 63)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_String,
@@ -2439,7 +2612,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 62,
+            funcId: 64,
             port: port_,
           );
         },
