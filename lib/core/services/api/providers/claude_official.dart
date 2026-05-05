@@ -514,7 +514,8 @@ Stream<ChatStreamChunk> _sendClaudeStream(
         final line = lines[i].trim();
         if (line.isEmpty || !line.startsWith('data:')) continue;
 
-        final data = line.substring(5).trimLeft();
+        final sseResult = rust_chat.chatParseSseLine(line: line);
+        final data = (sseResult != null) ? sseResult : line.substring(5).trimLeft();
         try {
           final obj = jsonDecode(data);
           final type = obj['type'];

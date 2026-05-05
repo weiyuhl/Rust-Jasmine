@@ -1605,8 +1605,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
       final line = lines[i].trim();
       if (line.isEmpty || !line.startsWith('data:')) continue;
 
-      final data = line.substring(5).trimLeft();
-      if (data == '[DONE]' || rust_chat.chatIsSseDone(line: line)) {
+      final sseResult = rust_chat.chatParseSseLine(line: line);
+      final data = (sseResult != null) ? sseResult : line.substring(5).trimLeft();
+      if (data == '[DONE]') {
         // If model streamed tool_calls but didn't include finish_reason on prior chunks,
         // execute tool flow now and start follow-up request.
         if (onToolCall != null && toolAcc.isNotEmpty) {
