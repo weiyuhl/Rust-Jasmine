@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 410386512;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1573385971;
 
 // Section: executor
 
@@ -403,6 +403,38 @@ fn wire__crate__api__mcp_api__build_read_resource_request_impl(
                     Ok(output_ok)
                 })())
             }
+        },
+    )
+}
+fn wire__crate__api__chat_protocol_api__chat_protocol_greet_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "chat_protocol_greet",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_name = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::api::chat_protocol_api::chat_protocol_greet(api_name),
+                )?;
+                Ok(output_ok)
+            })())
         },
     )
 }
@@ -785,7 +817,7 @@ fn wire__crate__api__modal_provider_api__modal_provider_get_provider_default_hea
     rust_vec_len_: i32,
     data_len_: i32,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec,_,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "modal_provider_get_provider_default_headers", port: Some(port_), mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal }, move || {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec,_,_>(flutter_rust_bridge::for_generated::TaskInfo{ debug_name: "modal_provider_get_provider_default_headers", port: Some(port_), mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal }, move || { 
             let message = unsafe { flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_) };
             let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_config_json = <String>::sse_decode(&mut deserializer);deserializer.end(); move |context|  {
@@ -1281,34 +1313,34 @@ fn pde_ffi_dispatcher_primary_impl(
             rust_vec_len,
             data_len,
         ),
-        11 => wire__crate__api__mcp_api__create_default_mcp_config_impl(
+        12 => wire__crate__api__mcp_api__create_default_mcp_config_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        15 => {
+        16 => {
             wire__crate__api__modal_provider_api__init_app_impl(port, ptr, rust_vec_len, data_len)
         }
-        19 => wire__crate__api__modal_provider_api__modal_provider_classify_provider_kind_impl(
+        20 => wire__crate__api__modal_provider_api__modal_provider_classify_provider_kind_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        20 => wire__crate__api__modal_provider_api__modal_provider_create_default_config_impl(
+        21 => wire__crate__api__modal_provider_api__modal_provider_create_default_config_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        21 => wire__crate__api__modal_provider_api__modal_provider_default_base_url_impl(
+        22 => wire__crate__api__modal_provider_api__modal_provider_default_base_url_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        22 => {
+        23 => {
             wire__crate__api__modal_provider_api__modal_provider_get_provider_default_headers_impl(
                 port,
                 ptr,
@@ -1316,37 +1348,37 @@ fn pde_ffi_dispatcher_primary_impl(
                 data_len,
             )
         }
-        23 => wire__crate__api__modal_provider_api__modal_provider_list_models_impl(
+        24 => wire__crate__api__modal_provider_api__modal_provider_list_models_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        24 => wire__crate__api__modal_provider_api__modal_provider_resolve_api_model_id_impl(
+        25 => wire__crate__api__modal_provider_api__modal_provider_resolve_api_model_id_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        25 => wire__crate__api__modal_provider_api__modal_provider_test_connection_impl(
+        26 => wire__crate__api__modal_provider_api__modal_provider_test_connection_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        26 => wire__crate__api__modal_provider_api__modal_provider_validate_provider_config_impl(
+        27 => wire__crate__api__modal_provider_api__modal_provider_validate_provider_config_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        30 => wire__crate__api__mcp_api__summarize_server_tools_impl(
+        31 => wire__crate__api__mcp_api__summarize_server_tools_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        32 => wire__crate__api__mcp_api__validate_mcp_server_config_impl(
+        33 => wire__crate__api__mcp_api__validate_mcp_server_config_impl(
             port,
             ptr,
             rust_vec_len,
@@ -1364,18 +1396,23 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        12 => wire__crate__api__mcp_api__default_mcp_version_impl(ptr, rust_vec_len, data_len),
-        13 => {
+        11 => wire__crate__api__chat_protocol_api__chat_protocol_greet_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        13 => wire__crate__api__mcp_api__default_mcp_version_impl(ptr, rust_vec_len, data_len),
+        14 => {
             wire__crate__api__mcp_api__export_mcp_servers_ui_json_impl(ptr, rust_vec_len, data_len)
         }
-        14 => wire__crate__api__mcp_api__get_mcp_method_names_impl(ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__mcp_api__is_mcp_version_supported_impl(ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__mcp_api__json_rpc_error_details_impl(ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__mcp_api__log_level_name_impl(ptr, rust_vec_len, data_len),
-        27 => wire__crate__api__mcp_api__negotiate_mcp_version_impl(ptr, rust_vec_len, data_len),
-        28 => wire__crate__api__mcp_api__normalize_tool_arguments_impl(ptr, rust_vec_len, data_len),
-        29 => wire__crate__api__mcp_api__parse_mcp_import_json_impl(ptr, rust_vec_len, data_len),
-        31 => wire__crate__api__mcp_api__supported_mcp_versions_impl(ptr, rust_vec_len, data_len),
+        15 => wire__crate__api__mcp_api__get_mcp_method_names_impl(ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__mcp_api__is_mcp_version_supported_impl(ptr, rust_vec_len, data_len),
+        18 => wire__crate__api__mcp_api__json_rpc_error_details_impl(ptr, rust_vec_len, data_len),
+        19 => wire__crate__api__mcp_api__log_level_name_impl(ptr, rust_vec_len, data_len),
+        28 => wire__crate__api__mcp_api__negotiate_mcp_version_impl(ptr, rust_vec_len, data_len),
+        29 => wire__crate__api__mcp_api__normalize_tool_arguments_impl(ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__mcp_api__parse_mcp_import_json_impl(ptr, rust_vec_len, data_len),
+        32 => wire__crate__api__mcp_api__supported_mcp_versions_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
