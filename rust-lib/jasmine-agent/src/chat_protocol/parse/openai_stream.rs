@@ -34,33 +34,21 @@ pub struct OpenAIUsage {
 /// - `usage` → token usage
 /// - `images` / `choices[0].delta.content_parts[].image_url` → image output
 pub fn parse_openai_chunk(json: &Value) -> OpenAIDelta {
-    let choices = json.get("choices").and_then(|c| c.as_array());
-    if choices.is_none() {
-        return OpenAIDelta {
-            content: String::new(),
-            reasoning_content: None,
-            reasoning_details: None,
-            role: None,
-            finish_reason: None,
-            tool_call_deltas: Vec::new(),
-            usage: extract_usage(json),
-            images: None,
-        };
-    }
-
-    let choices = choices.unwrap();
-    if choices.is_empty() {
-        return OpenAIDelta {
-            content: String::new(),
-            reasoning_content: None,
-            reasoning_details: None,
-            role: None,
-            finish_reason: None,
-            tool_call_deltas: Vec::new(),
-            usage: extract_usage(json),
-            images: None,
-        };
-    }
+    let choices = match json.get("choices").and_then(|c| c.as_array()) {
+        Some(c) if !c.is_empty() => c,
+        _ => {
+            return OpenAIDelta {
+                content: String::new(),
+                reasoning_content: None,
+                reasoning_details: None,
+                role: None,
+                finish_reason: None,
+                tool_call_deltas: Vec::new(),
+                usage: extract_usage(json),
+                images: None,
+            };
+        }
+    };
 
     let c0 = &choices[0];
     let delta = c0.get("delta");

@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -403,7 +404,9 @@ class S3BackupClient {
         if (regionHint.isNotEmpty) 'Bucket region: $regionHint',
       ];
       if (parts.isNotEmpty) return parts.join(' - ');
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[s3_client] silent catch: $e');
+    }
     if (regionHint.isNotEmpty) {
       return 'HTTP ${res.statusCode}. Bucket region: $regionHint';
     }

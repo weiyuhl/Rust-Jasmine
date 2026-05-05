@@ -39,7 +39,9 @@ class TagProvider extends ChangeNotifier {
         _assignment
           ..clear()
           ..addAll(m.map((k, v) => MapEntry(k, v.toString())));
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tag_provider] silent catch: $e');
+      }
     }
     final rawCol = prefs.getString(_collapsedKey);
     if (rawCol != null && rawCol.isNotEmpty) {
@@ -52,7 +54,9 @@ class TagProvider extends ChangeNotifier {
               (k, v) => MapEntry(k, (v is bool) ? v : (v.toString() == 'true')),
             ),
           );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tag_provider] silent catch: $e');
+      }
     }
     notifyListeners();
   }

@@ -36,6 +36,21 @@ struct AgentLoopState {
     max_tokens: Option<i32>,
     use_response_api: bool,
     round: u32,
+    system_prompt: Option<String>,
+    custom_headers: Option<Vec<(String, String)>>,
+    custom_body: Option<Value>,
+}
+
+/// Extract pending tool calls from collected events.
+fn extract_pending_tool_calls(events: &[AgentEvent]) -> Vec<ToolCallInfo> {
+    events
+        .iter()
+        .filter_map(|e| match e {
+            AgentEvent::ToolCalls { calls } => Some(calls.clone()),
+            _ => None,
+        })
+        .flatten()
+        .collect()
 }
 
 /// Start the OpenAI-compatible agent loop. Returns first round result.
@@ -73,6 +88,9 @@ pub fn start_openai_agent_loop(
         max_tokens,
         use_response_api,
         round: 1,
+        system_prompt: None,
+        custom_headers: None,
+        custom_body: None,
     };
 
     let mut events = Vec::new();
@@ -95,11 +113,12 @@ pub fn start_openai_agent_loop(
     );
 
     let content = result.unwrap_or_default();
-    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+    let pending_tool_calls = extract_pending_tool_calls(&events);
+    let is_done = pending_tool_calls.is_empty();
 
     let loop_result = AgentLoopResult {
         events,
-        pending_tool_calls: vec![],
+        pending_tool_calls,
         content,
         state_json: serde_json::to_string(&state).unwrap_or_default(),
         is_done,
@@ -125,6 +144,9 @@ pub fn continue_openai_agent_loop(
     }
     state.round += 1;
 
+    let custom_headers_ref: Option<Vec<(String, String)>> = state.custom_headers.clone();
+    let custom_body_ref: Option<Value> = state.custom_body.clone();
+
     let mut events = Vec::new();
     let result = agent_loop::openai_loop::run_openai_agent_loop(
         &state.base_url,
@@ -138,18 +160,19 @@ pub fn continue_openai_agent_loop(
         state.temperature,
         state.max_tokens,
         state.use_response_api,
-        None,
-        None,
+        custom_headers_ref.as_deref(),
+        custom_body_ref.as_ref(),
         |_name, _args| Ok("{}".to_string()),
         |event| events.push(event.clone()),
     );
 
     let content = result.unwrap_or_default();
-    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+    let pending_tool_calls = extract_pending_tool_calls(&events);
+    let is_done = pending_tool_calls.is_empty();
 
     let loop_result = AgentLoopResult {
         events,
-        pending_tool_calls: vec![],
+        pending_tool_calls,
         content,
         state_json: serde_json::to_string(&state).unwrap_or_default(),
         is_done,
@@ -192,6 +215,9 @@ pub fn start_claude_agent_loop(
         max_tokens,
         use_response_api: false,
         round: 1,
+        system_prompt: system_prompt.clone(),
+        custom_headers: None,
+        custom_body: None,
     };
 
     let mut events = Vec::new();
@@ -214,11 +240,12 @@ pub fn start_claude_agent_loop(
     );
 
     let content = result.unwrap_or_default();
-    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+    let pending_tool_calls = extract_pending_tool_calls(&events);
+    let is_done = pending_tool_calls.is_empty();
 
     let loop_result = AgentLoopResult {
         events,
-        pending_tool_calls: vec![],
+        pending_tool_calls,
         content,
         state_json: serde_json::to_string(&state).unwrap_or_default(),
         is_done,
@@ -243,34 +270,39 @@ pub fn continue_claude_agent_loop(
     }
     state.round += 1;
 
+    let custom_headers_ref: Option<Vec<(String, String)>> = state.custom_headers.clone();
+    let custom_body_ref: Option<Value> = state.custom_body.clone();
+
     let mut events = Vec::new();
     let result = agent_loop::claude_loop::run_claude_agent_loop(
         &state.base_url,
         &state.api_key,
         &state.model_id,
         &state.messages,
-        None, // system prompt handled in messages
+        state.system_prompt.as_deref(),
         state.tools.as_deref(),
         state.stream,
         state.is_reasoning,
         state.thinking_budget,
         state.temperature,
         state.max_tokens,
-        None,
-        None,
+        custom_headers_ref.as_deref(),
+        custom_body_ref.as_ref(),
         |_name, _args| Ok("{}".to_string()),
         |event| events.push(event.clone()),
     );
 
     let content = result.unwrap_or_default();
-    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+    let pending_tool_calls = extract_pending_tool_calls(&events);
+    let is_done = pending_tool_calls.is_empty();
 
     let loop_result = AgentLoopResult {
         events,
-        pending_tool_calls: vec![],
+        pending_tool_calls,
         content,
         state_json: serde_json::to_string(&state).unwrap_or_default(),
         is_done,
     };
     serde_json::to_string(&loop_result).map_err(|e| format!("Serialize: {}", e))
 }
+

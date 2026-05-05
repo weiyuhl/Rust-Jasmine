@@ -118,7 +118,9 @@ Stream<ChatStreamChunk> _sendClaudeStream(
           try {
             input = (jsonDecode((fn['arguments'] ?? '{}').toString()) as Map)
                 .cast<String, dynamic>();
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[claude_official] silent catch: $e');
+          }
           blocks.add({
             'type': 'tool_use',
             'id': id,
@@ -209,7 +211,9 @@ Stream<ChatStreamChunk> _sendClaudeStream(
       if (ov is Map && ov['webSearch'] is Map) {
         ws = (ov['webSearch'] as Map).cast<String, dynamic>();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[claude_official] silent catch: $e');
+    }
     final searchToolType = BuiltInToolsHelper.claudeBuiltInSearchToolType(
       cfg: config,
       modelId: modelId,
@@ -355,7 +359,9 @@ Stream<ChatStreamChunk> _sendClaudeStream(
           );
           totalUsage = (totalUsage ?? const TokenUsage()).merge(round);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[claude_official] silent catch: $e');
+      }
       final content = (obj['content'] as List?) ?? const <dynamic>[];
       final List<Map<String, dynamic>> assistantBlocks =
           <Map<String, dynamic>>[];
@@ -379,7 +385,9 @@ Stream<ChatStreamChunk> _sendClaudeStream(
             assistantBlocks.add(
               Map<String, dynamic>.from(it.cast<String, dynamic>()),
             );
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[claude_official] silent catch: $e');
+          }
         } else if (type == 'tool_use') {
           final id = (it['id'] ?? '').toString();
           final name = (it['name'] ?? '').toString();
@@ -889,7 +897,9 @@ Stream<ChatStreamChunk> _sendClaudeStream(
               if (sr is String && sr.isNotEmpty) {
                 lastStopReason = sr;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[claude_official] silent catch: $e');
+            }
           } else if (type == 'message_stop') {
             // Flush remaining text
             final t = textBuf.toString();

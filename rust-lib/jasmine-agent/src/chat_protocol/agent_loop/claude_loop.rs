@@ -31,7 +31,7 @@ where
 {
     let mut current_messages: Vec<Value> = messages.to_vec();
     let current_system = system_prompt.map(String::from);
-    let content_buf = String::new();
+    let mut content_buf = String::new();
     let mut round = 0u32;
     let max_rounds = 50;
 
@@ -88,7 +88,7 @@ where
         }
 
         // Parse response
-        let mut content_buf = String::new();
+        content_buf.clear();
         let mut thinking_buf = String::new();
         let mut tool_calls: Vec<ToolCallInfo> = Vec::new();
         let mut current_tool_use_id = String::new();

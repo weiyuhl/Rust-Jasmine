@@ -3584,49 +3584,49 @@ abstract class AppLocalizations {
   /// No description provided for @displaySettingsPageEnableDollarLatexTitle.
   ///
   /// In en, this message translates to:
-  /// **'Inline \$...\$ Rendering'**
+  /// **'Enable \$...\$ Rendering'**
   String get displaySettingsPageEnableDollarLatexTitle;
 
   /// No description provided for @displaySettingsPageEnableDollarLatexSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Render inline math inside \$...\$'**
+  /// **'Render content between \$...\$ as inline math formulas'**
   String get displaySettingsPageEnableDollarLatexSubtitle;
 
   /// No description provided for @displaySettingsPageEnableMathTitle.
   ///
   /// In en, this message translates to:
-  /// **'Math Formula Rendering'**
+  /// **'Enable Math Rendering'**
   String get displaySettingsPageEnableMathTitle;
 
   /// No description provided for @displaySettingsPageEnableMathSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Render LaTeX math (inline and block)'**
+  /// **'Render LaTeX math formulas (inline and block)'**
   String get displaySettingsPageEnableMathSubtitle;
 
   /// No description provided for @displaySettingsPageEnableUserMarkdownTitle.
   ///
   /// In en, this message translates to:
-  /// **'Render user messages with Markdown'**
+  /// **'User Message Markdown Rendering'**
   String get displaySettingsPageEnableUserMarkdownTitle;
 
   /// No description provided for @displaySettingsPageEnableReasoningMarkdownTitle.
   ///
   /// In en, this message translates to:
-  /// **'Render reasoning (thinking) with Markdown'**
+  /// **'Chain of Thought Markdown Rendering'**
   String get displaySettingsPageEnableReasoningMarkdownTitle;
 
   /// No description provided for @displaySettingsPageEnableAssistantMarkdownTitle.
   ///
   /// In en, this message translates to:
-  /// **'Render assistant messages with Markdown'**
+  /// **'Assistant Message Markdown Rendering'**
   String get displaySettingsPageEnableAssistantMarkdownTitle;
 
   /// No description provided for @displaySettingsPageMobileCodeBlockWrapTitle.
   ///
   /// In en, this message translates to:
-  /// **'Mobile Code Block Word Wrap'**
+  /// **'Mobile Code Block Auto Wrap'**
   String get displaySettingsPageMobileCodeBlockWrapTitle;
 
   /// No description provided for @displaySettingsPageAutoCollapseCodeBlockTitle.
@@ -3638,7 +3638,7 @@ abstract class AppLocalizations {
   /// No description provided for @displaySettingsPageAutoCollapseCodeBlockLinesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Auto-collapse threshold'**
+  /// **'Auto-collapse Lines Threshold'**
   String get displaySettingsPageAutoCollapseCodeBlockLinesTitle;
 
   /// No description provided for @displaySettingsPageAutoCollapseCodeBlockLinesUnit.
@@ -6426,7 +6426,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Show {count} more steps'**
-  String chainOfThoughtExpandSteps(Object count);
+  String chainOfThoughtExpandSteps(int count);
 
   /// No description provided for @chainOfThoughtCollapse.
   ///

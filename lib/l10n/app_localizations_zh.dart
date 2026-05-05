@@ -3303,7 +3303,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get displaySettingsPageShowRegenerateConfirmDialogTitle => '重新生成前弹出确认';
 
   @override
-  String chainOfThoughtExpandSteps(Object count) {
+  String chainOfThoughtExpandSteps(int count) {
     return '展开更多 $count 步';
   }
 
@@ -7784,7 +7784,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get displaySettingsPageShowRegenerateConfirmDialogTitle => '重新生成前弹出确认';
 
   @override
-  String chainOfThoughtExpandSteps(Object count) {
+  String chainOfThoughtExpandSteps(int count) {
     return '展开更多 $count 步';
   }
 
@@ -12263,7 +12263,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get displaySettingsPageShowRegenerateConfirmDialogTitle => '重新生成前彈出確認';
 
   @override
-  String chainOfThoughtExpandSteps(Object count) {
+  String chainOfThoughtExpandSteps(int count) {
     return '展開更多 $count 步';
   }
 

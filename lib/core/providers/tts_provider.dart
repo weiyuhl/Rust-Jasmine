@@ -117,13 +117,19 @@ class TtsProvider extends ChangeNotifier {
     // Configure engine
     try {
       await _tts.setSpeechRate(_speechRate);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.setPitch(_pitch);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.setVolume(1.0);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     // Try to set device locale language
     final loc = ui.PlatformDispatcher.instance.locale;
     final defaultTag = _localeToTag(loc);
@@ -131,7 +137,9 @@ class TtsProvider extends ChangeNotifier {
       if (_engineId != null && _engineId!.isNotEmpty) {
         try {
           await _tts.setEngine(_engineId!);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[tts_provider] silent catch: $e');
+        }
       }
       final tag = (_languageTag == null || _languageTag!.isEmpty)
           ? defaultTag
@@ -154,19 +162,27 @@ class TtsProvider extends ChangeNotifier {
     // Better UX: await completion callbacks to sequence chunks
     try {
       await _tts.awaitSpeakCompletion(true);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.awaitSynthCompletion(true);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.setQueueMode(1);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
   }
 
   Future<void> _recreateEngine() async {
     try {
       await _tts.stop();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     _engineReady = false;
     _tts = FlutterTts();
     // Rebind event handlers
@@ -203,10 +219,14 @@ class TtsProvider extends ChangeNotifier {
     // Querying languages/engines tends to trigger binding on Android.
     try {
       await _tts.getLanguages;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.getEngines;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
   }
 
   Future<void> _ensureBound({
@@ -245,9 +265,13 @@ class TtsProvider extends ChangeNotifier {
         chosen ??= engines.first.toString();
         try {
           await _tts.setEngine(chosen);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[tts_provider] silent catch: $e');
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
   }
 
   Future<void> setSpeechRate(double rate) async {
@@ -256,7 +280,9 @@ class TtsProvider extends ChangeNotifier {
     _speechRate = r;
     try {
       await _tts.setSpeechRate(_speechRate);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_rateKey, _speechRate);
@@ -268,7 +294,9 @@ class TtsProvider extends ChangeNotifier {
     _pitch = p;
     try {
       await _tts.setPitch(_pitch);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_pitchKey, _pitch);
@@ -278,7 +306,9 @@ class TtsProvider extends ChangeNotifier {
     try {
       final res = await _tts.getEngines;
       if (res is List) return res.map((e) => e.toString()).toList();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     return const <String>[];
   }
 
@@ -286,7 +316,9 @@ class TtsProvider extends ChangeNotifier {
     try {
       final res = await _tts.getLanguages;
       if (res is List) return res.map((e) => e.toString()).toList();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     return const <String>[];
   }
 
@@ -296,7 +328,9 @@ class TtsProvider extends ChangeNotifier {
     await prefs.setString(_engineKey, id);
     try {
       await _tts.setEngine(id);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     await _applyConfig();
     notifyListeners();
   }
@@ -307,7 +341,9 @@ class TtsProvider extends ChangeNotifier {
     await prefs.setString(_langKey, tag);
     try {
       await _tts.setLanguage(tag);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     notifyListeners();
   }
 
@@ -324,7 +360,9 @@ class TtsProvider extends ChangeNotifier {
     if (flush) {
       try {
         await _tts.stop();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       _stopInternal(updateState: false);
     }
     final content = _stripMarkdown(text).trim();
@@ -345,7 +383,9 @@ class TtsProvider extends ChangeNotifier {
     if (flush) {
       try {
         await _tts.stop();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       _stopInternal(updateState: false);
     }
     final content = _stripMarkdown(text).trim();
@@ -370,7 +410,9 @@ class TtsProvider extends ChangeNotifier {
     await _ensureBound();
     try {
       await _tts.pause();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
   }
 
   Future<void> resume() async {
@@ -392,10 +434,14 @@ class TtsProvider extends ChangeNotifier {
     // stop both network and system TTS safely
     try {
       await _player.stop();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       await _tts.stop();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     _stopInternal(updateState: true);
   }
 
@@ -436,7 +482,9 @@ class TtsProvider extends ChangeNotifier {
     dynamic res;
     try {
       res = await _tts.speak(text, focus: true);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     if (_speakOk(res)) return true;
     // Try picking engine and retry a few times to accommodate late binding
     await _selectEngine();
@@ -444,7 +492,9 @@ class TtsProvider extends ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 180));
       try {
         res = await _tts.speak(text, focus: true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       if (_speakOk(res)) return true;
     }
     // Recreate engine once and re-try
@@ -453,7 +503,9 @@ class TtsProvider extends ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 200));
       try {
         res = await _tts.speak(text, focus: true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       if (_speakOk(res)) return true;
     }
     return false;
@@ -534,7 +586,9 @@ class TtsProvider extends ChangeNotifier {
     _tts.stop();
     try {
       _player.dispose();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     super.dispose();
   }
 
@@ -548,7 +602,9 @@ class TtsProvider extends ChangeNotifier {
     if (flush) {
       try {
         await _player.stop();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       _stopInternal(updateState: false);
     }
     final content = _stripMarkdown(text).trim();
@@ -605,7 +661,9 @@ class TtsProvider extends ChangeNotifier {
       // Play bytes via temp file (Darwin-friendly)
       try {
         await _player.stop();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[tts_provider] silent catch: $e');
+      }
       await _playAudioBytes(res.bytes, mime: res.mime);
       return null;
     } catch (e) {
@@ -618,7 +676,9 @@ class TtsProvider extends ChangeNotifier {
       await _player.stop();
       // tiny delay to ensure AVPlayer releases prior item
       await Future.delayed(const Duration(milliseconds: 20));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[tts_provider] silent catch: $e');
+    }
     try {
       // On Darwin, playing raw bytes without a filename/mime may fail.
       // Persist to a temp file with a proper extension for AVPlayer.

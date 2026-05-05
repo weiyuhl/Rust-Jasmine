@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -144,13 +145,15 @@ class DioHttpClient extends http.BaseClient {
     //   if (!_cancelToken.isCancelled) {
     //     _cancelToken.cancel('closed');
     //   }
-    // } catch (_) {}
+    // } catch (e) { debugPrint('[dio_http_client] silent catch: $e'); }
     // try {
     //   _dio.close(force: true);
-    // } catch (_) {}
+    // } catch (e) { debugPrint('[dio_http_client] silent catch: $e'); }
     try {
       _dio.close();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[dio_http_client] silent catch: $e');
+    }
   }
 
   @override
@@ -162,7 +165,9 @@ class DioHttpClient extends http.BaseClient {
     List<int> bodyBytes = const <int>[];
     try {
       bodyBytes = await request.finalize().toBytes();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[dio_http_client] silent catch: $e');
+    }
 
     final reqHeaders = Map<String, String>.from(request.headers);
     reqHeaders.putIfAbsent('User-Agent', () => 'Kelivo');

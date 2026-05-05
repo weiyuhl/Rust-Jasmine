@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:convert';
 
 /// Shared parser for per-model override payloads (headers/body/api model mapping).
@@ -43,7 +44,9 @@ class ModelOverridePayloadParser {
         (s.startsWith('[') && s.endsWith(']'))) {
       try {
         return jsonDecode(s);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[model_override_payload_parser] silent catch: $e');
+      }
     }
     return v;
   }

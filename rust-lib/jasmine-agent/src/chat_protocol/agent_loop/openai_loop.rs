@@ -51,7 +51,7 @@ where
     let mut round = 0u32;
     let max_rounds = 50; // Safety limit
 
-    let content_buf = String::new();
+    let mut content_buf = String::new();
 
     loop {
         round += 1;
@@ -135,7 +135,7 @@ where
         }
 
         // Parse response
-        let mut content_buf = String::new();
+        content_buf.clear();
         let mut tool_acc = ToolAccumulator::new();
         let mut has_tool_calls = false;
 

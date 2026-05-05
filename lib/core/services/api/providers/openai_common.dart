@@ -650,7 +650,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
         )) {
           return true;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[openai_common] silent catch: $e');
+      }
       if (BuiltInToolsHelper.isOpenAIResponsesBuiltInSearchSupportedModel(id)) {
         return true;
       }
@@ -674,7 +676,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
             if (ov is Map && ov['webSearch'] is Map) {
               ws = (ov['webSearch'] as Map).cast<String, dynamic>();
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[openai_common] silent catch: $e');
+          }
           final usePreview =
               (ws['preview'] == true) ||
               ((ws['tool'] ?? '').toString() == 'preview');
@@ -925,7 +929,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
         if (ws is Map && ws['include_sources'] == true) {
           body['include'] = ['web_search_call.action.sources'];
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[openai_common] silent catch: $e');
+      }
     }
     // Save initial Responses context
     try {
@@ -1297,11 +1303,15 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
         String outText = '';
         try {
           outText = (obj['output_text'] ?? '').toString();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[openai_common] silent catch: $e');
+        }
         if (outText.isEmpty) {
           try {
             outText = (obj['response']?['output_text'] ?? '').toString();
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[openai_common] silent catch: $e');
+          }
         }
         if (outText.isEmpty) {
           try {
@@ -1329,7 +1339,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
               }
               outText = buf.toString();
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[openai_common] silent catch: $e');
+          }
         }
         TokenUsage? usage;
         try {
@@ -1350,7 +1362,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
               totalTokens: prompt + completion,
             );
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[openai_common] silent catch: $e');
+        }
         yield ChatStreamChunk(
           content: outText,
           isDone: true,
@@ -1372,7 +1386,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
           if (choices != null && choices.isNotEmpty) {
             c0 = (choices.first as Map).cast<String, dynamic>();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[openai_common] silent catch: $e');
+        }
         if (c0 == null) {
           final s = (lastObj['output_text'] ?? '').toString();
           yield ChatStreamChunk(
@@ -1400,7 +1416,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
             );
             aggUsage = (aggUsage ?? const TokenUsage()).merge(round);
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[openai_common] silent catch: $e');
+        }
 
         final msg =
             (c0['message'] as Map?)?.cast<String, dynamic>() ??
@@ -1651,7 +1669,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 toolMsgs.add({'__name': name, '__id': id, '__args': args});
               }
               finalized = callInfos.isNotEmpty;
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[openai_common] silent catch: $e');
+            }
           }
           if (!finalized) {
             toolAcc.forEach((idx, m) {
@@ -2108,7 +2128,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                       }
                     }
                   }
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[openai_common] silent catch: $e');
+                }
               }
             }
 
@@ -2256,7 +2278,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   'args': '',
                 };
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[openai_common] silent catch: $e');
+            }
           } else if (type == 'response.function_call_arguments.delta') {
             try {
               final idx = (json['output_index'] ?? 0) as int;
@@ -2268,7 +2292,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
               if (delta.isNotEmpty) {
                 entry['args'] = (entry['args'] ?? '') + delta;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[openai_common] silent catch: $e');
+            }
           } else if (type == 'response.output_item.done') {
             try {
               final item = json['item'];
@@ -2285,7 +2311,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 );
                 if (args.isNotEmpty) entry['args'] = args;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[openai_common] silent catch: $e');
+            }
           } else if (type is String && type.contains('function_call')) {
             // Accumulate function call args for Responses API
             final id = (json['id'] ?? json['call_id'] ?? '').toString();
@@ -2396,7 +2424,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   ],
                 );
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[openai_common] silent catch: $e');
+            }
             // Responses tool calling follow-up handling
             final bool hasRespCalls =
                 respToolCallsByIndex.isNotEmpty || toolAccResp.isNotEmpty;
@@ -2564,7 +2594,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                           .toList(),
                     );
                   }
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[openai_common] silent catch: $e');
+                }
 
                 _sanitizeOpenAIGpt5SamplingParams(
                   body2,
@@ -2684,7 +2716,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                           ];
                         }
                       }
-                    } catch (_) {}
+                    } catch (e) {
+                      debugPrint('[openai_common] silent catch: $e');
+                    }
                   }
                 }
 
@@ -2891,8 +2925,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                       final u2 = iu['url'];
                       if (u2 is String) url = u2;
                     }
-                    if (url != null && url.isNotEmpty)
+                    if (url != null && url.isNotEmpty) {
                       buf.write('\n\n![image]($url)');
+                    }
                   }
                   if (buf.isNotEmpty) content = content + buf.toString();
                 }
@@ -2908,9 +2943,10 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   );
                   if (t['id'] != null) entry['id'] = t['id'].toString();
                   if (t['name'] != null) entry['name'] = t['name'].toString();
-                  if (t['args_fragment'] != null)
+                  if (t['args_fragment'] != null) {
                     entry['args'] =
                         (entry['args'] ?? '') + t['args_fragment'].toString();
+                  }
                   // Push to Rust aggregator
                   try {
                     toolAggregatorJson = rust_chat.chatAggregateToolCall(
@@ -2920,7 +2956,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                       argsFragment: t['args_fragment']?.toString(),
                       aggregatorJson: toolAggregatorJson,
                     );
-                  } catch (_) {}
+                  } catch (e) {
+                    debugPrint('[openai_common] silent catch: $e');
+                  }
                 }
               }
             } else if (delta != null) {
@@ -2948,16 +2986,18 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 if (dc is List) {
                   for (final it in dc) {
                     if (it is Map &&
-                        (it['type'] == 'image_url' || it['type'] == 'image'))
+                        (it['type'] == 'image_url' || it['type'] == 'image')) {
                       imageItems.add(it);
+                    }
                   }
                 }
                 final singleImage = delta['image_url'];
-                if (singleImage is Map || singleImage is String)
+                if (singleImage is Map || singleImage is String) {
                   imageItems.add({
                     'type': 'image_url',
                     'image_url': singleImage,
                   });
+                }
                 if (imageItems.isNotEmpty) {
                   final buf = StringBuffer();
                   for (final it in imageItems) {
@@ -2970,8 +3010,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                       final u2 = iu['url'];
                       if (u2 is String) url = u2;
                     }
-                    if (url != null && url.isNotEmpty)
+                    if (url != null && url.isNotEmpty) {
                       buf.write('\n\n![image]($url)');
+                    }
                   }
                   if (buf.isNotEmpty) content = content + buf.toString();
                 }
@@ -2990,8 +3031,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   );
                   if (id != null) entry['id'] = id;
                   if (name != null && name.isNotEmpty) entry['name'] = name;
-                  if (argsDelta != null && argsDelta.isNotEmpty)
+                  if (argsDelta != null && argsDelta.isNotEmpty) {
                     entry['args'] = (entry['args'] ?? '') + argsDelta;
+                  }
                 }
               }
             }
@@ -3604,7 +3646,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                       finishReason2 = 'tool_calls';
                     }
                   }
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[openai_common] silent catch: $e');
+                }
               }
             }
             if (finishReason2 == 'tool_calls' || toolAcc2.isNotEmpty) {
@@ -4159,7 +4203,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                           finishReason2 = 'tool_calls';
                         }
                       }
-                    } catch (_) {}
+                    } catch (e) {
+                      debugPrint('[openai_common] silent catch: $e');
+                    }
                   }
                 }
                 if (finishReason2 == 'tool_calls' || toolAcc2.isNotEmpty) {

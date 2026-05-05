@@ -36,7 +36,9 @@ _GeminiSignatureMeta _extractGeminiThoughtMeta(String raw) {
     Map<String, dynamic> data = const <String, dynamic>{};
     try {
       data = (jsonDecode(payloadRaw) as Map).cast<String, dynamic>();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[google_gemini] silent catch: $e');
+    }
     String? textKey;
     dynamic textVal;
     final text = data['text'];

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -319,7 +320,9 @@ class NetworkTtsService {
       if (client == null) {
         try {
           c.close();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[network_tts] silent catch: $e');
+        }
       }
     }
   }
@@ -515,7 +518,9 @@ class NetworkTtsService {
     await completer.future;
     try {
       await sub.cancel();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[network_tts] silent catch: $e');
+    }
 
     final bytes = buf.takeBytes();
     return NetworkTtsResult(

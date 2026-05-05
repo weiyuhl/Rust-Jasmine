@@ -52,7 +52,9 @@ class S3BackupProvider extends ChangeNotifier {
     if (!await dir.exists()) {
       try {
         await dir.create(recursive: true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[s3_backup_provider] silent catch: $e');
+      }
     }
     if (!await dir.exists()) {
       dir = await Directory.systemTemp.createTemp('kelivo_tmp_');
@@ -126,7 +128,9 @@ class S3BackupProvider extends ChangeNotifier {
       );
       try {
         await file.delete();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[s3_backup_provider] silent catch: $e');
+      }
       _message = 'Restored';
     } catch (e) {
       _message = e.toString();

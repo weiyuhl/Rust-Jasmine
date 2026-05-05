@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -254,7 +255,9 @@ abstract final class StorageUsageService {
           cacheSubs['system_cache']!.add(bytes);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
 
     final clearable = StorageUsageStats(
       fileCount:
@@ -373,7 +376,9 @@ abstract final class StorageUsageService {
     try {
       final sys = await AppDirectories.getSystemCacheDirectory();
       await _deleteDirectoryContents(sys);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
     AvatarCache.clearMemory();
   }
 
@@ -394,16 +399,22 @@ abstract final class StorageUsageService {
           final entAbs = p.normalize(p.absolute(ent.path));
           if (p.equals(entAbs, avatarAbs)) continue;
           await ent.delete(recursive: true);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[storage_usage_service] silent catch: $e');
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
   }
 
   static Future<void> clearSystemCache() async {
     try {
       final dir = await AppDirectories.getSystemCacheDirectory();
       await _deleteDirectoryContents(dir);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
   }
 
   static Future<void> clearLogs() async {
@@ -412,10 +423,14 @@ abstract final class StorageUsageService {
 
     try {
       if (flutterOn) await FlutterLogger.setEnabled(false);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
     try {
       if (requestOn) await RequestLogger.setEnabled(false);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
 
     try {
       final root = await AppDirectories.getAppDataDirectory();
@@ -424,10 +439,14 @@ abstract final class StorageUsageService {
     } finally {
       try {
         if (flutterOn) await FlutterLogger.setEnabled(true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[storage_usage_service] silent catch: $e');
+      }
       try {
         if (requestOn) await RequestLogger.setEnabled(true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[storage_usage_service] silent catch: $e');
+      }
     }
   }
 
@@ -459,7 +478,9 @@ abstract final class StorageUsageService {
           } catch (_) {
             try {
               bytes = await ent.length();
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[storage_usage_service] silent catch: $e');
+            }
           }
           out.add(
             StorageFileEntry(
@@ -507,7 +528,9 @@ abstract final class StorageUsageService {
           await f.delete();
           deleted += 1;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[storage_usage_service] silent catch: $e');
+      }
     }
     return deleted;
   }
@@ -524,16 +547,22 @@ abstract final class StorageUsageService {
               // Some platforms lock active log files; try truncating.
               try {
                 await ent.writeAsBytes(const <int>[], flush: true);
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('[storage_usage_service] silent catch: $e');
+              }
             }
           } else if (ent is Directory) {
             // We'll delete empty dirs in a second pass.
           } else {
             try {
               await ent.delete();
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[storage_usage_service] silent catch: $e');
+            }
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[storage_usage_service] silent catch: $e');
+        }
       }
 
       // Delete empty directories bottom-up.
@@ -547,9 +576,13 @@ abstract final class StorageUsageService {
           if (await d.exists()) {
             await d.delete();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[storage_usage_service] silent catch: $e');
+        }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[storage_usage_service] silent catch: $e');
+    }
   }
 }
 

@@ -1431,10 +1431,23 @@
   "chainOfThoughtExpandSteps": "Show {count} more steps",
   "@chainOfThoughtExpandSteps": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "chainOfThoughtCollapse": "Collapse",
+  "displaySettingsPageEnableDollarLatexTitle": "Enable $...$ Rendering",
+  "displaySettingsPageEnableDollarLatexSubtitle": "Render content between $...$ as inline math formulas",
+  "displaySettingsPageEnableMathTitle": "Enable Math Rendering",
+  "displaySettingsPageEnableMathSubtitle": "Render LaTeX math formulas (inline and block)",
+  "displaySettingsPageEnableUserMarkdownTitle": "User Message Markdown Rendering",
+  "displaySettingsPageEnableReasoningMarkdownTitle": "Chain of Thought Markdown Rendering",
+  "displaySettingsPageEnableAssistantMarkdownTitle": "Assistant Message Markdown Rendering",
+  "displaySettingsPageMobileCodeBlockWrapTitle": "Mobile Code Block Auto Wrap",
+  "displaySettingsPageAutoCollapseCodeBlockTitle": "Auto-collapse Code Blocks",
+  "displaySettingsPageAutoCollapseCodeBlockLinesTitle": "Auto-collapse Lines Threshold",
+  "displaySettingsPageAutoCollapseCodeBlockLinesUnit": "lines",
   "displaySettingsPageShowChatListDateTitle": "Show Chat List Dates",
   "displaySettingsPageShowChatListDateSubtitle": "Display date group labels in the conversation list",
   "displaySettingsPageEnableImageCropperTitle": "Enable Image Cropping",

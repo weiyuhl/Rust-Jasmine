@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -59,7 +60,9 @@ class ChatApiService {
     if (token == null) return;
     try {
       if (!token.isCancelled) token.cancel('cancelled');
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_api_service] silent catch: $e');
+    }
   }
 
   /// Resolve the upstream/vendor model id for a given logical model key.
@@ -70,7 +73,9 @@ class ChatApiService {
     try {
       final ov = _modelOverride(cfg, modelId);
       return resolveApiModelIdOverride(ov, modelId);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_api_service] silent catch: $e');
+    }
     return modelId;
   }
 
@@ -96,7 +101,9 @@ class ChatApiService {
         final sel = ApiKeyManager().selectForProvider(cfg);
         if (sel.key != null) return sel.key!.key;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_api_service] silent catch: $e');
+    }
     return cfg.apiKey;
   }
 
@@ -105,7 +112,9 @@ class ChatApiService {
   static Set<String> _builtInTools(ProviderConfig cfg, String modelId) {
     try {
       return BuiltInToolNames.parseFromOverride(cfg.modelOverrides[modelId]);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_api_service] silent catch: $e');
+    }
     return const <String>{};
   }
 
@@ -180,7 +189,9 @@ class ChatApiService {
       if (start >= 0 && semi > start) {
         return dataUrl.substring(start + 1, semi);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_api_service] silent catch: $e');
+    }
     return 'image/png';
   }
 
@@ -448,7 +459,9 @@ class ChatApiService {
       final prev = _activeCancelTokens.remove(rid);
       try {
         prev?.cancel('replaced');
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chat_api_service] silent catch: $e');
+      }
       _activeCancelTokens[rid] = cancelToken;
     }
     final safeMessages = _sanitizeMessages(messages);
@@ -647,7 +660,9 @@ class ChatApiService {
                   if (ov is Map && ov['webSearch'] is Map) {
                     ws = (ov['webSearch'] as Map).cast<String, dynamic>();
                   }
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[chat_api_service] silent catch: $e');
+                }
                 final usePreview =
                     (ws['preview'] == true) ||
                     ((ws['tool'] ?? '').toString() == 'preview');
@@ -757,7 +772,9 @@ class ChatApiService {
               raw.map((e) => (e as Map).cast<String, dynamic>()).toList(),
             );
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[chat_api_service] silent catch: $e');
+        }
         _sanitizeOpenAIGpt5SamplingParams(
           body,
           upstreamModelId,

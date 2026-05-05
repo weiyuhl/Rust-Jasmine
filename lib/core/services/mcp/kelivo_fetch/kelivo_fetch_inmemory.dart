@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:mcp_client/mcp_client.dart' as mcp;
 
 import 'kelivo_fetch_server.dart';
@@ -47,10 +48,14 @@ startFetchMcpInMemory() async {
     stop: () async {
       try {
         client.disconnect();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[kelivo_fetch_inmemory] silent catch: $e');
+      }
       try {
         transport.close();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[kelivo_fetch_inmemory] silent catch: $e');
+      }
     },
   );
 }

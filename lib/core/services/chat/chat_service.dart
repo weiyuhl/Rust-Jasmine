@@ -191,10 +191,14 @@ class ChatService extends ChangeNotifier {
       if (msg != null && msg.role == 'assistant') {
         try {
           await _toolEventsBox.delete(msg.id);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[chat_service] silent catch: $e');
+        }
         try {
           await _toolEventsBox.delete(_sigKey(msg.id));
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[chat_service] silent catch: $e');
+        }
       }
       await _messagesBox.delete(messageId);
     }
@@ -319,7 +323,9 @@ class ChatService extends ChangeNotifier {
         ids.add(messageId);
         _toolEventsBox.put(_activeStreamingKey, ids);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_service] silent catch: $e');
+    }
   }
 
   /// Remove a message ID from the active streaming set.
@@ -335,7 +341,9 @@ class ChatService extends ChangeNotifier {
           _toolEventsBox.put(_activeStreamingKey, ids);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_service] silent catch: $e');
+    }
   }
 
   Future<void> _cleanupOrphanUploads() async {
@@ -367,11 +375,15 @@ class ChatService extends ChangeNotifier {
           if (!referenced.contains(filePath)) {
             try {
               await ent.delete();
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[chat_service] silent catch: $e');
+            }
           }
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_service] silent catch: $e');
+    }
   }
 
   Future<void> restoreConversation(
@@ -851,7 +863,9 @@ class ChatService extends ChangeNotifier {
     if (!_initialized) await init();
     try {
       await _toolEventsBox.delete(_sigKey(assistantMessageId));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_service] silent catch: $e');
+    }
   }
 
   Future<Conversation> forkConversation({
@@ -1103,10 +1117,14 @@ class ChatService extends ChangeNotifier {
     if (message.role == 'assistant') {
       try {
         await _toolEventsBox.delete(message.id);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chat_service] silent catch: $e');
+      }
       try {
         await _toolEventsBox.delete(_sigKey(message.id));
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chat_service] silent catch: $e');
+      }
     }
 
     // Update cache: clear this conversation so that next getMessages()
@@ -1139,7 +1157,9 @@ class ChatService extends ChangeNotifier {
       if (await uploadDir.exists()) {
         await uploadDir.delete(recursive: true);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chat_service] silent catch: $e');
+    }
     notifyListeners();
   }
 
@@ -1158,7 +1178,9 @@ class ChatService extends ChangeNotifier {
           count += 1;
           try {
             bytes += await ent.length();
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[chat_service] silent catch: $e');
+          }
         }
       }
       return UploadStats(fileCount: count, totalBytes: bytes);

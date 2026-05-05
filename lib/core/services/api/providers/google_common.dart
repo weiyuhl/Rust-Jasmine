@@ -1,4 +1,4 @@
-part of '../chat_api_service.dart';
+﻿part of '../chat_api_service.dart';
 
 /// Builds the Gemini tools array, handling Gemini 3 coexistence vs 2.x mutual exclusion.
 ///
@@ -154,7 +154,9 @@ Map<String, dynamic>? _googleFunctionCallPartFromToolCall(Map toolCall) {
   try {
     args = (jsonDecode((fn['arguments'] ?? '{}').toString()) as Map)
         .cast<String, dynamic>();
-  } catch (_) {}
+  } catch (e) {
+    debugPrint('[google_common] silent catch: $e');
+  }
   final part = <String, dynamic>{
     'functionCall': {'name': name, 'args': args},
   };
@@ -524,7 +526,9 @@ Stream<ChatStreamChunk> _sendGoogleStream(
             ),
           );
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[google_common] silent catch: $e');
+      }
       final candidates = (obj['candidates'] as List?) ?? const <dynamic>[];
       if (candidates.isEmpty) {
         yield ChatStreamChunk(
@@ -1205,7 +1209,9 @@ Stream<ChatStreamChunk> _sendGoogleStream(
                         }
                       }
                       bufferInlineImageChunk(mime, b64);
-                    } catch (_) {}
+                    } catch (e) {
+                      debugPrint('[google_common] silent catch: $e');
+                    }
                   }
                 }
                 // Emit server-side code execution parts as tool cards.
@@ -1268,7 +1274,9 @@ Stream<ChatStreamChunk> _sendGoogleStream(
                     try {
                       args = (jsonDecode(rawArgs) as Map)
                           .cast<String, dynamic>();
-                    } catch (_) {}
+                    } catch (e) {
+                      debugPrint('[google_common] silent catch: $e');
+                    }
                   }
                   // Prefer API-provided id (part-level), fall back to synthetic
                   final apiId = p['id']?.toString();

@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -48,7 +49,9 @@ class NotificationService {
     try {
       final enabled = await android.areNotificationsEnabled();
       if (enabled == true) return true;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[notification_service] silent catch: $e');
+    }
     try {
       final ok = await android.requestNotificationsPermission();
       return ok ?? false;

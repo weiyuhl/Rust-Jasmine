@@ -139,20 +139,26 @@ class McpToolService extends ChangeNotifier {
             buf.writeln(txt);
             continue;
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[mcp_tool_service] silent catch: $e');
+        }
         try {
           final uri = (dyn.uri as String?);
           if (uri != null && uri.isNotEmpty) {
             buf.writeln('resource: $uri');
             continue;
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[mcp_tool_service] silent catch: $e');
+        }
         // As a last resort, serialize to JSON if available
         try {
           final json = (dyn.toJson as dynamic).call();
           buf.writeln(const JsonEncoder.withIndent('  ').convert(json));
           continue;
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[mcp_tool_service] silent catch: $e');
+        }
         // Fallback to a readable string (avoid Instance of ... when possible)
         final s = c.toString();
         if (!s.startsWith('Instance of')) buf.writeln(s);
@@ -237,19 +243,25 @@ class McpToolService extends ChangeNotifier {
                 buf.writeln(txt);
                 continue;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[mcp_tool_service] silent catch: $e');
+            }
             try {
               final uri = (dyn.uri as String?);
               if (uri != null && uri.isNotEmpty) {
                 buf.writeln('resource: $uri');
                 continue;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[mcp_tool_service] silent catch: $e');
+            }
             try {
               final json = (dyn.toJson as dynamic).call();
               buf.writeln(const JsonEncoder.withIndent('  ').convert(json));
               continue;
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[mcp_tool_service] silent catch: $e');
+            }
             final s = c.toString();
             if (!s.startsWith('Instance of')) buf.writeln(s);
           } catch (_) {

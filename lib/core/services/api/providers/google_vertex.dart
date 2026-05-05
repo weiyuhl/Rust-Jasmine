@@ -48,7 +48,9 @@ Future<String> _downloadRemoteAsBase64(
       if (token != null && token.isNotEmpty) {
         req.headers['Authorization'] = 'Bearer $token';
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[google_vertex] silent catch: $e');
+    }
     final proj = (config.projectId ?? '').trim();
     if (proj.isNotEmpty) {
       req.headers['X-Goog-User-Project'] = proj;
@@ -208,17 +210,26 @@ Stream<ChatStreamChunk> _sendGoogleVertexClaudeStream({
         if (p.startsWith('http')) {
           try {
             b64 = await _downloadRemoteAsBase64(client, config, p);
-            mime = 'image/png'; // TODO: detect mime from response or url
-            if (p.toLowerCase().endsWith('.jpg') ||
-                p.toLowerCase().endsWith('.jpeg')) {
-              mime = 'image/jpeg';
-            }
-            if (p.toLowerCase().endsWith('.webp')) {
-              mime = 'image/webp';
-            }
-            if (p.toLowerCase().endsWith('.gif')) {
-              mime = 'image/gif';
-            }
+            final lower = p.toLowerCase().split('?').first;
+            const mimeMap = {
+              '.jpg': 'image/jpeg',
+              '.jpeg': 'image/jpeg',
+              '.png': 'image/png',
+              '.webp': 'image/webp',
+              '.gif': 'image/gif',
+              '.svg': 'image/svg+xml',
+              '.bmp': 'image/bmp',
+              '.tiff': 'image/tiff',
+              '.tif': 'image/tiff',
+              '.avif': 'image/avif',
+              '.ico': 'image/x-icon',
+            };
+            mime =
+                mimeMap.entries
+                    .where((e) => lower.endsWith(e.key))
+                    .map((e) => e.value)
+                    .firstOrNull ??
+                'image/png';
           } catch (_) {
             parts.add({
               'type': 'text',
@@ -295,7 +306,9 @@ Stream<ChatStreamChunk> _sendGoogleVertexClaudeStream({
       if (ov is Map && ov['webSearch'] is Map) {
         ws = (ov['webSearch'] as Map).cast<String, dynamic>();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[google_vertex] silent catch: $e');
+    }
     final entry = <String, dynamic>{
       'type': 'web_search_20250305',
       'name': 'web_search',
@@ -391,7 +404,9 @@ Stream<ChatStreamChunk> _sendGoogleVertexClaudeStream({
           );
           totalUsage = (totalUsage ?? const TokenUsage()).merge(round);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[google_vertex] silent catch: $e');
+      }
       final content = (obj['content'] as List?) ?? const <dynamic>[];
       final List<Map<String, dynamic>> assistantBlocks =
           <Map<String, dynamic>>[];
@@ -412,7 +427,9 @@ Stream<ChatStreamChunk> _sendGoogleVertexClaudeStream({
             assistantBlocks.add(
               Map<String, dynamic>.from(it.cast<String, dynamic>()),
             );
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[google_vertex] silent catch: $e');
+          }
         } else if (type == 'tool_use') {
           final id = (it['id'] ?? '').toString();
           final name = (it['name'] ?? '').toString();
@@ -867,12 +884,16 @@ Stream<ChatStreamChunk> _sendGoogleVertexClaudeStream({
               if (sr is String && sr.isNotEmpty) {
                 lastStopReason = sr;
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[google_vertex] silent catch: $e');
+            }
           } else if (type == 'message_stop') {
             flushTextBlock();
             messageStopped = true;
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[google_vertex] silent catch: $e');
+        }
       }
       if (messageStopped) break;
     }

@@ -70,7 +70,9 @@ class AssistantProvider extends ChangeNotifier {
       if (changed) {
         try {
           await _persist();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[assistant_provider] silent catch: $e');
+        }
       }
     }
     // Do not create defaults here because localization is not available.
@@ -343,7 +345,9 @@ class AssistantProvider extends ChangeNotifier {
               if (await old.exists() && old.path != dest.path) {
                 await old.delete();
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[assistant_provider] silent catch: $e');
+            }
           }
 
           next = updated.copyWith(avatar: dest.path);
@@ -354,7 +358,9 @@ class AssistantProvider extends ChangeNotifier {
       if (changed && raw.startsWith('http')) {
         try {
           await AvatarCache.getPath(raw);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[assistant_provider] silent catch: $e');
+        }
       }
 
       // Handle background persistence similar to avatar, but under images/
@@ -398,7 +404,9 @@ class AssistantProvider extends ChangeNotifier {
               if (await oldBg.exists() && oldBg.path != destBg.path) {
                 await oldBg.delete();
               }
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[assistant_provider] silent catch: $e');
+            }
           }
 
           next = next.copyWith(background: destBg.path);
@@ -410,7 +418,9 @@ class AssistantProvider extends ChangeNotifier {
           if (await oldBg.exists()) {
             await oldBg.delete();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[assistant_provider] silent catch: $e');
+        }
       }
     } catch (_) {
       // On any failure, fall back to the provided value unchanged.

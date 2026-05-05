@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'package:flutter_background/flutter_background.dart';
 
@@ -43,7 +44,9 @@ class AndroidBackgroundManager {
       try {
         final current = FlutterBackground.isBackgroundExecutionEnabled;
         if (current == enable) return;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[android_background] silent catch: $e');
+      }
 
       if (enable) {
         if (!_initialized) {
@@ -55,7 +58,9 @@ class AndroidBackgroundManager {
         // Try to disable without forcing initialization to avoid permission prompts
         try {
           await FlutterBackground.disableBackgroundExecution();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[android_background] silent catch: $e');
+        }
       }
     } catch (_) {
       // ignore runtime errors; best effort only

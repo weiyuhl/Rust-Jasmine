@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -325,7 +326,9 @@ class KelivoInMemoryClientTransport implements mcp.ClientTransport {
     _closed = true;
     try {
       _server.close();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[kelivo_fetch_server] silent catch: $e');
+    }
     if (!_messageController.isClosed) _messageController.close();
     if (!_closeCompleter.isCompleted) _closeCompleter.complete();
   }

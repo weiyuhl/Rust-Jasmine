@@ -241,7 +241,10 @@ impl McpServerManager {
         let ids: Vec<String> = self.servers.keys().cloned().collect();
         let moved_id = ids[old_index].clone();
         // Remove and re-insert at new position
-        let server = self.servers.remove(&moved_id).unwrap();
+        let server = match self.servers.remove(&moved_id) {
+            Some(s) => s,
+            None => return,
+        };
         let mut new_servers: Vec<(String, ManagedMcpServer)> = self.servers.drain().collect();
         new_servers.insert(new_index, (moved_id, server));
         self.servers = new_servers.into_iter().collect();

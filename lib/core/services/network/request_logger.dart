@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -22,10 +23,14 @@ class RequestLogger {
     if (!v) {
       try {
         await _sink?.flush();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[request_logger] silent catch: $e');
+      }
       try {
         await _sink?.close();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[request_logger] silent catch: $e');
+      }
       _sink = null;
       _sinkDate = null;
     } else {
@@ -52,10 +57,14 @@ class RequestLogger {
 
     try {
       await _sink?.flush();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[request_logger] silent catch: $e');
+    }
     try {
       await _sink?.close();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[request_logger] silent catch: $e');
+    }
     _sink = null;
     _sinkDate = today;
 
@@ -84,7 +93,9 @@ class RequestLogger {
           }
           await active.rename(rotated.path);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[request_logger] silent catch: $e');
+      }
     }
 
     _sink = active.openWrite(mode: FileMode.append);
@@ -104,10 +115,14 @@ class RequestLogger {
       } catch (_) {
         try {
           await _sink?.flush();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[request_logger] silent catch: $e');
+        }
         try {
           await _sink?.close();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[request_logger] silent catch: $e');
+        }
         _sink = null;
         _sinkDate = null;
         if (!_writeErrorReported) {
@@ -116,7 +131,9 @@ class RequestLogger {
             stderr.writeln(
               '[RequestLogger] write failed; further write errors will be suppressed.',
             );
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[request_logger] silent catch: $e');
+          }
         }
       }
     });
@@ -172,7 +189,9 @@ class RequestLogger {
               await f.delete();
               files.remove(f);
             }
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[request_logger] silent catch: $e');
+          }
         }
       }
 
@@ -186,7 +205,9 @@ class RequestLogger {
             final s = await f.stat();
             statMap[f] = s;
             totalSize += s.size;
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[request_logger] silent catch: $e');
+          }
         }
         if (totalSize > maxBytes) {
           // Sort oldest first
@@ -197,10 +218,14 @@ class RequestLogger {
             try {
               totalSize -= entry.value.size;
               await entry.key.delete();
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[request_logger] silent catch: $e');
+            }
           }
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[request_logger] silent catch: $e');
+    }
   }
 }

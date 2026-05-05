@@ -135,3 +135,38 @@ cargo ndk -t arm64-v8a -t armeabi-v7a -o ../../android/app/src/main/jniLibs buil
 cd ../..
 flutter build apk --release --target-platform android-arm64
 ```
+
+
+# 重新生成 Rust 绑定并构建 Android APK
+
+该计划详细说明了如何使用 `flutter_rust_bridge_codegen` (v2) 重新生成 Rust 与 Dart 的绑定，修复两端由于接口变化产生的兼容性问题，并使用跨平台编译机制打包 Android APK。
+
+## User Review Required
+
+> [!WARNING]
+> 在执行前请确认：
+> 1. 生成新绑定后可能会破坏原有的 Dart API 调用（如果有不兼容更改），我将自动运行分析并修复所有破损的接口。
+> 2. Android 编译由于带有 Rust 的 NDK 交叉编译（通过 `cargokit` 机制），可能会比较耗时，我会使用 `--split-per-abi` 参数编出针对各架构的瘦 APK。
+
+## Proposed Changes
+
+### 1. 重新生成绑定
+将使用 `flutter_rust_bridge_codegen generate` 重新生成位于 `lib/src/rust` 以及 `rust-lib/jasmine-agent/src/` 中的相关胶水代码。
+
+### 2. 检查与修复接口 (Dart / Rust)
+- 运行 `flutter analyze` 检查新绑定生成后 Dart 层是否报错。
+- 运行 `cargo check` 检查 Rust 层是否报错。
+- 如果存在新旧 API 签名的不兼容问题，我将逐一修复它们。
+
+### 3. 构建发布版 APK
+- 调用 `flutter build apk --release --split-per-abi`。
+- 因为项目使用了 `rust_builder` (内部集成 `cargokit`)，Flutter 构建工具链会自动调用 Rust/Cargo 进行交叉编译生成 `libjasmine_agent.so` 并打包进 APK。
+
+## Verification Plan
+
+### Automated Tests
+- 执行 `flutter analyze` 确保无 Dart 警告。
+- 观察 `flutter build apk` 的输出，确保 Rust `.so` 动态库被成功编译并打包。
+
+### Manual Verification
+- 测试生成的 APK，确保 Flutter UI 能正常调用 Rust 逻辑并且不再报 `Failed to load dynamic library` 错误。

@@ -202,7 +202,9 @@ class HotkeyProvider extends ChangeNotifier {
       for (final hk in _registered.values) {
         try {
           await HotKeyManager.instance.unregister(hk);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[hotkey_provider] silent catch: $e');
+        }
       }
     }
     _registered.clear();

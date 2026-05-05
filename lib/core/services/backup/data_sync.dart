@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -154,10 +155,14 @@ class DataSync {
     // Cleanup temp intermediate files
     try {
       await settingsTmp.delete();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[data_sync] silent catch: $e');
+    }
     try {
       if (chatsTmp != null) await chatsTmp.delete();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[data_sync] silent catch: $e');
+    }
 
     return outFile;
   }
@@ -321,7 +326,9 @@ class DataSync {
       if (mtimeStr.isNotEmpty) {
         try {
           mtime = DateTime.parse(mtimeStr.first);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[data_sync] silent catch: $e');
+        }
       }
       final name = (disp.isNotEmpty && disp.first.trim().isNotEmpty)
           ? disp.first.trim()
@@ -342,7 +349,9 @@ class DataSync {
                   'T\$1:\$2:\$3',
                 );
             mtime = DateTime.parse(timestamp);
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[data_sync] silent catch: $e');
+          }
         }
       }
 
@@ -389,7 +398,9 @@ class DataSync {
       await _restoreFromBackupFile(file, cfg, mode: mode);
       try {
         await file.delete();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[data_sync] silent catch: $e');
+      }
     } finally {
       client.close();
     }
@@ -425,7 +436,9 @@ class DataSync {
     if (!await dir.exists()) {
       try {
         await dir.create(recursive: true);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[data_sync] silent catch: $e');
+      }
     }
     if (!await dir.exists()) {
       dir = await Directory.systemTemp.createTemp('kelivo_tmp_');
@@ -748,7 +761,9 @@ class DataSync {
                       : (jsonDecode(newStr) as Map<String, dynamic>);
                   final merged = <String, dynamic>{...newMap, ...existingMap};
                   await prefs.restoreSingle(key, jsonEncode(merged));
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[data_sync] silent catch: $e');
+                }
               } else if (key == 'assistant_tag_collapsed_v1') {
                 // Merge collapse states; prefer existing on conflicts
                 try {
@@ -763,7 +778,9 @@ class DataSync {
                       : (jsonDecode(newStr) as Map<String, dynamic>);
                   final merged = <String, dynamic>{...newMap, ...existingMap};
                   await prefs.restoreSingle(key, jsonEncode(merged));
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[data_sync] silent catch: $e');
+                }
               } else if (key == 'provider_groups_v1') {
                 // Merge provider groups by id; keep existing order, append new groups at end (incoming order)
                 try {
@@ -799,7 +816,9 @@ class DataSync {
                     for (final id in existingOrder) groupById[id],
                   ].whereType<Map<String, dynamic>>().toList();
                   await prefs.restoreSingle(key, jsonEncode(merged));
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[data_sync] silent catch: $e');
+                }
               } else if (key == 'provider_group_map_v1') {
                 // Merge provider->group mapping; prefer existing on conflicts
                 try {
@@ -814,7 +833,9 @@ class DataSync {
                       : (jsonDecode(newStr) as Map<String, dynamic>);
                   final merged = <String, dynamic>{...newMap, ...existingMap};
                   await prefs.restoreSingle(key, jsonEncode(merged));
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[data_sync] silent catch: $e');
+                }
               } else if (key == 'provider_group_collapsed_v1') {
                 // Merge collapse states; prefer existing on conflicts
                 try {
@@ -829,7 +850,9 @@ class DataSync {
                       : (jsonDecode(newStr) as Map<String, dynamic>);
                   final merged = <String, dynamic>{...newMap, ...existingMap};
                   await prefs.restoreSingle(key, jsonEncode(merged));
-                } catch (_) {}
+                } catch (e) {
+                  debugPrint('[data_sync] silent catch: $e');
+                }
               } else if ((key == 'providers_order_v1' ||
                       key == 'search_services_v1') &&
                   existing.containsKey(key)) {
@@ -847,7 +870,9 @@ class DataSync {
             // Skip existing non-mergeable keys to preserve user preferences
           }
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[data_sync] silent catch: $e');
+      }
     }
 
     // Restore chats
@@ -901,7 +926,9 @@ class DataSync {
           for (final entry in toolEvents.entries) {
             try {
               await chatService.setToolEvents(entry.key, entry.value);
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[data_sync] silent catch: $e');
+            }
           }
           for (final entry in geminiThoughtSigs.entries) {
             try {
@@ -909,7 +936,9 @@ class DataSync {
                 entry.key,
                 entry.value,
               );
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[data_sync] silent catch: $e');
+            }
           }
         } else {
           // Merge mode: Add only non-existing conversations and messages
@@ -951,7 +980,9 @@ class DataSync {
             if (existing.isEmpty) {
               try {
                 await chatService.setToolEvents(entry.key, entry.value);
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('[data_sync] silent catch: $e');
+              }
             }
           }
           for (final entry in geminiThoughtSigs.entries) {
@@ -964,11 +995,15 @@ class DataSync {
                   entry.key,
                   entry.value,
                 );
-              } catch (_) {}
+              } catch (e) {
+                debugPrint('[data_sync] silent catch: $e');
+              }
             }
           }
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[data_sync] silent catch: $e');
+      }
     }
 
     // Restore files
@@ -982,7 +1017,9 @@ class DataSync {
           if (await dst.exists()) {
             try {
               await dst.delete(recursive: true);
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[data_sync] silent catch: $e');
+            }
           }
           await dst.create(recursive: true);
           for (final ent in uploadSrc.listSync(recursive: true)) {
@@ -1002,7 +1039,9 @@ class DataSync {
           if (await dst.exists()) {
             try {
               await dst.delete(recursive: true);
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[data_sync] silent catch: $e');
+            }
           }
           await dst.create(recursive: true);
           for (final ent in imagesSrc.listSync(recursive: true)) {
@@ -1022,7 +1061,9 @@ class DataSync {
           if (await dst.exists()) {
             try {
               await dst.delete(recursive: true);
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[data_sync] silent catch: $e');
+            }
           }
           await dst.create(recursive: true);
           for (final ent in avatarsSrc.listSync(recursive: true)) {
@@ -1097,7 +1138,9 @@ class DataSync {
 
     try {
       await extractDir.delete(recursive: true);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[data_sync] silent catch: $e');
+    }
   }
 }
 

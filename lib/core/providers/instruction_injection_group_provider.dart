@@ -39,7 +39,9 @@ class InstructionInjectionGroupProvider extends ChangeNotifier {
               (k, v) => MapEntry(k, (v is bool) ? v : (v.toString() == 'true')),
             ),
           );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_group_provider] silent catch: $e');
+      }
     }
     notifyListeners();
   }

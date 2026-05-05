@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 export '../models/model_types.dart';
 
 import 'dart:convert';
@@ -160,7 +161,9 @@ class GoogleProvider extends BaseProvider {
             headers['Authorization'] = 'Bearer $token';
             final proj = (cfg.projectId ?? '').trim();
             if (proj.isNotEmpty) headers['X-Goog-User-Project'] = proj;
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[model_provider] silent catch: $e');
+          }
         } else {
           final key = ProviderManager._effectiveApiKey(cfg);
           if (key.isNotEmpty) {
@@ -210,7 +213,9 @@ class GoogleProvider extends BaseProvider {
             }
           }
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[model_provider] silent catch: $e');
+      }
 
       // If this is Vertex AI, augment with known Anthropic models
       // Since Google listModels API often only returns Gemini models under publishers/google,
@@ -253,7 +258,9 @@ class ProviderManager {
         final sel = ApiKeyManager().selectForProvider(cfg);
         if (sel.key != null) return sel.key!.key;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[model_provider] silent catch: $e');
+    }
     return cfg.apiKey;
   }
 
@@ -361,7 +368,9 @@ class ProviderManager {
               ?.toString()
               .trim();
           if (raw != null && raw.isNotEmpty) upstreamId = raw;
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[model_provider] silent catch: $e');
+        }
 
         String url;
         final endpoint = useStream
@@ -436,7 +445,9 @@ class ProviderManager {
                     jsonStr,
                   );
               headers['Authorization'] = 'Bearer $token';
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[model_provider] silent catch: $e');
+            }
           } else if (effectiveKey.isNotEmpty) {
             headers['Authorization'] = 'Bearer $effectiveKey';
           }

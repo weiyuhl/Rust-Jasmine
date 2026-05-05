@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -101,14 +102,18 @@ class WorldBookStore {
         next[entry.key] = filtered;
       }
       if (removed) await _persistActiveIdsMap(next);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[world_book_store] silent catch: $e');
+    }
 
     try {
       final collapsed = await _loadCollapsedBooksMap();
       if (collapsed.remove(id) != null) {
         await _persistCollapsedBooksMap(collapsed);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[world_book_store] silent catch: $e');
+    }
   }
 
   static Future<void> clear() async {
@@ -245,7 +250,9 @@ class WorldBookStore {
     final prefs = await SharedPreferences.getInstance();
     try {
       await prefs.setString(_activeIdsByAssistantKey, jsonEncode(map));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[world_book_store] silent catch: $e');
+    }
   }
 
   static Future<void> _persistCollapsedBooksMap(Map<String, bool> map) async {
@@ -253,6 +260,8 @@ class WorldBookStore {
     final prefs = await SharedPreferences.getInstance();
     try {
       await prefs.setString(_collapsedBooksKey, jsonEncode(map));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[world_book_store] silent catch: $e');
+    }
   }
 }

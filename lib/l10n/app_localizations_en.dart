@@ -1868,34 +1868,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get displaySettingsPageEnableDollarLatexTitle =>
-      'Inline \$...\$ Rendering';
+      'Enable \$...\$ Rendering';
 
   @override
   String get displaySettingsPageEnableDollarLatexSubtitle =>
-      'Render inline math inside \$...\$';
+      'Render content between \$...\$ as inline math formulas';
 
   @override
-  String get displaySettingsPageEnableMathTitle => 'Math Formula Rendering';
+  String get displaySettingsPageEnableMathTitle => 'Enable Math Rendering';
 
   @override
   String get displaySettingsPageEnableMathSubtitle =>
-      'Render LaTeX math (inline and block)';
+      'Render LaTeX math formulas (inline and block)';
 
   @override
   String get displaySettingsPageEnableUserMarkdownTitle =>
-      'Render user messages with Markdown';
+      'User Message Markdown Rendering';
 
   @override
   String get displaySettingsPageEnableReasoningMarkdownTitle =>
-      'Render reasoning (thinking) with Markdown';
+      'Chain of Thought Markdown Rendering';
 
   @override
   String get displaySettingsPageEnableAssistantMarkdownTitle =>
-      'Render assistant messages with Markdown';
+      'Assistant Message Markdown Rendering';
 
   @override
   String get displaySettingsPageMobileCodeBlockWrapTitle =>
-      'Mobile Code Block Word Wrap';
+      'Mobile Code Block Auto Wrap';
 
   @override
   String get displaySettingsPageAutoCollapseCodeBlockTitle =>
@@ -1903,7 +1903,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get displaySettingsPageAutoCollapseCodeBlockLinesTitle =>
-      'Auto-collapse threshold';
+      'Auto-collapse Lines Threshold';
 
   @override
   String get displaySettingsPageAutoCollapseCodeBlockLinesUnit => 'lines';
@@ -3423,7 +3423,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Confirm before regenerating';
 
   @override
-  String chainOfThoughtExpandSteps(Object count) {
+  String chainOfThoughtExpandSteps(int count) {
     return 'Show $count more steps';
   }
 

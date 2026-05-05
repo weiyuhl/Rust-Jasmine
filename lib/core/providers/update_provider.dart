@@ -60,7 +60,9 @@ class UpdateInfo {
     if (releasedRaw != null && releasedRaw.isNotEmpty) {
       try {
         released = DateTime.parse(releasedRaw);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[update_provider] silent catch: $e');
+      }
     }
     return UpdateInfo(
       app: (json['app'] ?? '').toString(),

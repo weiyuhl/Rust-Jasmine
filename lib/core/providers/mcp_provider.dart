@@ -291,7 +291,9 @@ class McpProvider extends ChangeNotifier {
             )
             .toList();
         _servers = list;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[mcp_provider] silent catch: $e');
+      }
     }
     // Ensure built-in @kelivo/fetch is present by default
     _ensureBuiltinFetchServerPresent();
@@ -386,7 +388,9 @@ class McpProvider extends ChangeNotifier {
     for (final s in _servers) {
       try {
         await disconnect(s.id);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[mcp_provider] silent catch: $e');
+      }
     }
 
     // Replace and reset statuses
@@ -444,7 +448,9 @@ class McpProvider extends ChangeNotifier {
       await rust_mcp.validateMcpServerConfig(
         configJson: jsonEncode(cfg.toJson()),
       );
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[mcp_provider] silent catch: $e');
+    }
     _servers = [..._servers, cfg];
     _status[id] = McpStatus.idle;
     await _persist();
@@ -857,7 +863,9 @@ class McpProvider extends ChangeNotifier {
                 ty = ttype.map((e) => e.toString()).join('|');
               }
               defVal = v['default'];
-            } catch (_) {}
+            } catch (e) {
+              debugPrint('[mcp_provider] silent catch: $e');
+            }
             params.add(
               McpParamSpec(
                 name: key,
@@ -867,7 +875,9 @@ class McpProvider extends ChangeNotifier {
               ),
             );
           });
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[mcp_provider] silent catch: $e');
+        }
 
         merged.add(
           McpToolConfig(
@@ -957,7 +967,9 @@ class McpProvider extends ChangeNotifier {
           // debugPrint('[MCP/Call] invalid arguments; skipping reconnect');
           return null;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[mcp_provider] silent catch: $e');
+      }
 
       _status[serverId] = McpStatus.error;
       _errors[serverId] = e.toString();
@@ -1020,7 +1032,9 @@ class McpProvider extends ChangeNotifier {
         _cachedSystemPath = (result.stdout as String).trim();
         return _cachedSystemPath;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[mcp_provider] silent catch: $e');
+    }
     return null;
   }
 

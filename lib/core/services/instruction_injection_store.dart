@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -96,13 +97,17 @@ class InstructionInjectionStore {
       await prefs.setString(_activeIdKey, id);
       try {
         await prefs.setString(_activeIdsKey, jsonEncode(active));
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_store] silent catch: $e');
+      }
       try {
         await prefs.setString(
           _activeIdsByAssistantKey,
           jsonEncode(<String, List<String>>{_defaultAssistantKey: active}),
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_store] silent catch: $e');
+      }
     }
     return list;
   }
@@ -162,7 +167,9 @@ class InstructionInjectionStore {
       if (removed) {
         await _persistActiveIdsMap(next);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[instruction_injection_store] silent catch: $e');
+    }
   }
 
   static Future<void> clear() async {
@@ -284,7 +291,9 @@ class InstructionInjectionStore {
         if (legacy.isNotEmpty) {
           map[_defaultAssistantKey] = legacy;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_store] silent catch: $e');
+      }
     }
     _activeIdsByAssistantCache = map;
     return _cloneActiveIdsMap(map);
@@ -300,7 +309,9 @@ class InstructionInjectionStore {
             .map((e) => e.toString())
             .toList();
         return _cleanIds(list);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_store] silent catch: $e');
+      }
     }
     final legacy = prefs.getString(_activeIdKey);
     if (legacy != null && legacy.isNotEmpty) {
@@ -316,7 +327,9 @@ class InstructionInjectionStore {
     final prefs = await SharedPreferences.getInstance();
     try {
       await prefs.setString(_activeIdsByAssistantKey, jsonEncode(map));
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[instruction_injection_store] silent catch: $e');
+    }
     final defaultList = map[_defaultAssistantKey] ?? const <String>[];
     _activeIdCache = defaultList.isNotEmpty ? defaultList.first : null;
     if (defaultList.isEmpty) {
@@ -326,7 +339,9 @@ class InstructionInjectionStore {
       await prefs.setString(_activeIdKey, defaultList.first);
       try {
         await prefs.setString(_activeIdsKey, jsonEncode(defaultList));
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[instruction_injection_store] silent catch: $e');
+      }
     }
   }
 }

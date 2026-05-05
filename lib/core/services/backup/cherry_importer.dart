@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive.dart';
@@ -74,13 +75,17 @@ class CherryImporter {
       if (aStr.isNotEmpty) {
         assistantsSlice = jsonDecode(aStr) as Map<String, dynamic>;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
     try {
       final lStr = (persistObj['llm'] ?? '') as String;
       if (lStr.isNotEmpty) {
         llmSlice = jsonDecode(lStr) as Map<String, dynamic>;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
 
     final List<dynamic> cherryProviders =
         (llmSlice['providers'] as List?) ?? const <dynamic>[];
@@ -304,7 +309,9 @@ class CherryImporter {
         if (obj.containsKey('localStorage') && obj.containsKey('indexedDB')) {
           return obj;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
       return null;
     }
 
@@ -313,7 +320,9 @@ class CherryImporter {
       final content = await file.readAsString();
       final obj = tryParseBackupJson(content);
       if (obj != null) return obj;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
 
     // 2) Try ZIP: scan all file entries and pick the one that parses to expected JSON
     try {
@@ -331,7 +340,9 @@ class CherryImporter {
           // skip non-text entries
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
 
     // 3) Try GZIP (some .bak may be gzip-compressed JSON)
     try {
@@ -339,7 +350,9 @@ class CherryImporter {
       final content = utf8.decode(gunzipped, allowMalformed: true);
       final obj = tryParseBackupJson(content);
       if (obj != null) return obj;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
 
     throw Exception('Unable to read Cherry backup file');
   }
@@ -470,7 +483,9 @@ class CherryImporter {
       if (raw != null && raw.isNotEmpty) {
         current = jsonDecode(raw) as Map<String, dynamic>;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
 
     final merged = <String, dynamic>{}..addAll(current);
     for (final entry in imported.entries) {
@@ -580,7 +595,9 @@ class CherryImporter {
       if (raw != null && raw.isNotEmpty) {
         existing = jsonDecode(raw) as List<dynamic>;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[cherry_importer] silent catch: $e');
+    }
     final byId = <String, Map<String, dynamic>>{
       for (final e in existing)
         if (e is Map && e['id'] != null)
@@ -707,7 +724,9 @@ class CherryImporter {
         if (byBase.isNotEmpty) diskFilesIndexByBase = byBase;
         if (byRel.isNotEmpty) diskFilesIndexByRel = byRel;
         if (byId.isNotEmpty) diskFilesIndexById = byId;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
     }
 
     final result = <String, String>{};
@@ -743,7 +762,9 @@ class CherryImporter {
           result[id] = outPath;
           continue;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
 
       try {
         if (contentStr.isNotEmpty) {
@@ -751,7 +772,9 @@ class CherryImporter {
           result[id] = outPath;
           continue;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
 
       // Try from archive/disk using multiple strategies
       // 1) by normalized rel path from meta.path
@@ -793,7 +816,9 @@ class CherryImporter {
           }
           if (done) continue;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
 
       // 2) by filename candidates: name, origin_name, basename(path)
       try {
@@ -828,7 +853,9 @@ class CherryImporter {
           if (done) break;
         }
         if (done) continue;
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
 
       // 3) by id + ext
       try {
@@ -869,7 +896,9 @@ class CherryImporter {
           result[id] = outPath;
           continue;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[cherry_importer] silent catch: $e');
+      }
 
       // If neither available, we cannot materialize this file; skip (message will fall back to URL/none)
     }

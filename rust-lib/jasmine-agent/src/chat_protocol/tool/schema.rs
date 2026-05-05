@@ -68,11 +68,10 @@ pub fn to_responses_tools_format(tools: &[Value]) -> Vec<Value> {
             if tool.get("type").and_then(|v| v.as_str()) != Some("function") {
                 return tool.clone();
             }
-            if tool.get("function").and_then(|v| v.as_object()).is_none() {
-                return tool.clone();
-            }
-            let fn_val = tool["function"].clone();
-            let fn_obj = fn_val.as_object().unwrap();
+            let fn_obj = match tool.get("function").and_then(|v| v.as_object()) {
+                Some(obj) => obj,
+                None => return tool.clone(),
+            };
             let mut out = serde_json::Map::new();
             out.insert("type".into(), json!("function"));
             if let Some(name) = fn_obj.get("name") {

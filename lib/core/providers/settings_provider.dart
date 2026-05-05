@@ -536,7 +536,9 @@ class SettingsProvider extends ChangeNotifier {
             '[SettingsProvider] provider modelOverrides migration start',
             tag: 'Migration',
           );
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[settings_provider] silent catch: $e');
+        }
 
         var backupOk = true;
         if (!prefs.containsKey(_providerConfigsBackupKey)) {
@@ -584,7 +586,9 @@ class SettingsProvider extends ChangeNotifier {
               '[SettingsProvider] provider modelOverrides migration done (result=$result)',
               tag: 'Migration',
             );
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[settings_provider] silent catch: $e');
+          }
         }
       }
     } catch (e, st) {
@@ -593,7 +597,9 @@ class SettingsProvider extends ChangeNotifier {
           '[SettingsProvider] provider modelOverrides migration failed: $e\n$st',
           tag: 'Migration',
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
       assert(() {
         debugPrint(
           '[SettingsProvider] provider modelOverrides migration failed: $e',
@@ -971,7 +977,9 @@ class SettingsProvider extends ChangeNotifier {
               (e) => SearchServiceOptions.fromJson(e as Map<String, dynamic>),
             )
             .toList();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     final searchCommonStr = prefs.getString(_searchCommonKey);
     if (searchCommonStr != null && searchCommonStr.isNotEmpty) {
@@ -979,7 +987,9 @@ class SettingsProvider extends ChangeNotifier {
         _searchCommonOptions = SearchCommonOptions.fromJson(
           jsonDecode(searchCommonStr) as Map<String, dynamic>,
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     _searchServiceSelected = prefs.getInt(_searchSelectedKey) ?? 0;
     _searchEnabled = prefs.getBool(_searchEnabledKey) ?? false;
@@ -1031,7 +1041,9 @@ class SettingsProvider extends ChangeNotifier {
         _webDavConfig = WebDavConfig.fromJson(
           jsonDecode(webdavStr) as Map<String, dynamic>,
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     // s3 config
     final s3Str = prefs.getString(_s3ConfigKey);
@@ -1040,7 +1052,9 @@ class SettingsProvider extends ChangeNotifier {
         _s3Config = S3Config.fromJson(
           jsonDecode(s3Str) as Map<String, dynamic>,
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     if (_providerConfigs.isEmpty) {
       // Seed a couple of sensible defaults on first launch, but do not recreate
@@ -1071,7 +1085,9 @@ class SettingsProvider extends ChangeNotifier {
           _providerGroupCollapsedKey,
           jsonEncode(_providerGroupCollapsed),
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
 
     notifyListeners();
@@ -1977,7 +1993,9 @@ class SettingsProvider extends ChangeNotifier {
         // ignore: avoid_print
         // Defer import here is not possible; rely on main.dart sync. This is a no-op placeholder.
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[settings_provider] silent catch: $e');
+    }
   }
 
   void setDynamicColorSupported(bool v) {
@@ -2022,7 +2040,9 @@ class SettingsProvider extends ChangeNotifier {
     // Prefetch for offline
     try {
       await AvatarCache.getPath(u);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[settings_provider] silent catch: $e');
+    }
   }
 
   Future<void> setProviderAvatarFilePath(String key, String path) async {
@@ -2060,7 +2080,9 @@ class SettingsProvider extends ChangeNotifier {
               await oldFile.exists()) {
             await oldFile.delete();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[settings_provider] silent catch: $e');
+        }
       }
 
       await setProviderConfig(
@@ -2088,13 +2110,17 @@ class SettingsProvider extends ChangeNotifier {
             await f.exists()) {
           await f.delete();
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     // Best-effort: evict cached URL avatar
     if (old.avatarType == 'url' && (old.avatarValue ?? '').isNotEmpty) {
       try {
         await AvatarCache.evict(old.avatarValue!);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[settings_provider] silent catch: $e');
+      }
     }
     await setProviderConfig(
       key,

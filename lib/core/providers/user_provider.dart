@@ -43,7 +43,9 @@ class UserProvider extends ChangeNotifier {
         rawAvatar != _avatarValue) {
       try {
         await prefs.setString(_prefsAvatarValueKey, _avatarValue!);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[user_provider] silent catch: $e');
+      }
     }
     // Only notify if avatar exists; otherwise rely on name notify above
     if (_avatarType != null && _avatarValue != null) {
@@ -94,7 +96,9 @@ class UserProvider extends ChangeNotifier {
     // Prefetch to enable offline display later
     try {
       await AvatarCache.getPath(u);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[user_provider] silent catch: $e');
+    }
   }
 
   Future<void> setAvatarFilePath(String path) async {
@@ -131,7 +135,9 @@ class UserProvider extends ChangeNotifier {
               await old.exists()) {
             await old.delete();
           }
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[user_provider] silent catch: $e');
+        }
       }
 
       _avatarType = 'file';

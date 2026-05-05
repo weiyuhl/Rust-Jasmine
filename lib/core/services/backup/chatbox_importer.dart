@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -222,7 +223,9 @@ class ChatboxImporter {
       if (raw != null && raw.isNotEmpty) {
         current = jsonDecode(raw) as Map<String, dynamic>;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[chatbox_importer] silent catch: $e');
+    }
 
     final merged = <String, dynamic>{}..addAll(current);
     for (final entry in imported.entries) {
@@ -296,7 +299,9 @@ class ChatboxImporter {
             }
           }
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chatbox_importer] silent catch: $e');
+      }
     }
 
     // Prepare chat service for conversation restore.
@@ -662,19 +667,25 @@ class ChatboxImporter {
         if (rawTags != null && rawTags.isNotEmpty) {
           tags = jsonDecode(rawTags) as List<dynamic>;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chatbox_importer] silent catch: $e');
+      }
       try {
         final rawAssign = prefs.getString(_assignKey);
         if (rawAssign != null && rawAssign.isNotEmpty) {
           assignment = jsonDecode(rawAssign) as Map<String, dynamic>;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chatbox_importer] silent catch: $e');
+      }
       try {
         final rawCol = prefs.getString(_collapsedKey);
         if (rawCol != null && rawCol.isNotEmpty) {
           collapsed = jsonDecode(rawCol) as Map<String, dynamic>;
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[chatbox_importer] silent catch: $e');
+      }
     }
 
     final normalizedTags = <Map<String, dynamic>>[

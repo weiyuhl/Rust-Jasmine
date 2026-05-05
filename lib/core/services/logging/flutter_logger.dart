@@ -22,10 +22,14 @@ class FlutterLogger {
     if (!v) {
       try {
         await _sink?.flush();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[flutter_logger] silent catch: $e');
+      }
       try {
         await _sink?.close();
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[flutter_logger] silent catch: $e');
+      }
       _sink = null;
       _sinkDate = null;
     } else {
@@ -45,7 +49,9 @@ class FlutterLogger {
     FlutterError.onError = (FlutterErrorDetails details) {
       try {
         log(details.toString().trimRight(), tag: 'FlutterError');
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[flutter_logger] silent catch: $e');
+      }
 
       final original = _originalFlutterOnError;
       if (original != null) {
@@ -59,7 +65,9 @@ class FlutterLogger {
     ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
       try {
         log('$error\n$stack', tag: 'Uncaught');
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[flutter_logger] silent catch: $e');
+      }
 
       final original = _originalPlatformOnError;
       if (original != null) return original(error, stack);
@@ -86,10 +94,14 @@ class FlutterLogger {
 
     try {
       await _sink?.flush();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[flutter_logger] silent catch: $e');
+    }
     try {
       await _sink?.close();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[flutter_logger] silent catch: $e');
+    }
     _sink = null;
     _sinkDate = today;
 
@@ -120,7 +132,9 @@ class FlutterLogger {
           }
           await active.rename(rotated.path);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[flutter_logger] silent catch: $e');
+      }
     }
 
     _sink = active.openWrite(mode: FileMode.append);
@@ -148,10 +162,14 @@ class FlutterLogger {
       } catch (_) {
         try {
           await _sink?.flush();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[flutter_logger] silent catch: $e');
+        }
         try {
           await _sink?.close();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[flutter_logger] silent catch: $e');
+        }
         _sink = null;
         _sinkDate = null;
         if (!_writeErrorReported) {
@@ -160,7 +178,9 @@ class FlutterLogger {
             stderr.writeln(
               '[FlutterLogger] write failed; further write errors will be suppressed.',
             );
-          } catch (_) {}
+          } catch (e) {
+            debugPrint('[flutter_logger] silent catch: $e');
+          }
         }
       }
     });

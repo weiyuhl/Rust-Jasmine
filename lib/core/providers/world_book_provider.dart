@@ -89,7 +89,9 @@ class WorldBookProvider with ChangeNotifier {
         if (changed) {
           await WorldBookStore.setActiveIdsMap(next);
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[world_book_provider] silent catch: $e');
+      }
     }
     await WorldBookStore.update(book);
     await loadAll();

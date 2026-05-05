@@ -1104,7 +1104,9 @@
   "chainOfThoughtExpandSteps": "展开更多 {count} 步",
   "@chainOfThoughtExpandSteps": {
     "placeholders": {
-      "count": {}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "chainOfThoughtCollapse": "收起",
