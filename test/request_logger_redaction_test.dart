@@ -9,11 +9,25 @@ void main() {
       final headers = RequestLogger.redactHeaders({
         'Authorization': 'Bearer sk-secret',
         'x-api-key': 'sk-secret',
+        'X-API-Key': 'sk-secret',
+        'X-Api-Key': 'sk-secret',
+        'Api-Key': 'sk-secret',
+        'X-Goog-Api-Key': 'sk-secret',
+        'X-Auth-Token': 'token-secret',
+        'X-Client-Secret': 'client-secret',
+        'Set-Cookie': 'session=secret',
         'Content-Type': 'application/json',
       });
 
       expect(headers['Authorization'], RequestLogger.redactedValue);
       expect(headers['x-api-key'], RequestLogger.redactedValue);
+      expect(headers['X-API-Key'], RequestLogger.redactedValue);
+      expect(headers['X-Api-Key'], RequestLogger.redactedValue);
+      expect(headers['Api-Key'], RequestLogger.redactedValue);
+      expect(headers['X-Goog-Api-Key'], RequestLogger.redactedValue);
+      expect(headers['X-Auth-Token'], RequestLogger.redactedValue);
+      expect(headers['X-Client-Secret'], RequestLogger.redactedValue);
+      expect(headers['Set-Cookie'], RequestLogger.redactedValue);
       expect(headers['Content-Type'], 'application/json');
     });
 

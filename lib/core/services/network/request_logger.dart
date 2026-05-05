@@ -192,14 +192,11 @@ class RequestLogger {
 
   static bool _isSensitiveHeaderName(String name) {
     final normalized = _normalizeKey(name);
-    return normalized == 'authorization' ||
-        normalized == 'proxyauthorization' ||
-        normalized == 'xapikey' ||
-        normalized == 'apikey' ||
-        normalized == 'openaikey' ||
-        normalized == 'anthropickey' ||
-        normalized == 'cookie' ||
-        normalized == 'setcookie';
+    return normalized.contains('authorization') ||
+        normalized.contains('apikey') ||
+        normalized.contains('token') ||
+        normalized.contains('secret') ||
+        normalized.contains('cookie');
   }
 
   static String _normalizeKey(String key) =>
