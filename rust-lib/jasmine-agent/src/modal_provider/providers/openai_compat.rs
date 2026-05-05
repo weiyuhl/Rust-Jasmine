@@ -22,12 +22,9 @@ impl OpenAICompatProvider {
         let base = config.base_url_normalized();
 
         let url = format!("{}/models", base);
-        let req = ureq::get(&url);
-        let req = if !key.is_empty() {
-            req.set("Authorization", &format!("Bearer {}", key))
-        } else {
-            req
-        };
+        let req = ureq::get(&url)
+            .set("Authorization", &format!("Bearer {}", key));
+        let req = Self::apply_openrouter_headers(config, req);
 
         let resp = req
             .call()
