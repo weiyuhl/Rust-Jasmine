@@ -217,6 +217,44 @@ class ChatApiService {
     bool keepRemoteMarkdownText = true,
   }) async {
     if (raw.isEmpty) return const _ParsedTextAndImages('', <_ImageRef>[]);
+
+    if (allowRemoteImages && allowLocalImages && !keepRemoteMarkdownText) {
+      try {
+        final parsedJson = jsonDecode(rust_chat.chatParseTextAndImages(raw: raw));
+        final parsedText = (parsedJson['text'] ?? '').toString();
+        final imagesRaw = parsedJson['images'];
+        if (imagesRaw is List) {
+          final images = <_ImageRef>[];
+          for (final rawImage in imagesRaw) {
+            if (rawImage is! Map) continue;
+            final kind = (rawImage['kind'] ?? '').toString().toLowerCase();
+            final src = (rawImage['src'] ?? '').toString();
+            if (src.isEmpty) continue;
+            if (kind == 'url') {
+              final ok = await _isValidRemoteImageUrl(src);
+              if (!ok) throw Exception('Invalid remote image URL');
+              images.add(_ImageRef('url', src));
+            } else if (kind == 'path') {
+              try {
+                final fixed = SandboxPathResolver.fix(src);
+                final file = File(fixed);
+                if (!file.existsSync()) throw Exception('Missing local file');
+                images.add(_ImageRef('path', src));
+              } catch (_) {
+                throw Exception('Invalid local image path');
+              }
+            } else if (kind == 'data') {
+              images.add(_ImageRef('data', src));
+            }
+          }
+          return _ParsedTextAndImages(parsedText, images);
+        }
+      } catch (_) {
+        // Fall back to the manual Dart parser when Rust parsing is unavailable
+        // or validation requires original text preservation.
+      }
+    }
+
     final mdImg = RegExp(r'!\[[^\]]*\]\(([^)]+)\)');
     // Match custom inline image markers like: [image:/absolute/path.png]
     // Use a single backslash in a raw string to escape '[' and ']' in regex.

@@ -1,14 +1,28 @@
 part of '../chat_api_service.dart';
 
 Uri _openAICompatibleUrl(ProviderConfig config) {
-  // Delegated to Rust chat protocol
-  final url = rust_chat.chatBuildOpenaiUrl(
-    baseUrl: config.baseUrl,
-    chatPath: config.chatPath,
-    useResponseApi: config.useResponseApi ?? false,
-  );
+  String url;
+  try {
+    // Delegated to Rust chat protocol
+    url = rust_chat.chatBuildOpenaiUrl(
+      baseUrl: config.baseUrl,
+      chatPath: config.chatPath,
+      useResponseApi: config.useResponseApi ?? false,
+    );
+  } catch (_) {
+    final normalizedBase = config.baseUrl.trimRight().replaceAll(
+      RegExp(r'/$'),
+      '',
+    );
+    final chatPath = (config.chatPath?.trim().isNotEmpty == true)
+        ? config.chatPath!.trim()
+        : '/v1/chat/completions';
+    final normalizedPath = chatPath.startsWith('/') ? chatPath : '/$chatPath';
+    url = '$normalizedBase$normalizedPath';
+  }
   // DashScope path correction (Rust returns standard URL; DashScope needs override)
-  if (BuiltInToolsHelper.isDashScopeProvider(config) && config.useResponseApi == true) {
+  if (BuiltInToolsHelper.isDashScopeProvider(config) &&
+      config.useResponseApi == true) {
     final baseUri = Uri.parse(config.baseUrl);
     final normalizedPath = baseUri.path.replaceAll(RegExp(r'/$'), '');
     if (normalizedPath != '/api/v2/apps/protocols/compatible-mode/v1') {
@@ -151,7 +165,14 @@ String _openAIEffortForBudget(int? budget, String upstreamModelId) {
       baseEffort == 'high' && budget != null && budget >= 64000
       ? 'xhigh'
       : baseEffort;
-  return openAINormalizeReasoningEffort(requestedEffort, upstreamModelId);
+  try {
+    return rust_chat.chatNormalizeReasoningEffort(
+      effort: requestedEffort,
+      modelId: upstreamModelId,
+    );
+  } catch (_) {
+    return openAINormalizeReasoningEffort(requestedEffort, upstreamModelId);
+  }
 }
 
 String _effectiveOpenAIEffort(
@@ -543,6 +564,17 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
   final providerId = config.id.toLowerCase();
   final modelLower = upstreamModelId.toLowerCase();
   final bool isAzureOpenAI = host.contains('openai.azure.com');
+  final String vendorStr = () {
+    try {
+      return rust_chat.chatClassifyVendor(
+        providerId: config.id,
+        baseUrl: config.baseUrl,
+        modelId: upstreamModelId,
+      );
+    } catch (_) {
+      return '';
+    }
+  }();
   final bool isMimoHost = host.contains('xiaomimimo');
   final bool isMimoModel =
       modelLower.startsWith('mimo-') || modelLower.contains('/mimo-');
@@ -553,18 +585,19 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
     config,
     upstreamModelId,
   );
-  final bool needsReasoningEcho =
-      (host.contains('deepseek') ||
-          modelLower.contains('deepseek') ||
-          isMimo ||
-          _isKimiThinkingModel(upstreamModelId)) &&
-      isReasoning;
+  final bool needsReasoningEcho = vendorStr.isNotEmpty
+      ? rust_chat.chatNeedsReasoningEcho(vendorStr: vendorStr) && isReasoning
+      : ((host.contains('deepseek') ||
+                modelLower.contains('deepseek') ||
+                isMimo ||
+                _isKimiThinkingModel(upstreamModelId)) &&
+            isReasoning);
   // OpenRouter reasoning models require preserving `reasoning_details` across tool-calling turns.
   final bool preserveReasoningDetails =
       host.contains('openrouter.ai') && isReasoning;
-  final String completionTokensKey = (isAzureOpenAI || isMimo)
-      ? 'max_completion_tokens'
-      : 'max_tokens';
+  final String completionTokensKey = vendorStr.isNotEmpty
+      ? rust_chat.chatCompletionTokensKey(vendorStr: vendorStr)
+      : (isAzureOpenAI || isMimo ? 'max_completion_tokens' : 'max_tokens');
   void setMaxTokens(Map<String, dynamic> map) {
     if (maxTokens != null) map[completionTokensKey] = maxTokens;
   }
@@ -831,22 +864,43 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
         }
       }
     }
-    body = {
-      'model': upstreamModelId,
-      'input': input,
-      'stream': stream,
-      if (instructions.isNotEmpty) 'instructions': instructions,
-      if (temperature != null) 'temperature': temperature,
-      if (topP != null) 'top_p': topP,
-      if (maxTokens != null) 'max_output_tokens': maxTokens,
-      if (toolList.isNotEmpty) 'tools': _toResponsesToolsFormat(toolList),
-      if (toolList.isNotEmpty) 'tool_choice': 'auto',
-      if (isReasoning && effort != 'off')
-        'reasoning': {
-          'summary': 'auto',
-          if (effort != 'auto') 'effort': effort,
-        },
-    };
+    try {
+      body =
+          jsonDecode(
+                rust_chat.chatBuildOpenaiResponsesBody(
+                  modelId: upstreamModelId,
+                  inputJson: jsonEncode(input),
+                  instructions: instructions.isNotEmpty ? instructions : null,
+                  toolsJson: toolList.isNotEmpty
+                      ? jsonEncode(_toResponsesToolsFormat(toolList))
+                      : null,
+                  stream: stream,
+                  temperature: temperature,
+                  topP: topP,
+                  maxTokens: maxTokens,
+                  thinkingBudget: thinkingBudget,
+                  isReasoning: isReasoning,
+                ),
+              )
+              as Map<String, dynamic>;
+    } catch (_) {
+      body = {
+        'model': upstreamModelId,
+        'input': input,
+        'stream': stream,
+        if (instructions.isNotEmpty) 'instructions': instructions,
+        if (temperature != null) 'temperature': temperature,
+        if (topP != null) 'top_p': topP,
+        if (maxTokens != null) 'max_output_tokens': maxTokens,
+        if (toolList.isNotEmpty) 'tools': _toResponsesToolsFormat(toolList),
+        if (toolList.isNotEmpty) 'tool_choice': 'auto',
+        if (isReasoning && effort != 'off')
+          'reasoning': {
+            'summary': 'auto',
+            if (effort != 'auto') 'effort': effort,
+          },
+      };
+    }
     _applyCompatibleResponsesReasoning(
       body,
       config: config,
@@ -1032,18 +1086,39 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
           mm.add(outMsg);
         }
       }
-      body = {
-        'model': upstreamModelId,
-        'messages': mm,
-        'stream': stream,
-        if (temperature != null) 'temperature': temperature,
-        if (topP != null) 'top_p': topP,
-        if (isReasoning && effort != 'off' && effort != 'auto')
-          'reasoning_effort': effort,
-        if (tools != null && tools.isNotEmpty)
-          'tools': _cleanToolsForCompatibility(tools),
-        if (tools != null && tools.isNotEmpty) 'tool_choice': 'auto',
-      };
+      try {
+        body =
+            jsonDecode(
+                  rust_chat.chatBuildOpenaiChatBody(
+                    modelId: upstreamModelId,
+                    messagesJson: jsonEncode(mm),
+                    toolsJson: (tools != null && tools.isNotEmpty)
+                        ? jsonEncode(_cleanToolsForCompatibility(tools))
+                        : null,
+                    stream: stream,
+                    temperature: temperature,
+                    topP: topP,
+                    maxTokens: null,
+                    thinkingBudget: thinkingBudget,
+                    isReasoning: isReasoning,
+                    extraBodyJson: null,
+                  ),
+                )
+                as Map<String, dynamic>;
+      } catch (_) {
+        body = {
+          'model': upstreamModelId,
+          'messages': mm,
+          'stream': stream,
+          if (temperature != null) 'temperature': temperature,
+          if (topP != null) 'top_p': topP,
+          if (isReasoning && effort != 'off' && effort != 'auto')
+            'reasoning_effort': effort,
+          if (tools != null && tools.isNotEmpty)
+            'tools': _cleanToolsForCompatibility(tools),
+          if (tools != null && tools.isNotEmpty) 'tool_choice': 'auto',
+        };
+      }
     }
     setMaxTokens(body);
   }
@@ -1526,7 +1601,7 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
       if (line.isEmpty || !line.startsWith('data:')) continue;
 
       final data = line.substring(5).trimLeft();
-      if (data == '[DONE]') {
+      if (data == '[DONE]' || rust_chat.chatIsSseDone(line: line)) {
         // If model streamed tool_calls but didn't include finish_reason on prior chunks,
         // execute tool flow now and start follow-up request.
         if (onToolCall != null && toolAcc.isNotEmpty) {

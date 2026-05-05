@@ -18,7 +18,13 @@ Stream<ChatStreamChunk> _sendClaudeStream(
 }) async* {
   final upstreamModelId = _apiModelId(config, modelId);
   // Endpoint (delegated to Rust)
-  final url = Uri.parse(rust_chat.chatBuildClaudeUrl(baseUrl: config.baseUrl));
+  late Uri url;
+  try {
+    url = Uri.parse(rust_chat.chatBuildClaudeUrl(baseUrl: config.baseUrl));
+  } catch (_) {
+    final normalizedBase = config.baseUrl.trimRight().replaceAll(RegExp(r'/$'), '');
+    url = Uri.parse('$normalizedBase/messages');
+  }
 
   final isReasoning = _effectiveModelInfo(
     config,
@@ -151,24 +157,28 @@ Stream<ChatStreamChunk> _sendClaudeStream(
   }
   flushPendingToolResults();
 
-  // Map OpenAI-style tools to Anthropic custom tools (client tools)
+  // Map OpenAI-style tools to Anthropic custom tools (delegated to Rust)
   List<Map<String, dynamic>>? anthropicTools;
   if (tools != null && tools.isNotEmpty) {
-    anthropicTools = [];
-    for (final t in tools) {
-      final fn = (t['function'] as Map<String, dynamic>?);
-      if (fn == null) continue;
-      final name = (fn['name'] ?? '').toString();
-      if (name.isEmpty) continue;
-      final desc = (fn['description'] ?? '').toString();
-      final params =
-          (fn['parameters'] as Map?)?.cast<String, dynamic>() ??
-          <String, dynamic>{'type': 'object'};
-      anthropicTools.add({
-        'name': name,
-        if (desc.isNotEmpty) 'description': desc,
-        'input_schema': params,
-      });
+    try {
+      final result = jsonDecode(
+        rust_chat.chatToClaudeToolsFormat(toolsJson: jsonEncode(tools)),
+      ) as List;
+      anthropicTools = result.map((e) => e as Map<String, dynamic>).toList();
+    } catch (_) {
+      anthropicTools = [];
+      for (final t in tools) {
+        final fn = (t['function'] as Map<String, dynamic>?);
+        if (fn == null) continue;
+        final name = (fn['name'] ?? '').toString();
+        if (name.isEmpty) continue;
+        anthropicTools.add({
+          'name': name,
+          if ((fn['description'] ?? '').toString().isNotEmpty)
+            'description': fn['description'],
+          'input_schema': fn['parameters'] ?? <String, dynamic>{'type': 'object'},
+        });
+      }
     }
   }
 
@@ -264,22 +274,43 @@ Stream<ChatStreamChunk> _sendClaudeStream(
         : null;
 
     // Prepare request body per round
-    final body = <String, dynamic>{
-      'model': upstreamModelId,
-      'max_tokens': maxTokens ?? 64000,
-      'messages': convo,
-      'stream': stream,
-      if (systemPrompt.isNotEmpty) 'system': systemPrompt,
-      if (!omitSamplingParams &&
-          !_isClaudeReasoningEnabled(thinkingBudget) &&
-          temperature != null)
-        'temperature': temperature,
-      if (compatibleTopP != null) 'top_p': compatibleTopP,
-      if (allTools.isNotEmpty) 'tools': allTools,
-      if (allTools.isNotEmpty) 'tool_choice': {'type': 'auto'},
-      if (thinking != null) 'thinking': thinking,
-      if (outputConfig != null) 'output_config': outputConfig,
-    };
+    Map<String, dynamic> body;
+    try {
+      body =
+          jsonDecode(
+                rust_chat.chatBuildClaudeBody(
+                  modelId: upstreamModelId,
+                  messagesJson: jsonEncode(convo),
+                  systemPrompt: systemPrompt.isNotEmpty ? systemPrompt : null,
+                  toolsJson: allTools.isNotEmpty ? jsonEncode(allTools) : null,
+                  stream: stream,
+                  temperature: temperature,
+                  topP: topP,
+                  maxTokens: maxTokens,
+                  thinkingBudget: thinkingBudget,
+                  isReasoning: isReasoning,
+                  extraBodyJson: null,
+                ),
+              )
+              as Map<String, dynamic>;
+    } catch (_) {
+      body = <String, dynamic>{
+        'model': upstreamModelId,
+        'max_tokens': maxTokens ?? 64000,
+        'messages': convo,
+        'stream': stream,
+        if (systemPrompt.isNotEmpty) 'system': systemPrompt,
+        if (!omitSamplingParams &&
+            !_isClaudeReasoningEnabled(thinkingBudget) &&
+            temperature != null)
+          'temperature': temperature,
+        if (compatibleTopP != null) 'top_p': compatibleTopP,
+        if (allTools.isNotEmpty) 'tools': allTools,
+        if (allTools.isNotEmpty) 'tool_choice': {'type': 'auto'},
+        if (thinking != null) 'thinking': thinking,
+        if (outputConfig != null) 'output_config': outputConfig,
+      };
+    }
     final extraClaude = _customBody(config, modelId);
     if (extraClaude.isNotEmpty) {
       body.addAll(extraClaude);
