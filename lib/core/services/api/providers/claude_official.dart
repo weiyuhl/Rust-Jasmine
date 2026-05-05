@@ -518,7 +518,24 @@ Stream<ChatStreamChunk> _sendClaudeStream(
         final data = (sseResult != null) ? sseResult : line.substring(5).trimLeft();
         try {
           final obj = jsonDecode(data);
-          final type = obj['type'];
+          // Try Rust Claude event parser for type classification
+          String type;
+          try {
+            final rustEvent = jsonDecode(rust_chat.chatParseClaudeEvent(jsonStr: data));
+            type = switch (rustEvent as Map<String, dynamic>) {
+              {'ContentBlockStart': var _} => 'content_block_start',
+              {'ContentBlockDelta': var _} => 'content_block_delta',
+              {'ContentBlockStop': var _} => 'content_block_stop',
+              {'MessageDelta': var _} => 'message_delta',
+              {'MessageStart': var _} => 'message_start',
+              {'MessageStop': var _} => 'message_stop',
+              {'Ping': var _} => 'ping',
+              {'Error': var _} => 'error',
+              _ => (obj['type'] ?? '').toString(),
+            };
+          } catch (_) {
+            type = (obj['type'] ?? '').toString();
+          }
 
           if (type == 'content_block_start') {
             final cb = obj['content_block'];
