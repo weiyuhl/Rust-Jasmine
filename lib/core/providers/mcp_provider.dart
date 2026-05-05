@@ -778,11 +778,39 @@ class McpProvider extends ChangeNotifier {
   }
 
   Future<void> refreshTools(String id) async {
-    final client = _clients[id];
-    if (client == null) return;
     try {
-      // debugPrint('[MCP/Tools] listTools() ...');
-      final tools = await client.listTools();
+      List<dynamic> toolsJson = [];
+      final server = getById(id);
+      // Try Rust MCP client for SSE/HTTP transports
+      if (server != null &&
+          server.transport != McpTransportType.stdio &&
+          server.transport != McpTransportType.inmemory) {
+        try {
+          final headersJson = server.headers.isNotEmpty
+              ? jsonEncode(server.headers)
+              : null;
+          final transport =
+              server.transport == McpTransportType.sse ? 'sse' : 'http';
+          final result = rust_client.mcpListTools(
+            url: server.url,
+            headersJson: headersJson,
+            transport: transport,
+            timeoutMs: BigInt.from(_requestTimeout.inMilliseconds),
+          );
+          toolsJson = jsonDecode(result) as List<dynamic>;
+        } catch (_) {
+          // Fall through to mcp_client
+          final client = _clients[id];
+          if (client == null) return;
+          final tools = await client.listTools();
+          toolsJson = tools.map((t) => t.toJson()).toList();
+        }
+      } else {
+        final client = _clients[id];
+        if (client == null) return;
+        final tools = await client.listTools();
+        toolsJson = tools.map((t) => t.toJson()).toList();
+      }
       // debugPrint('[MCP/Tools] listTools() returned ${tools.length} tools');
       // Preserve enabled state from existing config
       final idx = _servers.indexWhere((e) => e.id == id);
@@ -791,13 +819,18 @@ class McpProvider extends ChangeNotifier {
       final existingMap = {for (final t in existing) t.name: t};
 
       List<McpToolConfig> merged = [];
-      for (final t in tools) {
-        final prior = existingMap[t.name];
+      for (final t in toolsJson) {
+        if (t is! Map) continue;
+        final toolMap = t.cast<String, dynamic>();
+        final toolName = (toolMap['name'] ?? '').toString();
+        final toolDesc = (toolMap['description'] ?? '').toString();
+        final prior = existingMap[toolName];
         // Extract params from inputSchema if present
         final params = <McpParamSpec>[];
         Map<String, dynamic>? schemaJson;
         try {
-          final js = t.inputSchema;
+          final js = (toolMap['inputSchema'] as Map?)?.cast<String, dynamic>() ??
+              const <String, dynamic>{};
           schemaJson = js;
           final props =
               (js['properties'] as Map?)?.cast<String, dynamic>() ??
@@ -832,8 +865,8 @@ class McpProvider extends ChangeNotifier {
         merged.add(
           McpToolConfig(
             enabled: prior?.enabled ?? true,
-            name: t.name,
-            description: t.description,
+            name: toolName,
+            description: toolDesc,
             params: params,
             schema: schemaJson,
             needsApproval: prior?.needsApproval ?? false,
