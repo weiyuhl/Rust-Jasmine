@@ -20,7 +20,7 @@ use crate::chat_protocol::agent_loop::{self};
 /// * `max_tokens` - Max completion tokens
 /// * `use_response_api` - Use OpenAI Responses API
 /// * `on_event_json` - Callback that receives AgentEvent JSON
-#[flutter_rust_bridge::frb(sync)]
+#[flutter_rust_bridge::frb]
 pub fn run_openai_agent_loop(
     base_url: String,
     api_key: String,
