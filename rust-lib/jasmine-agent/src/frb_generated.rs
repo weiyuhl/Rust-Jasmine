@@ -38,7 +38,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1476575372;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1841053012;
 
 // Section: executor
 
@@ -1261,6 +1261,80 @@ fn wire__crate__api__chat_protocol_api__chat_to_claude_tools_format_impl(
         },
     )
 }
+fn wire__crate__api__agent_loop_api__continue_claude_agent_loop_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "continue_claude_agent_loop",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_state_json = <String>::sse_decode(&mut deserializer);
+            let api_tool_results_json = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::api::agent_loop_api::continue_claude_agent_loop(
+                        api_state_json,
+                        api_tool_results_json,
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__agent_loop_api__continue_openai_agent_loop_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "continue_openai_agent_loop",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_state_json = <String>::sse_decode(&mut deserializer);
+            let api_tool_results_json = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::api::agent_loop_api::continue_openai_agent_loop(
+                        api_state_json,
+                        api_tool_results_json,
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__mcp_api__create_default_mcp_config_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -2131,16 +2205,17 @@ fn wire__crate__api__mcp_api__parse_mcp_import_json_impl(
         },
     )
 }
-fn wire__crate__api__agent_loop_api__run_claude_agent_loop_impl(
+fn wire__crate__api__agent_loop_api__start_claude_agent_loop_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "run_claude_agent_loop",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            debug_name: "start_claude_agent_loop",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -2164,35 +2239,38 @@ fn wire__crate__api__agent_loop_api__run_claude_agent_loop_impl(
             let api_temperature = <Option<f64>>::sse_decode(&mut deserializer);
             let api_max_tokens = <Option<i32>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, String>((move || {
-                let output_ok = crate::api::agent_loop_api::run_claude_agent_loop(
-                    api_base_url,
-                    api_api_key,
-                    api_model_id,
-                    api_messages_json,
-                    api_system_prompt,
-                    api_tools_json,
-                    api_stream,
-                    api_is_reasoning,
-                    api_thinking_budget,
-                    api_temperature,
-                    api_max_tokens,
-                )?;
-                Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::api::agent_loop_api::start_claude_agent_loop(
+                        api_base_url,
+                        api_api_key,
+                        api_model_id,
+                        api_messages_json,
+                        api_system_prompt,
+                        api_tools_json,
+                        api_stream,
+                        api_is_reasoning,
+                        api_thinking_budget,
+                        api_temperature,
+                        api_max_tokens,
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
         },
     )
 }
-fn wire__crate__api__agent_loop_api__run_openai_agent_loop_impl(
+fn wire__crate__api__agent_loop_api__start_openai_agent_loop_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "run_openai_agent_loop",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            debug_name: "start_openai_agent_loop",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -2216,22 +2294,24 @@ fn wire__crate__api__agent_loop_api__run_openai_agent_loop_impl(
             let api_max_tokens = <Option<i32>>::sse_decode(&mut deserializer);
             let api_use_response_api = <bool>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, String>((move || {
-                let output_ok = crate::api::agent_loop_api::run_openai_agent_loop(
-                    api_base_url,
-                    api_api_key,
-                    api_model_id,
-                    api_messages_json,
-                    api_tools_json,
-                    api_stream,
-                    api_is_reasoning,
-                    api_thinking_budget,
-                    api_temperature,
-                    api_max_tokens,
-                    api_use_response_api,
-                )?;
-                Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::api::agent_loop_api::start_openai_agent_loop(
+                        api_base_url,
+                        api_api_key,
+                        api_model_id,
+                        api_messages_json,
+                        api_tools_json,
+                        api_stream,
+                        api_is_reasoning,
+                        api_thinking_budget,
+                        api_temperature,
+                        api_max_tokens,
+                        api_use_response_api,
+                    )?;
+                    Ok(output_ok)
+                })())
+            }
         },
     )
 }
@@ -2508,34 +2588,46 @@ fn pde_ffi_dispatcher_primary_impl(
             rust_vec_len,
             data_len,
         ),
-        35 => wire__crate__api__mcp_api__create_default_mcp_config_impl(
+        35 => wire__crate__api__agent_loop_api__continue_claude_agent_loop_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        39 => {
+        36 => wire__crate__api__agent_loop_api__continue_openai_agent_loop_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        37 => wire__crate__api__mcp_api__create_default_mcp_config_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        41 => {
             wire__crate__api__modal_provider_api__init_app_impl(port, ptr, rust_vec_len, data_len)
         }
-        49 => wire__crate__api__modal_provider_api__modal_provider_classify_provider_kind_impl(
+        51 => wire__crate__api__modal_provider_api__modal_provider_classify_provider_kind_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        50 => wire__crate__api__modal_provider_api__modal_provider_create_default_config_impl(
+        52 => wire__crate__api__modal_provider_api__modal_provider_create_default_config_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        51 => wire__crate__api__modal_provider_api__modal_provider_default_base_url_impl(
+        53 => wire__crate__api__modal_provider_api__modal_provider_default_base_url_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        52 => {
+        54 => {
             wire__crate__api__modal_provider_api__modal_provider_get_provider_default_headers_impl(
                 port,
                 ptr,
@@ -2543,37 +2635,49 @@ fn pde_ffi_dispatcher_primary_impl(
                 data_len,
             )
         }
-        53 => wire__crate__api__modal_provider_api__modal_provider_list_models_impl(
+        55 => wire__crate__api__modal_provider_api__modal_provider_list_models_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        54 => wire__crate__api__modal_provider_api__modal_provider_resolve_api_model_id_impl(
+        56 => wire__crate__api__modal_provider_api__modal_provider_resolve_api_model_id_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        55 => wire__crate__api__modal_provider_api__modal_provider_test_connection_impl(
+        57 => wire__crate__api__modal_provider_api__modal_provider_test_connection_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        56 => wire__crate__api__modal_provider_api__modal_provider_validate_provider_config_impl(
+        58 => wire__crate__api__modal_provider_api__modal_provider_validate_provider_config_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        62 => wire__crate__api__mcp_api__summarize_server_tools_impl(
+        62 => wire__crate__api__agent_loop_api__start_claude_agent_loop_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        64 => wire__crate__api__mcp_api__validate_mcp_server_config_impl(
+        63 => wire__crate__api__agent_loop_api__start_openai_agent_loop_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        64 => wire__crate__api__mcp_api__summarize_server_tools_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        66 => wire__crate__api__mcp_api__validate_mcp_server_config_impl(
             port,
             ptr,
             rust_vec_len,
@@ -2707,40 +2811,30 @@ fn pde_ffi_dispatcher_sync_impl(
             rust_vec_len,
             data_len,
         ),
-        36 => wire__crate__api__mcp_api__default_mcp_version_impl(ptr, rust_vec_len, data_len),
-        37 => {
+        38 => wire__crate__api__mcp_api__default_mcp_version_impl(ptr, rust_vec_len, data_len),
+        39 => {
             wire__crate__api__mcp_api__export_mcp_servers_ui_json_impl(ptr, rust_vec_len, data_len)
         }
-        38 => wire__crate__api__mcp_api__get_mcp_method_names_impl(ptr, rust_vec_len, data_len),
-        40 => wire__crate__api__mcp_api__is_mcp_version_supported_impl(ptr, rust_vec_len, data_len),
-        41 => wire__crate__api__mcp_api__json_rpc_error_details_impl(ptr, rust_vec_len, data_len),
-        42 => wire__crate__api__mcp_api__log_level_name_impl(ptr, rust_vec_len, data_len),
-        43 => wire__crate__api__mcp_client_api__mcp_build_transport_config_impl(
+        40 => wire__crate__api__mcp_api__get_mcp_method_names_impl(ptr, rust_vec_len, data_len),
+        42 => wire__crate__api__mcp_api__is_mcp_version_supported_impl(ptr, rust_vec_len, data_len),
+        43 => wire__crate__api__mcp_api__json_rpc_error_details_impl(ptr, rust_vec_len, data_len),
+        44 => wire__crate__api__mcp_api__log_level_name_impl(ptr, rust_vec_len, data_len),
+        45 => wire__crate__api__mcp_client_api__mcp_build_transport_config_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        44 => wire__crate__api__mcp_client_api__mcp_call_tool_impl(ptr, rust_vec_len, data_len),
-        45 => wire__crate__api__mcp_client_api__mcp_connect_impl(ptr, rust_vec_len, data_len),
-        46 => wire__crate__api__mcp_client_api__mcp_list_prompts_impl(ptr, rust_vec_len, data_len),
-        47 => {
+        46 => wire__crate__api__mcp_client_api__mcp_call_tool_impl(ptr, rust_vec_len, data_len),
+        47 => wire__crate__api__mcp_client_api__mcp_connect_impl(ptr, rust_vec_len, data_len),
+        48 => wire__crate__api__mcp_client_api__mcp_list_prompts_impl(ptr, rust_vec_len, data_len),
+        49 => {
             wire__crate__api__mcp_client_api__mcp_list_resources_impl(ptr, rust_vec_len, data_len)
         }
-        48 => wire__crate__api__mcp_client_api__mcp_list_tools_impl(ptr, rust_vec_len, data_len),
-        57 => wire__crate__api__mcp_api__negotiate_mcp_version_impl(ptr, rust_vec_len, data_len),
-        58 => wire__crate__api__mcp_api__normalize_tool_arguments_impl(ptr, rust_vec_len, data_len),
-        59 => wire__crate__api__mcp_api__parse_mcp_import_json_impl(ptr, rust_vec_len, data_len),
-        60 => wire__crate__api__agent_loop_api__run_claude_agent_loop_impl(
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        61 => wire__crate__api__agent_loop_api__run_openai_agent_loop_impl(
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        63 => wire__crate__api__mcp_api__supported_mcp_versions_impl(ptr, rust_vec_len, data_len),
+        50 => wire__crate__api__mcp_client_api__mcp_list_tools_impl(ptr, rust_vec_len, data_len),
+        59 => wire__crate__api__mcp_api__negotiate_mcp_version_impl(ptr, rust_vec_len, data_len),
+        60 => wire__crate__api__mcp_api__normalize_tool_arguments_impl(ptr, rust_vec_len, data_len),
+        61 => wire__crate__api__mcp_api__parse_mcp_import_json_impl(ptr, rust_vec_len, data_len),
+        65 => wire__crate__api__mcp_api__supported_mcp_versions_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

@@ -6,25 +6,11 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-/// Run the OpenAI-compatible agent loop.
-///
-/// Executes the full agent cycle: send request → parse SSE → yield events →
-/// execute tool calls → loop until done.
-///
-/// Returns a JSON string of the final accumulated content.
-///
-/// # Arguments
-/// * `config_json` - Provider config JSON
-/// * `messages_json` - Messages array JSON
-/// * `tools_json` - Optional tool definitions JSON
-/// * `stream` - Whether to use SSE streaming
-/// * `is_reasoning` - Whether model supports reasoning
-/// * `thinking_budget` - Reasoning token budget
-/// * `temperature` - Sampling temperature
-/// * `max_tokens` - Max completion tokens
-/// * `use_response_api` - Use OpenAI Responses API
-/// * `on_event_json` - Callback that receives AgentEvent JSON
-String runOpenaiAgentLoop({
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `AgentLoopResult`, `AgentLoopState`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
+
+/// Start the OpenAI-compatible agent loop. Returns first round result.
+Future<String> startOpenaiAgentLoop({
   required String baseUrl,
   required String apiKey,
   required String modelId,
@@ -36,7 +22,7 @@ String runOpenaiAgentLoop({
   double? temperature,
   int? maxTokens,
   required bool useResponseApi,
-}) => RustLib.instance.api.crateApiAgentLoopApiRunOpenaiAgentLoop(
+}) => RustLib.instance.api.crateApiAgentLoopApiStartOpenaiAgentLoop(
   baseUrl: baseUrl,
   apiKey: apiKey,
   modelId: modelId,
@@ -50,13 +36,18 @@ String runOpenaiAgentLoop({
   useResponseApi: useResponseApi,
 );
 
-/// Run the Claude agent loop.
-///
-/// Executes the full agent cycle for Claude API: send request → parse SSE → yield events →
-/// execute tool calls → loop until done.
-///
-/// Returns a JSON string of the final accumulated content.
-String runClaudeAgentLoop({
+/// Continue the agent loop after tool execution.
+/// Receives tool results and runs the next round.
+Future<String> continueOpenaiAgentLoop({
+  required String stateJson,
+  required String toolResultsJson,
+}) => RustLib.instance.api.crateApiAgentLoopApiContinueOpenaiAgentLoop(
+  stateJson: stateJson,
+  toolResultsJson: toolResultsJson,
+);
+
+/// Start the Claude agent loop. Returns first round result.
+Future<String> startClaudeAgentLoop({
   required String baseUrl,
   required String apiKey,
   required String modelId,
@@ -68,7 +59,7 @@ String runClaudeAgentLoop({
   int? thinkingBudget,
   double? temperature,
   int? maxTokens,
-}) => RustLib.instance.api.crateApiAgentLoopApiRunClaudeAgentLoop(
+}) => RustLib.instance.api.crateApiAgentLoopApiStartClaudeAgentLoop(
   baseUrl: baseUrl,
   apiKey: apiKey,
   modelId: modelId,
@@ -80,4 +71,13 @@ String runClaudeAgentLoop({
   thinkingBudget: thinkingBudget,
   temperature: temperature,
   maxTokens: maxTokens,
+);
+
+/// Continue the Claude agent loop after tool execution.
+Future<String> continueClaudeAgentLoop({
+  required String stateJson,
+  required String toolResultsJson,
+}) => RustLib.instance.api.crateApiAgentLoopApiContinueClaudeAgentLoop(
+  stateJson: stateJson,
+  toolResultsJson: toolResultsJson,
 );

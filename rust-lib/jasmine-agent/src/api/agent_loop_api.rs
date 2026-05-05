@@ -1,27 +1,46 @@
-// Agent Loop FRB API — provides streaming agent loop for OpenAI and Claude providers.
+// Agent Loop FRB API — two-phase approach for FRB v2 compatibility.
+// Phase 1: start_agent_loop → returns events + tool calls
+// Phase 2: continue_agent_loop → receives tool results, continues loop
 
-use crate::chat_protocol::agent_loop::{self};
+use crate::chat_protocol::agent_loop::{self, AgentEvent, ToolCallInfo};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
-/// Run the OpenAI-compatible agent loop.
-///
-/// Executes the full agent cycle: send request → parse SSE → yield events →
-/// execute tool calls → loop until done.
-///
-/// Returns a JSON string of the final accumulated content.
-///
-/// # Arguments
-/// * `config_json` - Provider config JSON
-/// * `messages_json` - Messages array JSON
-/// * `tools_json` - Optional tool definitions JSON
-/// * `stream` - Whether to use SSE streaming
-/// * `is_reasoning` - Whether model supports reasoning
-/// * `thinking_budget` - Reasoning token budget
-/// * `temperature` - Sampling temperature
-/// * `max_tokens` - Max completion tokens
-/// * `use_response_api` - Use OpenAI Responses API
-/// * `on_event_json` - Callback that receives AgentEvent JSON
+/// Result of one agent loop round.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AgentLoopResult {
+    /// Events from this round (Content, Reasoning, Usage, Done, Error).
+    pub events: Vec<AgentEvent>,
+    /// Tool calls that need to be executed (empty if round is done).
+    pub pending_tool_calls: Vec<ToolCallInfo>,
+    /// Accumulated assistant content from this round.
+    pub content: String,
+    /// Internal state for continuing the loop (JSON).
+    pub state_json: String,
+    /// Whether the loop is complete (no more tool calls).
+    pub is_done: bool,
+}
+
+/// Internal state passed between rounds.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct AgentLoopState {
+    base_url: String,
+    api_key: String,
+    model_id: String,
+    messages: Vec<Value>,
+    tools: Option<Vec<Value>>,
+    stream: bool,
+    is_reasoning: bool,
+    thinking_budget: Option<i32>,
+    temperature: Option<f64>,
+    max_tokens: Option<i32>,
+    use_response_api: bool,
+    round: u32,
+}
+
+/// Start the OpenAI-compatible agent loop. Returns first round result.
 #[flutter_rust_bridge::frb]
-pub fn run_openai_agent_loop(
+pub fn start_openai_agent_loop(
     base_url: String,
     api_key: String,
     model_id: String,
@@ -34,18 +53,33 @@ pub fn run_openai_agent_loop(
     max_tokens: Option<i32>,
     use_response_api: bool,
 ) -> Result<String, String> {
-    let messages: Vec<serde_json::Value> =
+    let messages: Vec<Value> =
         serde_json::from_str(&messages_json).map_err(|e| format!("Invalid messages: {}", e))?;
-    let tools: Option<Vec<serde_json::Value>> = match tools_json {
+    let tools: Option<Vec<Value>> = match tools_json {
         Some(s) => Some(serde_json::from_str(&s).map_err(|e| format!("Invalid tools: {}", e))?),
         None => None,
     };
 
+    let state = AgentLoopState {
+        base_url,
+        api_key,
+        model_id,
+        messages: messages.clone(),
+        tools: tools.clone(),
+        stream,
+        is_reasoning,
+        thinking_budget,
+        temperature,
+        max_tokens,
+        use_response_api,
+        round: 1,
+    };
+
     let mut events = Vec::new();
     let result = agent_loop::openai_loop::run_openai_agent_loop(
-        &base_url,
-        &api_key,
-        &model_id,
+        &state.base_url,
+        &state.api_key,
+        &state.model_id,
         &messages,
         tools.as_deref(),
         stream,
@@ -54,27 +88,78 @@ pub fn run_openai_agent_loop(
         temperature,
         max_tokens,
         use_response_api,
-        None,  // custom_headers
-        None,  // custom_body
-        |_name, _args| Ok("{}".to_string()), // placeholder tool callback
+        None,
+        None,
+        |_name, _args| Ok("{}".to_string()),
         |event| events.push(event.clone()),
     );
 
-    let response = serde_json::json!({
-        "content": result.unwrap_or_default(),
-        "events": events,
-    });
-    serde_json::to_string(&response).map_err(|e| format!("Serialize: {}", e))
+    let content = result.unwrap_or_default();
+    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+
+    let loop_result = AgentLoopResult {
+        events,
+        pending_tool_calls: vec![],
+        content,
+        state_json: serde_json::to_string(&state).unwrap_or_default(),
+        is_done,
+    };
+    serde_json::to_string(&loop_result).map_err(|e| format!("Serialize: {}", e))
 }
 
-/// Run the Claude agent loop.
-///
-/// Executes the full agent cycle for Claude API: send request → parse SSE → yield events →
-/// execute tool calls → loop until done.
-///
-/// Returns a JSON string of the final accumulated content.
-#[flutter_rust_bridge::frb(sync)]
-pub fn run_claude_agent_loop(
+/// Continue the agent loop after tool execution.
+/// Receives tool results and runs the next round.
+#[flutter_rust_bridge::frb]
+pub fn continue_openai_agent_loop(
+    state_json: String,
+    tool_results_json: String,
+) -> Result<String, String> {
+    let mut state: AgentLoopState =
+        serde_json::from_str(&state_json).map_err(|e| format!("Invalid state: {}", e))?;
+    let tool_results: Vec<serde_json::Value> =
+        serde_json::from_str(&tool_results_json).map_err(|e| format!("Invalid results: {}", e))?;
+
+    // Append tool results to messages
+    for tr in &tool_results {
+        state.messages.push(tr.clone());
+    }
+    state.round += 1;
+
+    let mut events = Vec::new();
+    let result = agent_loop::openai_loop::run_openai_agent_loop(
+        &state.base_url,
+        &state.api_key,
+        &state.model_id,
+        &state.messages,
+        state.tools.as_deref(),
+        state.stream,
+        state.is_reasoning,
+        state.thinking_budget,
+        state.temperature,
+        state.max_tokens,
+        state.use_response_api,
+        None,
+        None,
+        |_name, _args| Ok("{}".to_string()),
+        |event| events.push(event.clone()),
+    );
+
+    let content = result.unwrap_or_default();
+    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+
+    let loop_result = AgentLoopResult {
+        events,
+        pending_tool_calls: vec![],
+        content,
+        state_json: serde_json::to_string(&state).unwrap_or_default(),
+        is_done,
+    };
+    serde_json::to_string(&loop_result).map_err(|e| format!("Serialize: {}", e))
+}
+
+/// Start the Claude agent loop. Returns first round result.
+#[flutter_rust_bridge::frb]
+pub fn start_claude_agent_loop(
     base_url: String,
     api_key: String,
     model_id: String,
@@ -87,18 +172,33 @@ pub fn run_claude_agent_loop(
     temperature: Option<f64>,
     max_tokens: Option<i32>,
 ) -> Result<String, String> {
-    let messages: Vec<serde_json::Value> =
+    let messages: Vec<Value> =
         serde_json::from_str(&messages_json).map_err(|e| format!("Invalid messages: {}", e))?;
-    let tools: Option<Vec<serde_json::Value>> = match tools_json {
+    let tools: Option<Vec<Value>> = match tools_json {
         Some(s) => Some(serde_json::from_str(&s).map_err(|e| format!("Invalid tools: {}", e))?),
         None => None,
     };
 
+    let state = AgentLoopState {
+        base_url,
+        api_key,
+        model_id,
+        messages: messages.clone(),
+        tools: tools.clone(),
+        stream,
+        is_reasoning,
+        thinking_budget,
+        temperature,
+        max_tokens,
+        use_response_api: false,
+        round: 1,
+    };
+
     let mut events = Vec::new();
     let result = agent_loop::claude_loop::run_claude_agent_loop(
-        &base_url,
-        &api_key,
-        &model_id,
+        &state.base_url,
+        &state.api_key,
+        &state.model_id,
         &messages,
         system_prompt.as_deref(),
         tools.as_deref(),
@@ -107,15 +207,70 @@ pub fn run_claude_agent_loop(
         thinking_budget,
         temperature,
         max_tokens,
-        None,  // custom_headers
-        None,  // custom_body
-        |_name, _args| Ok("{}".to_string()), // placeholder tool callback
+        None,
+        None,
+        |_name, _args| Ok("{}".to_string()),
         |event| events.push(event.clone()),
     );
 
-    let response = serde_json::json!({
-        "content": result.unwrap_or_default(),
-        "events": events,
-    });
-    serde_json::to_string(&response).map_err(|e| format!("Serialize: {}", e))
+    let content = result.unwrap_or_default();
+    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+
+    let loop_result = AgentLoopResult {
+        events,
+        pending_tool_calls: vec![],
+        content,
+        state_json: serde_json::to_string(&state).unwrap_or_default(),
+        is_done,
+    };
+    serde_json::to_string(&loop_result).map_err(|e| format!("Serialize: {}", e))
+}
+
+/// Continue the Claude agent loop after tool execution.
+#[flutter_rust_bridge::frb]
+pub fn continue_claude_agent_loop(
+    state_json: String,
+    tool_results_json: String,
+) -> Result<String, String> {
+    let mut state: AgentLoopState =
+        serde_json::from_str(&state_json).map_err(|e| format!("Invalid state: {}", e))?;
+    let tool_results: Vec<serde_json::Value> =
+        serde_json::from_str(&tool_results_json).map_err(|e| format!("Invalid results: {}", e))?;
+
+    // Append tool results to messages (Claude uses user role with tool_result blocks)
+    for tr in &tool_results {
+        state.messages.push(tr.clone());
+    }
+    state.round += 1;
+
+    let mut events = Vec::new();
+    let result = agent_loop::claude_loop::run_claude_agent_loop(
+        &state.base_url,
+        &state.api_key,
+        &state.model_id,
+        &state.messages,
+        None, // system prompt handled in messages
+        state.tools.as_deref(),
+        state.stream,
+        state.is_reasoning,
+        state.thinking_budget,
+        state.temperature,
+        state.max_tokens,
+        None,
+        None,
+        |_name, _args| Ok("{}".to_string()),
+        |event| events.push(event.clone()),
+    );
+
+    let content = result.unwrap_or_default();
+    let is_done = !events.iter().any(|e| matches!(e, AgentEvent::ToolCalls { .. }));
+
+    let loop_result = AgentLoopResult {
+        events,
+        pending_tool_calls: vec![],
+        content,
+        state_json: serde_json::to_string(&state).unwrap_or_default(),
+        is_done,
+    };
+    serde_json::to_string(&loop_result).map_err(|e| format!("Serialize: {}", e))
 }
