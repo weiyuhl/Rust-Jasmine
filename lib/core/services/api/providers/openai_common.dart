@@ -2801,29 +2801,73 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
           final choices = json['choices'];
           if (choices != null && choices.isNotEmpty) {
             final c0 = choices[0];
-            finishReason = c0['finish_reason'] as String?;
-            // if (finishReason != null) {
-            //   print('[ChatApi] Received finishReason from choices: $finishReason');
-            // }
-
-            // Some providers may include both delta and message.content in SSE chunks.
-            // Prioritize delta, then fallback to message.content; merge if both present.
             final message = c0['message'];
             final delta = c0['delta'];
 
+            // Try Rust chunk parser first (fast path for OpenAI-compatible providers)
+            Map<String, dynamic>? rustDelta;
+            try {
+              final parsed = jsonDecode(rust_chat.chatParseOpenaiChunk(jsonStr: data));
+              rustDelta = parsed is Map<String, dynamic> ? parsed : null;
+              finishReason = rustDelta?['finish_reason'] as String?;
+            } catch (_) {
+              finishReason = c0['finish_reason'] as String?;
+            }
+
             // 1) Parse delta first
-            if (delta != null) {
-              // Streaming format: choices[0].delta.content
+            if (rustDelta != null) {
+              final rc = (rustDelta['reasoning_content'] as String?);
+              if (rc != null && rc.isNotEmpty) {
+                reasoning = rc;
+                content += (rustDelta['content'] ?? '').toString();
+                approxCompletionChars += content.length;
+                if (needsReasoningEcho) reasoningBuffer += rc;
+              } else {
+                final dc = (rustDelta['content'] ?? '').toString();
+                if (dc.isNotEmpty) {
+                  content += dc;
+                  approxCompletionChars += dc.length;
+                }
+              }
+              if (preserveReasoningDetails) {
+                final rd = rustDelta['reasoning_details'];
+                if (rd is List && rd.isNotEmpty) reasoningDetailsBuffer = rd;
+              }
+              if (wantsImageOutput) {
+                final imgs = rustDelta['images'];
+                if (imgs is List && imgs.isNotEmpty) {
+                  final buf = StringBuffer();
+                  for (final it in imgs) {
+                    if (it is! Map) continue;
+                    dynamic iu = it['image_url'];
+                    String? url;
+                    if (iu is String) { url = iu; }
+                    else if (iu is Map) { final u2 = iu['url']; if (u2 is String) url = u2; }
+                    if (url != null && url.isNotEmpty) buf.write('\n\n![image]($url)');
+                  }
+                  if (buf.isNotEmpty) content = content + buf.toString();
+                }
+              }
+              final tcs = rustDelta['tool_call_deltas'];
+              if (tcs is List) {
+                for (final t in tcs) {
+                  if (t is! Map) continue;
+                  final idx = (t['index'] as int?) ?? 0;
+                  final entry = toolAcc.putIfAbsent(idx, () => {'id': '', 'name': '', 'args': ''});
+                  if (t['id'] != null) entry['id'] = t['id'].toString();
+                  if (t['name'] != null) entry['name'] = t['name'].toString();
+                  if (t['args_fragment'] != null) entry['args'] = (entry['args'] ?? '') + t['args_fragment'].toString();
+                }
+              }
+            } else if (delta != null) {
+              // Fallback: manual Dart delta parsing
               final dc = delta['content'];
               final deltaContent = _extractOpenAICompatibleDeltaText(delta);
               if (deltaContent.isNotEmpty) {
                 content += deltaContent;
                 approxCompletionChars += deltaContent.length;
               }
-
-              // reasoning_content handling (unchanged)
-              final rc =
-                  (delta['reasoning_content'] ?? delta['reasoning']) as String?;
+              final rc = (delta['reasoning_content'] ?? delta['reasoning']) as String?;
               if (rc != null && rc.isNotEmpty) {
                 reasoning = rc;
                 if (needsReasoningEcho) reasoningBuffer += rc;
@@ -2832,48 +2876,29 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 final rd = delta['reasoning_details'];
                 if (rd is List && rd.isNotEmpty) reasoningDetailsBuffer = rd;
               }
-
-              // images handling from delta (unchanged)
               if (wantsImageOutput) {
                 final List<dynamic> imageItems = <dynamic>[];
                 final imgs = delta['images'];
                 if (imgs is List) imageItems.addAll(imgs);
                 if (dc is List) {
                   for (final it in dc) {
-                    if (it is Map &&
-                        (it['type'] == 'image_url' || it['type'] == 'image')) {
-                      imageItems.add(it);
-                    }
+                    if (it is Map && (it['type'] == 'image_url' || it['type'] == 'image')) imageItems.add(it);
                   }
                 }
                 final singleImage = delta['image_url'];
-                if (singleImage is Map || singleImage is String) {
-                  imageItems.add({
-                    'type': 'image_url',
-                    'image_url': singleImage,
-                  });
-                }
+                if (singleImage is Map || singleImage is String) imageItems.add({'type': 'image_url', 'image_url': singleImage});
                 if (imageItems.isNotEmpty) {
                   final buf = StringBuffer();
                   for (final it in imageItems) {
                     if (it is! Map) continue;
-                    dynamic iu = it['image_url'];
-                    String? url;
-                    if (iu is String) {
-                      url = iu;
-                    } else if (iu is Map) {
-                      final u2 = iu['url'];
-                      if (u2 is String) url = u2;
-                    }
-                    if (url != null && url.isNotEmpty) {
-                      buf.write('\n\n![image]($url)');
-                    }
+                    dynamic iu = it['image_url']; String? url;
+                    if (iu is String) { url = iu; }
+                    else if (iu is Map) { final u2 = iu['url']; if (u2 is String) url = u2; }
+                    if (url != null && url.isNotEmpty) buf.write('\n\n![image]($url)');
                   }
                   if (buf.isNotEmpty) content = content + buf.toString();
                 }
               }
-
-              // tool_calls handling from delta (unchanged)
               final tcs = delta['tool_calls'] as List?;
               if (tcs != null) {
                 for (final t in tcs) {
@@ -2882,15 +2907,10 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   final func = t['function'] as Map<String, dynamic>?;
                   final name = func?['name'] as String?;
                   final argsDelta = func?['arguments'] as String?;
-                  final entry = toolAcc.putIfAbsent(
-                    idx,
-                    () => {'id': '', 'name': '', 'args': ''},
-                  );
+                  final entry = toolAcc.putIfAbsent(idx, () => {'id': '', 'name': '', 'args': ''});
                   if (id != null) entry['id'] = id;
                   if (name != null && name.isNotEmpty) entry['name'] = name;
-                  if (argsDelta != null && argsDelta.isNotEmpty) {
-                    entry['args'] = (entry['args'] ?? '') + argsDelta;
-                  }
+                  if (argsDelta != null && argsDelta.isNotEmpty) entry['args'] = (entry['args'] ?? '') + argsDelta;
                 }
               }
             }
