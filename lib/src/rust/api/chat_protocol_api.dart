@@ -6,5 +6,198 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-String chatProtocolGreet({required String name}) =>
-    RustLib.instance.api.crateApiChatProtocolApiChatProtocolGreet(name: name);
+String chatBuildOpenaiUrl({
+  required String baseUrl,
+  String? chatPath,
+  required bool useResponseApi,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatBuildOpenaiUrl(
+  baseUrl: baseUrl,
+  chatPath: chatPath,
+  useResponseApi: useResponseApi,
+);
+
+String chatBuildOpenaiChatBody({
+  required String modelId,
+  required String messagesJson,
+  String? toolsJson,
+  required bool stream,
+  double? temperature,
+  double? topP,
+  int? maxTokens,
+  int? thinkingBudget,
+  required bool isReasoning,
+  String? extraBodyJson,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatBuildOpenaiChatBody(
+  modelId: modelId,
+  messagesJson: messagesJson,
+  toolsJson: toolsJson,
+  stream: stream,
+  temperature: temperature,
+  topP: topP,
+  maxTokens: maxTokens,
+  thinkingBudget: thinkingBudget,
+  isReasoning: isReasoning,
+  extraBodyJson: extraBodyJson,
+);
+
+String chatBuildOpenaiResponsesBody({
+  required String modelId,
+  required String inputJson,
+  String? instructions,
+  String? toolsJson,
+  required bool stream,
+  double? temperature,
+  double? topP,
+  int? maxTokens,
+  int? thinkingBudget,
+  required bool isReasoning,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatBuildOpenaiResponsesBody(
+  modelId: modelId,
+  inputJson: inputJson,
+  instructions: instructions,
+  toolsJson: toolsJson,
+  stream: stream,
+  temperature: temperature,
+  topP: topP,
+  maxTokens: maxTokens,
+  thinkingBudget: thinkingBudget,
+  isReasoning: isReasoning,
+);
+
+String chatBuildImagesBody({
+  required String modelId,
+  required String prompt,
+  int? n,
+  String? size,
+  String? quality,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatBuildImagesBody(
+  modelId: modelId,
+  prompt: prompt,
+  n: n,
+  size: size,
+  quality: quality,
+);
+
+String chatBuildClaudeUrl({required String baseUrl}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatBuildClaudeUrl(baseUrl: baseUrl);
+
+String chatBuildClaudeBody({
+  required String modelId,
+  required String messagesJson,
+  String? systemPrompt,
+  String? toolsJson,
+  required bool stream,
+  double? temperature,
+  double? topP,
+  int? maxTokens,
+  int? thinkingBudget,
+  required bool isReasoning,
+  String? extraBodyJson,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatBuildClaudeBody(
+  modelId: modelId,
+  messagesJson: messagesJson,
+  systemPrompt: systemPrompt,
+  toolsJson: toolsJson,
+  stream: stream,
+  temperature: temperature,
+  topP: topP,
+  maxTokens: maxTokens,
+  thinkingBudget: thinkingBudget,
+  isReasoning: isReasoning,
+  extraBodyJson: extraBodyJson,
+);
+
+String? chatParseSseLine({required String line}) =>
+    RustLib.instance.api.crateApiChatProtocolApiChatParseSseLine(line: line);
+
+bool chatIsSseDone({required String line}) =>
+    RustLib.instance.api.crateApiChatProtocolApiChatIsSseDone(line: line);
+
+String chatParseOpenaiChunk({required String jsonStr}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatParseOpenaiChunk(jsonStr: jsonStr);
+
+String chatParseClaudeEvent({required String jsonStr}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatParseClaudeEvent(jsonStr: jsonStr);
+
+String chatAggregateToolCall({
+  required int index,
+  String? id,
+  String? name,
+  String? argsFragment,
+  String? aggregatorJson,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatAggregateToolCall(
+  index: index,
+  id: id,
+  name: name,
+  argsFragment: argsFragment,
+  aggregatorJson: aggregatorJson,
+);
+
+String chatFinalizeToolCalls({required String aggregatorJson}) =>
+    RustLib.instance.api.crateApiChatProtocolApiChatFinalizeToolCalls(
+      aggregatorJson: aggregatorJson,
+    );
+
+String chatCopyMessage({required String msgJson}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatCopyMessage(msgJson: msgJson);
+
+String chatParseTextAndImages({required String raw}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatParseTextAndImages(raw: raw);
+
+String chatSanitizeUnicode({required String text}) =>
+    RustLib.instance.api.crateApiChatProtocolApiChatSanitizeUnicode(text: text);
+
+String chatClassifyVendor({
+  required String providerId,
+  required String baseUrl,
+  required String modelId,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatClassifyVendor(
+  providerId: providerId,
+  baseUrl: baseUrl,
+  modelId: modelId,
+);
+
+String chatCompletionTokensKey({required String vendorStr}) => RustLib
+    .instance
+    .api
+    .crateApiChatProtocolApiChatCompletionTokensKey(vendorStr: vendorStr);
+
+bool chatNeedsReasoningEcho({required String vendorStr}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatNeedsReasoningEcho(vendorStr: vendorStr);
+
+String chatNormalizeReasoningEffort({
+  required String effort,
+  required String modelId,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatNormalizeReasoningEffort(
+  effort: effort,
+  modelId: modelId,
+);
+
+String chatSanitizeGpt5Body({
+  required String bodyJson,
+  required String modelId,
+  required String effort,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatSanitizeGpt5Body(
+  bodyJson: bodyJson,
+  modelId: modelId,
+  effort: effort,
+);
+
+bool chatIsKimiThinkingModel({required String modelId}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatIsKimiThinkingModel(modelId: modelId);
+
+String chatCleanToolSchema({required String toolJson}) => RustLib.instance.api
+    .crateApiChatProtocolApiChatCleanToolSchema(toolJson: toolJson);
+
+String chatToClaudeToolsFormat({required String toolsJson}) => RustLib
+    .instance
+    .api
+    .crateApiChatProtocolApiChatToClaudeToolsFormat(toolsJson: toolsJson);
+
+bool chatIsBuiltinSearchSupported({
+  required String modelId,
+  required String providerType,
+}) => RustLib.instance.api.crateApiChatProtocolApiChatIsBuiltinSearchSupported(
+  modelId: modelId,
+  providerType: providerType,
+);

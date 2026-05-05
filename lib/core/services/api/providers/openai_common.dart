@@ -1,23 +1,24 @@
 part of '../chat_api_service.dart';
 
 Uri _openAICompatibleUrl(ProviderConfig config) {
-  final rawBase = config.baseUrl.endsWith('/')
-      ? config.baseUrl.substring(0, config.baseUrl.length - 1)
-      : config.baseUrl;
-  final baseUri = Uri.parse(rawBase);
-  if (config.useResponseApi == true) {
+  // Delegated to Rust chat protocol
+  final url = rust_chat.chatBuildOpenaiUrl(
+    baseUrl: config.baseUrl,
+    chatPath: config.chatPath,
+    useResponseApi: config.useResponseApi ?? false,
+  );
+  // DashScope path correction (Rust returns standard URL; DashScope needs override)
+  if (BuiltInToolsHelper.isDashScopeProvider(config) && config.useResponseApi == true) {
+    final baseUri = Uri.parse(config.baseUrl);
     final normalizedPath = baseUri.path.replaceAll(RegExp(r'/$'), '');
-    if (BuiltInToolsHelper.isDashScopeProvider(config) &&
-        normalizedPath != '/api/v2/apps/protocols/compatible-mode/v1') {
+    if (normalizedPath != '/api/v2/apps/protocols/compatible-mode/v1') {
       return Uri.parse(
         '${baseUri.scheme}://${baseUri.authority}'
         '/api/v2/apps/protocols/compatible-mode/v1/responses',
       );
     }
-    return Uri.parse('$rawBase/responses');
   }
-  final path = config.chatPath ?? '/chat/completions';
-  return Uri.parse('$rawBase$path');
+  return Uri.parse(url);
 }
 
 void _applyCompatibleBuiltInSearch(
@@ -189,14 +190,29 @@ void _sanitizeOpenAIGpt5SamplingParams(
   String upstreamModelId, {
   required String fallbackEffort,
 }) {
-  // Must run on the final request body (after override merges), otherwise
-  // we may keep/drop sampling params based on stale effort assumptions.
   if (!body.containsKey('temperature') &&
       !body.containsKey('top_p') &&
       !body.containsKey('logprobs')) {
     return;
   }
   final effort = _effectiveOpenAIEffort(body, fallbackEffort: fallbackEffort);
+  try {
+    final resultJson = rust_chat.chatSanitizeGpt5Body(
+      bodyJson: jsonEncode(body),
+      modelId: upstreamModelId,
+      effort: effort,
+    );
+    final result = jsonDecode(resultJson) as Map<String, dynamic>;
+    body.clear();
+    body.addAll(result);
+  } catch (_) {
+    // Fall through to manual logic below
+  }
+  if (!body.containsKey('temperature') &&
+      !body.containsKey('top_p') &&
+      !body.containsKey('logprobs')) {
+    return;
+  }
   final allowed = _allowsSamplingParamsForOpenAIModel(
     upstreamModelId,
     effort: effort,

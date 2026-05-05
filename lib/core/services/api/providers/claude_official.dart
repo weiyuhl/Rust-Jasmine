@@ -17,11 +17,8 @@ Stream<ChatStreamChunk> _sendClaudeStream(
   bool stream = true,
 }) async* {
   final upstreamModelId = _apiModelId(config, modelId);
-  // Endpoint and headers (constant across rounds)
-  final base = config.baseUrl.endsWith('/')
-      ? config.baseUrl.substring(0, config.baseUrl.length - 1)
-      : config.baseUrl;
-  final url = Uri.parse('$base/messages');
+  // Endpoint (delegated to Rust)
+  final url = Uri.parse(rust_chat.chatBuildClaudeUrl(baseUrl: config.baseUrl));
 
   final isReasoning = _effectiveModelInfo(
     config,

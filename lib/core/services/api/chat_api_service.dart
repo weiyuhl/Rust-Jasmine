@@ -23,6 +23,7 @@ import '../model_override_resolver.dart';
 import '../model_override_payload_parser.dart';
 import 'provider_request_headers.dart';
 import '../../utils/multimodal_input_utils.dart';
+import '../../../../src/rust/api/chat_protocol_api.dart' as rust_chat;
 
 part 'chat_api_service_shims.dart';
 part 'providers/openai_common.dart';
@@ -954,7 +955,12 @@ class ChatApiService {
       final m = messages[i];
       final content = m['content'];
       if (content is String) {
-        final cleaned = UnicodeSanitizer.sanitize(content);
+        String cleaned;
+        try {
+          cleaned = rust_chat.chatSanitizeUnicode(text: content);
+        } catch (_) {
+          cleaned = UnicodeSanitizer.sanitize(content);
+        }
         if (cleaned != content) {
           out ??= <Map<String, dynamic>>[
             for (int j = 0; j < i; j++) Map<String, dynamic>.from(messages[j]),

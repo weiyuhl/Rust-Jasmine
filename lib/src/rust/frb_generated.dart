@@ -68,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => 1573385971;
+  int get rustContentHash => -1877764436;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -128,7 +128,127 @@ abstract class RustLibApi extends BaseApi {
     required String uri,
   });
 
-  String crateApiChatProtocolApiChatProtocolGreet({required String name});
+  String crateApiChatProtocolApiChatAggregateToolCall({
+    required int index,
+    String? id,
+    String? name,
+    String? argsFragment,
+    String? aggregatorJson,
+  });
+
+  String crateApiChatProtocolApiChatBuildClaudeBody({
+    required String modelId,
+    required String messagesJson,
+    String? systemPrompt,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+    String? extraBodyJson,
+  });
+
+  String crateApiChatProtocolApiChatBuildClaudeUrl({required String baseUrl});
+
+  String crateApiChatProtocolApiChatBuildImagesBody({
+    required String modelId,
+    required String prompt,
+    int? n,
+    String? size,
+    String? quality,
+  });
+
+  String crateApiChatProtocolApiChatBuildOpenaiChatBody({
+    required String modelId,
+    required String messagesJson,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+    String? extraBodyJson,
+  });
+
+  String crateApiChatProtocolApiChatBuildOpenaiResponsesBody({
+    required String modelId,
+    required String inputJson,
+    String? instructions,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+  });
+
+  String crateApiChatProtocolApiChatBuildOpenaiUrl({
+    required String baseUrl,
+    String? chatPath,
+    required bool useResponseApi,
+  });
+
+  String crateApiChatProtocolApiChatClassifyVendor({
+    required String providerId,
+    required String baseUrl,
+    required String modelId,
+  });
+
+  String crateApiChatProtocolApiChatCleanToolSchema({required String toolJson});
+
+  String crateApiChatProtocolApiChatCompletionTokensKey({
+    required String vendorStr,
+  });
+
+  String crateApiChatProtocolApiChatCopyMessage({required String msgJson});
+
+  String crateApiChatProtocolApiChatFinalizeToolCalls({
+    required String aggregatorJson,
+  });
+
+  bool crateApiChatProtocolApiChatIsBuiltinSearchSupported({
+    required String modelId,
+    required String providerType,
+  });
+
+  bool crateApiChatProtocolApiChatIsKimiThinkingModel({
+    required String modelId,
+  });
+
+  bool crateApiChatProtocolApiChatIsSseDone({required String line});
+
+  bool crateApiChatProtocolApiChatNeedsReasoningEcho({
+    required String vendorStr,
+  });
+
+  String crateApiChatProtocolApiChatNormalizeReasoningEffort({
+    required String effort,
+    required String modelId,
+  });
+
+  String crateApiChatProtocolApiChatParseClaudeEvent({required String jsonStr});
+
+  String crateApiChatProtocolApiChatParseOpenaiChunk({required String jsonStr});
+
+  String? crateApiChatProtocolApiChatParseSseLine({required String line});
+
+  String crateApiChatProtocolApiChatParseTextAndImages({required String raw});
+
+  String crateApiChatProtocolApiChatSanitizeGpt5Body({
+    required String bodyJson,
+    required String modelId,
+    required String effort,
+  });
+
+  String crateApiChatProtocolApiChatSanitizeUnicode({required String text});
+
+  String crateApiChatProtocolApiChatToClaudeToolsFormat({
+    required String toolsJson,
+  });
 
   Future<String> crateApiMcpApiCreateDefaultMcpConfig({
     required String name,
@@ -576,27 +696,820 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  String crateApiChatProtocolApiChatProtocolGreet({required String name}) {
+  String crateApiChatProtocolApiChatAggregateToolCall({
+    required int index,
+    String? id,
+    String? name,
+    String? argsFragment,
+    String? aggregatorJson,
+  }) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          sse_encode_String(name, serializer);
+          sse_encode_i_32(index, serializer);
+          sse_encode_opt_String(id, serializer);
+          sse_encode_opt_String(name, serializer);
+          sse_encode_opt_String(argsFragment, serializer);
+          sse_encode_opt_String(aggregatorJson, serializer);
           return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
-          decodeErrorData: null,
+          decodeErrorData: sse_decode_String,
         ),
-        constMeta: kCrateApiChatProtocolApiChatProtocolGreetConstMeta,
-        argValues: [name],
+        constMeta: kCrateApiChatProtocolApiChatAggregateToolCallConstMeta,
+        argValues: [index, id, name, argsFragment, aggregatorJson],
         apiImpl: this,
       ),
     );
   }
 
-  TaskConstMeta get kCrateApiChatProtocolApiChatProtocolGreetConstMeta =>
-      const TaskConstMeta(debugName: "chat_protocol_greet", argNames: ["name"]);
+  TaskConstMeta get kCrateApiChatProtocolApiChatAggregateToolCallConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_aggregate_tool_call",
+        argNames: ["index", "id", "name", "argsFragment", "aggregatorJson"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildClaudeBody({
+    required String modelId,
+    required String messagesJson,
+    String? systemPrompt,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+    String? extraBodyJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(messagesJson, serializer);
+          sse_encode_opt_String(systemPrompt, serializer);
+          sse_encode_opt_String(toolsJson, serializer);
+          sse_encode_bool(stream, serializer);
+          sse_encode_opt_box_autoadd_f_64(temperature, serializer);
+          sse_encode_opt_box_autoadd_f_64(topP, serializer);
+          sse_encode_opt_box_autoadd_i_32(maxTokens, serializer);
+          sse_encode_opt_box_autoadd_i_32(thinkingBudget, serializer);
+          sse_encode_bool(isReasoning, serializer);
+          sse_encode_opt_String(extraBodyJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatBuildClaudeBodyConstMeta,
+        argValues: [
+          modelId,
+          messagesJson,
+          systemPrompt,
+          toolsJson,
+          stream,
+          temperature,
+          topP,
+          maxTokens,
+          thinkingBudget,
+          isReasoning,
+          extraBodyJson,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatBuildClaudeBodyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_claude_body",
+        argNames: [
+          "modelId",
+          "messagesJson",
+          "systemPrompt",
+          "toolsJson",
+          "stream",
+          "temperature",
+          "topP",
+          "maxTokens",
+          "thinkingBudget",
+          "isReasoning",
+          "extraBodyJson",
+        ],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildClaudeUrl({required String baseUrl}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(baseUrl, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatBuildClaudeUrlConstMeta,
+        argValues: [baseUrl],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatBuildClaudeUrlConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_claude_url",
+        argNames: ["baseUrl"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildImagesBody({
+    required String modelId,
+    required String prompt,
+    int? n,
+    String? size,
+    String? quality,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(prompt, serializer);
+          sse_encode_opt_box_autoadd_i_32(n, serializer);
+          sse_encode_opt_String(size, serializer);
+          sse_encode_opt_String(quality, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatBuildImagesBodyConstMeta,
+        argValues: [modelId, prompt, n, size, quality],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatBuildImagesBodyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_images_body",
+        argNames: ["modelId", "prompt", "n", "size", "quality"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildOpenaiChatBody({
+    required String modelId,
+    required String messagesJson,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+    String? extraBodyJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(messagesJson, serializer);
+          sse_encode_opt_String(toolsJson, serializer);
+          sse_encode_bool(stream, serializer);
+          sse_encode_opt_box_autoadd_f_64(temperature, serializer);
+          sse_encode_opt_box_autoadd_f_64(topP, serializer);
+          sse_encode_opt_box_autoadd_i_32(maxTokens, serializer);
+          sse_encode_opt_box_autoadd_i_32(thinkingBudget, serializer);
+          sse_encode_bool(isReasoning, serializer);
+          sse_encode_opt_String(extraBodyJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatBuildOpenaiChatBodyConstMeta,
+        argValues: [
+          modelId,
+          messagesJson,
+          toolsJson,
+          stream,
+          temperature,
+          topP,
+          maxTokens,
+          thinkingBudget,
+          isReasoning,
+          extraBodyJson,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatBuildOpenaiChatBodyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_openai_chat_body",
+        argNames: [
+          "modelId",
+          "messagesJson",
+          "toolsJson",
+          "stream",
+          "temperature",
+          "topP",
+          "maxTokens",
+          "thinkingBudget",
+          "isReasoning",
+          "extraBodyJson",
+        ],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildOpenaiResponsesBody({
+    required String modelId,
+    required String inputJson,
+    String? instructions,
+    String? toolsJson,
+    required bool stream,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    int? thinkingBudget,
+    required bool isReasoning,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(inputJson, serializer);
+          sse_encode_opt_String(instructions, serializer);
+          sse_encode_opt_String(toolsJson, serializer);
+          sse_encode_bool(stream, serializer);
+          sse_encode_opt_box_autoadd_f_64(temperature, serializer);
+          sse_encode_opt_box_autoadd_f_64(topP, serializer);
+          sse_encode_opt_box_autoadd_i_32(maxTokens, serializer);
+          sse_encode_opt_box_autoadd_i_32(thinkingBudget, serializer);
+          sse_encode_bool(isReasoning, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta:
+            kCrateApiChatProtocolApiChatBuildOpenaiResponsesBodyConstMeta,
+        argValues: [
+          modelId,
+          inputJson,
+          instructions,
+          toolsJson,
+          stream,
+          temperature,
+          topP,
+          maxTokens,
+          thinkingBudget,
+          isReasoning,
+        ],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiChatProtocolApiChatBuildOpenaiResponsesBodyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_openai_responses_body",
+        argNames: [
+          "modelId",
+          "inputJson",
+          "instructions",
+          "toolsJson",
+          "stream",
+          "temperature",
+          "topP",
+          "maxTokens",
+          "thinkingBudget",
+          "isReasoning",
+        ],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatBuildOpenaiUrl({
+    required String baseUrl,
+    String? chatPath,
+    required bool useResponseApi,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(baseUrl, serializer);
+          sse_encode_opt_String(chatPath, serializer);
+          sse_encode_bool(useResponseApi, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatBuildOpenaiUrlConstMeta,
+        argValues: [baseUrl, chatPath, useResponseApi],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatBuildOpenaiUrlConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_build_openai_url",
+        argNames: ["baseUrl", "chatPath", "useResponseApi"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatClassifyVendor({
+    required String providerId,
+    required String baseUrl,
+    required String modelId,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(providerId, serializer);
+          sse_encode_String(baseUrl, serializer);
+          sse_encode_String(modelId, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatClassifyVendorConstMeta,
+        argValues: [providerId, baseUrl, modelId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatClassifyVendorConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_classify_vendor",
+        argNames: ["providerId", "baseUrl", "modelId"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatCleanToolSchema({
+    required String toolJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(toolJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatCleanToolSchemaConstMeta,
+        argValues: [toolJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatCleanToolSchemaConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_clean_tool_schema",
+        argNames: ["toolJson"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatCompletionTokensKey({
+    required String vendorStr,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(vendorStr, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatCompletionTokensKeyConstMeta,
+        argValues: [vendorStr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatCompletionTokensKeyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_completion_tokens_key",
+        argNames: ["vendorStr"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatCopyMessage({required String msgJson}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(msgJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatCopyMessageConstMeta,
+        argValues: [msgJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatCopyMessageConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_copy_message",
+        argNames: ["msgJson"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatFinalizeToolCalls({
+    required String aggregatorJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(aggregatorJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatFinalizeToolCallsConstMeta,
+        argValues: [aggregatorJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatFinalizeToolCallsConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_finalize_tool_calls",
+        argNames: ["aggregatorJson"],
+      );
+
+  @override
+  bool crateApiChatProtocolApiChatIsBuiltinSearchSupported({
+    required String modelId,
+    required String providerType,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(providerType, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateApiChatProtocolApiChatIsBuiltinSearchSupportedConstMeta,
+        argValues: [modelId, providerType],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiChatProtocolApiChatIsBuiltinSearchSupportedConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_is_builtin_search_supported",
+        argNames: ["modelId", "providerType"],
+      );
+
+  @override
+  bool crateApiChatProtocolApiChatIsKimiThinkingModel({
+    required String modelId,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelId, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatIsKimiThinkingModelConstMeta,
+        argValues: [modelId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatIsKimiThinkingModelConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_is_kimi_thinking_model",
+        argNames: ["modelId"],
+      );
+
+  @override
+  bool crateApiChatProtocolApiChatIsSseDone({required String line}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(line, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatIsSseDoneConstMeta,
+        argValues: [line],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatIsSseDoneConstMeta =>
+      const TaskConstMeta(debugName: "chat_is_sse_done", argNames: ["line"]);
+
+  @override
+  bool crateApiChatProtocolApiChatNeedsReasoningEcho({
+    required String vendorStr,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(vendorStr, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatNeedsReasoningEchoConstMeta,
+        argValues: [vendorStr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatNeedsReasoningEchoConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_needs_reasoning_echo",
+        argNames: ["vendorStr"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatNormalizeReasoningEffort({
+    required String effort,
+    required String modelId,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(effort, serializer);
+          sse_encode_String(modelId, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateApiChatProtocolApiChatNormalizeReasoningEffortConstMeta,
+        argValues: [effort, modelId],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiChatProtocolApiChatNormalizeReasoningEffortConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_normalize_reasoning_effort",
+        argNames: ["effort", "modelId"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatParseClaudeEvent({
+    required String jsonStr,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(jsonStr, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatParseClaudeEventConstMeta,
+        argValues: [jsonStr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatParseClaudeEventConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_parse_claude_event",
+        argNames: ["jsonStr"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatParseOpenaiChunk({
+    required String jsonStr,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(jsonStr, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatParseOpenaiChunkConstMeta,
+        argValues: [jsonStr],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatParseOpenaiChunkConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_parse_openai_chunk",
+        argNames: ["jsonStr"],
+      );
+
+  @override
+  String? crateApiChatProtocolApiChatParseSseLine({required String line}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(line, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatParseSseLineConstMeta,
+        argValues: [line],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatParseSseLineConstMeta =>
+      const TaskConstMeta(debugName: "chat_parse_sse_line", argNames: ["line"]);
+
+  @override
+  String crateApiChatProtocolApiChatParseTextAndImages({required String raw}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(raw, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatParseTextAndImagesConstMeta,
+        argValues: [raw],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatParseTextAndImagesConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_parse_text_and_images",
+        argNames: ["raw"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatSanitizeGpt5Body({
+    required String bodyJson,
+    required String modelId,
+    required String effort,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(bodyJson, serializer);
+          sse_encode_String(modelId, serializer);
+          sse_encode_String(effort, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatSanitizeGpt5BodyConstMeta,
+        argValues: [bodyJson, modelId, effort],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatSanitizeGpt5BodyConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_sanitize_gpt5_body",
+        argNames: ["bodyJson", "modelId", "effort"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatSanitizeUnicode({required String text}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(text, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatSanitizeUnicodeConstMeta,
+        argValues: [text],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatSanitizeUnicodeConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_sanitize_unicode",
+        argNames: ["text"],
+      );
+
+  @override
+  String crateApiChatProtocolApiChatToClaudeToolsFormat({
+    required String toolsJson,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(toolsJson, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiChatProtocolApiChatToClaudeToolsFormatConstMeta,
+        argValues: [toolsJson],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiChatProtocolApiChatToClaudeToolsFormatConstMeta =>
+      const TaskConstMeta(
+        debugName: "chat_to_claude_tools_format",
+        argNames: ["toolsJson"],
+      );
 
   @override
   Future<String> crateApiMcpApiCreateDefaultMcpConfig({
@@ -614,7 +1527,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 12,
+            funcId: 35,
             port: port_,
           );
         },
@@ -641,7 +1554,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 36)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -668,7 +1581,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(serversJson, serializer);
           sse_encode_bool(isDesktop, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -693,7 +1606,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -718,7 +1631,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 16,
+            funcId: 39,
             port: port_,
           );
         },
@@ -743,7 +1656,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(version, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_bool,
@@ -769,7 +1682,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_i_32(code, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -795,7 +1708,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(level, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -825,7 +1738,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 20,
+            funcId: 43,
             port: port_,
           );
         },
@@ -862,7 +1775,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 21,
+            funcId: 44,
             port: port_,
           );
         },
@@ -897,7 +1810,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 22,
+            funcId: 45,
             port: port_,
           );
         },
@@ -933,7 +1846,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 23,
+            funcId: 46,
             port: port_,
           );
         },
@@ -970,7 +1883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 24,
+            funcId: 47,
             port: port_,
           );
         },
@@ -1005,7 +1918,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 25,
+            funcId: 48,
             port: port_,
           );
         },
@@ -1046,7 +1959,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 26,
+            funcId: 49,
             port: port_,
           );
         },
@@ -1086,7 +1999,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 27,
+            funcId: 50,
             port: port_,
           );
         },
@@ -1120,7 +2033,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_String(clientVersions, serializer);
           sse_encode_list_String(serverVersions, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 51)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_String,
@@ -1150,7 +2063,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_opt_String(schemaJson, serializer);
           sse_encode_String(argsJson, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 52)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -1180,7 +2093,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(rawJson, serializer);
           sse_encode_bool(isDesktop, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 53)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -1211,7 +2124,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 31,
+            funcId: 54,
             port: port_,
           );
         },
@@ -1238,7 +2151,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 55)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_String,
@@ -1266,7 +2179,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 33,
+            funcId: 56,
             port: port_,
           );
         },
@@ -1300,6 +2213,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double dco_decode_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as double;
+  }
+
+  @protected
+  int dco_decode_box_autoadd_i_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
+  double dco_decode_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as double;
+  }
+
+  @protected
   int dco_decode_i_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -1321,6 +2252,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String? dco_decode_opt_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
+  double? dco_decode_opt_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_f_64(raw);
+  }
+
+  @protected
+  int? dco_decode_opt_box_autoadd_i_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_i_32(raw);
   }
 
   @protected
@@ -1346,6 +2289,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
+  }
+
+  @protected
+  double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_f_64(deserializer));
+  }
+
+  @protected
+  int sse_decode_box_autoadd_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_i_32(deserializer));
+  }
+
+  @protected
+  double sse_decode_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getFloat64();
   }
 
   @protected
@@ -1385,6 +2346,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_f_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  int? sse_decode_opt_box_autoadd_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_i_32(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   int sse_decode_u_8(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8();
@@ -1405,6 +2388,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self, serializer);
+  }
+
+  @protected
+  void sse_encode_f_64(double self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putFloat64(self);
   }
 
   @protected
@@ -1439,6 +2440,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_f_64(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_i_32(int? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_i_32(self, serializer);
     }
   }
 
