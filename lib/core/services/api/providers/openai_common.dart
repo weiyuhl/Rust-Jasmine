@@ -644,7 +644,10 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
     // Built-in web search for Responses API when enabled on supported models
     bool isResponsesWebSearchSupported(String id) {
       try {
-        if (rust_chat.chatIsBuiltinSearchSupported(modelId: id, providerType: 'openai')) {
+        if (rust_chat.chatIsBuiltinSearchSupported(
+          modelId: id,
+          providerType: 'openai',
+        )) {
           return true;
         }
       } catch (_) {}
@@ -1608,7 +1611,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
       if (line.isEmpty || !line.startsWith('data:')) continue;
 
       final sseResult = rust_chat.chatParseSseLine(line: line);
-      final data = (sseResult != null) ? sseResult : line.substring(5).trimLeft();
+      final data = (sseResult != null)
+          ? sseResult
+          : line.substring(5).trimLeft();
       if (data == '[DONE]') {
         // If model streamed tool_calls but didn't include finish_reason on prior chunks,
         // execute tool flow now and start follow-up request.
@@ -1621,9 +1626,13 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
           final aggJson = toolAggregatorJson;
           if (aggJson != null) {
             try {
-              final rustResult = jsonDecode(
-                rust_chat.chatFinalizeToolCalls(aggregatorJson: aggJson),
-              ) as List;
+              final rustResult =
+                  jsonDecode(
+                        rust_chat.chatFinalizeToolCalls(
+                          aggregatorJson: aggJson,
+                        ),
+                      )
+                      as List;
               for (final rc in rustResult) {
                 if (rc is! Map) continue;
                 final id = (rc['id'] ?? '').toString();
@@ -1631,9 +1640,12 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 final args = rc['arguments'] is Map
                     ? rc['arguments'] as Map<String, dynamic>
                     : <String, dynamic>{};
-                callInfos.add(ToolCallInfo(id: id, name: name, arguments: args));
+                callInfos.add(
+                  ToolCallInfo(id: id, name: name, arguments: args),
+                );
                 calls.add({
-                  'id': id, 'type': 'function',
+                  'id': id,
+                  'type': 'function',
                   'function': {'name': name, 'arguments': jsonEncode(args)},
                 });
                 toolMsgs.add({'__name': name, '__id': id, '__args': args});
@@ -1647,7 +1659,8 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
               final name = (m['name'] ?? '');
               Map<String, dynamic> args;
               try {
-                args = (jsonDecode(m['args'] ?? '{}') as Map).cast<String, dynamic>();
+                args = (jsonDecode(m['args'] ?? '{}') as Map)
+                    .cast<String, dynamic>();
               } catch (_) {
                 args = <String, dynamic>{};
               }
@@ -2836,7 +2849,9 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
             // Try Rust chunk parser first (fast path for OpenAI-compatible providers)
             Map<String, dynamic>? rustDelta;
             try {
-              final parsed = jsonDecode(rust_chat.chatParseOpenaiChunk(jsonStr: data));
+              final parsed = jsonDecode(
+                rust_chat.chatParseOpenaiChunk(jsonStr: data),
+              );
               rustDelta = parsed is Map<String, dynamic> ? parsed : null;
               finishReason = rustDelta?['finish_reason'] as String?;
             } catch (_) {
@@ -2870,9 +2885,14 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                     if (it is! Map) continue;
                     dynamic iu = it['image_url'];
                     String? url;
-                    if (iu is String) { url = iu; }
-                    else if (iu is Map) { final u2 = iu['url']; if (u2 is String) url = u2; }
-                    if (url != null && url.isNotEmpty) buf.write('\n\n![image]($url)');
+                    if (iu is String) {
+                      url = iu;
+                    } else if (iu is Map) {
+                      final u2 = iu['url'];
+                      if (u2 is String) url = u2;
+                    }
+                    if (url != null && url.isNotEmpty)
+                      buf.write('\n\n![image]($url)');
                   }
                   if (buf.isNotEmpty) content = content + buf.toString();
                 }
@@ -2882,10 +2902,15 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 for (final t in tcs) {
                   if (t is! Map) continue;
                   final idx = (t['index'] as int?) ?? 0;
-                  final entry = toolAcc.putIfAbsent(idx, () => {'id': '', 'name': '', 'args': ''});
+                  final entry = toolAcc.putIfAbsent(
+                    idx,
+                    () => {'id': '', 'name': '', 'args': ''},
+                  );
                   if (t['id'] != null) entry['id'] = t['id'].toString();
                   if (t['name'] != null) entry['name'] = t['name'].toString();
-                  if (t['args_fragment'] != null) entry['args'] = (entry['args'] ?? '') + t['args_fragment'].toString();
+                  if (t['args_fragment'] != null)
+                    entry['args'] =
+                        (entry['args'] ?? '') + t['args_fragment'].toString();
                   // Push to Rust aggregator
                   try {
                     toolAggregatorJson = rust_chat.chatAggregateToolCall(
@@ -2906,7 +2931,8 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 content += deltaContent;
                 approxCompletionChars += deltaContent.length;
               }
-              final rc = (delta['reasoning_content'] ?? delta['reasoning']) as String?;
+              final rc =
+                  (delta['reasoning_content'] ?? delta['reasoning']) as String?;
               if (rc != null && rc.isNotEmpty) {
                 reasoning = rc;
                 if (needsReasoningEcho) reasoningBuffer += rc;
@@ -2921,19 +2947,31 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                 if (imgs is List) imageItems.addAll(imgs);
                 if (dc is List) {
                   for (final it in dc) {
-                    if (it is Map && (it['type'] == 'image_url' || it['type'] == 'image')) imageItems.add(it);
+                    if (it is Map &&
+                        (it['type'] == 'image_url' || it['type'] == 'image'))
+                      imageItems.add(it);
                   }
                 }
                 final singleImage = delta['image_url'];
-                if (singleImage is Map || singleImage is String) imageItems.add({'type': 'image_url', 'image_url': singleImage});
+                if (singleImage is Map || singleImage is String)
+                  imageItems.add({
+                    'type': 'image_url',
+                    'image_url': singleImage,
+                  });
                 if (imageItems.isNotEmpty) {
                   final buf = StringBuffer();
                   for (final it in imageItems) {
                     if (it is! Map) continue;
-                    dynamic iu = it['image_url']; String? url;
-                    if (iu is String) { url = iu; }
-                    else if (iu is Map) { final u2 = iu['url']; if (u2 is String) url = u2; }
-                    if (url != null && url.isNotEmpty) buf.write('\n\n![image]($url)');
+                    dynamic iu = it['image_url'];
+                    String? url;
+                    if (iu is String) {
+                      url = iu;
+                    } else if (iu is Map) {
+                      final u2 = iu['url'];
+                      if (u2 is String) url = u2;
+                    }
+                    if (url != null && url.isNotEmpty)
+                      buf.write('\n\n![image]($url)');
                   }
                   if (buf.isNotEmpty) content = content + buf.toString();
                 }
@@ -2946,10 +2984,14 @@ Stream<ChatStreamChunk> _sendOpenAIStream(
                   final func = t['function'] as Map<String, dynamic>?;
                   final name = func?['name'] as String?;
                   final argsDelta = func?['arguments'] as String?;
-                  final entry = toolAcc.putIfAbsent(idx, () => {'id': '', 'name': '', 'args': ''});
+                  final entry = toolAcc.putIfAbsent(
+                    idx,
+                    () => {'id': '', 'name': '', 'args': ''},
+                  );
                   if (id != null) entry['id'] = id;
                   if (name != null && name.isNotEmpty) entry['name'] = name;
-                  if (argsDelta != null && argsDelta.isNotEmpty) entry['args'] = (entry['args'] ?? '') + argsDelta;
+                  if (argsDelta != null && argsDelta.isNotEmpty)
+                    entry['args'] = (entry['args'] ?? '') + argsDelta;
                 }
               }
             }

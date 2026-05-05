@@ -51,6 +51,7 @@ class McpToolConfig {
   final List<McpParamSpec> params;
   // Raw JSON schema for parameters, if provided by the server
   final Map<String, dynamic>? schema;
+
   /// Whether this tool requires user approval before execution.
   final bool needsApproval;
 
@@ -440,7 +441,9 @@ class McpProvider extends ChangeNotifier {
     );
     // Validate config via Rust
     try {
-      await rust_mcp.validateMcpServerConfig(configJson: jsonEncode(cfg.toJson()));
+      await rust_mcp.validateMcpServerConfig(
+        configJson: jsonEncode(cfg.toJson()),
+      );
     } catch (_) {}
     _servers = [..._servers, cfg];
     _status[id] = McpStatus.idle;
@@ -511,8 +514,10 @@ class McpProvider extends ChangeNotifier {
     if (idx < 0) return;
     final server = _servers[idx];
     final tools = server.tools
-        .map((t) =>
-            t.name == toolName ? t.copyWith(needsApproval: needsApproval) : t)
+        .map(
+          (t) =>
+              t.name == toolName ? t.copyWith(needsApproval: needsApproval) : t,
+        )
         .toList();
     _servers[idx] = server.copyWith(tools: tools);
     await _persist();
@@ -789,8 +794,9 @@ class McpProvider extends ChangeNotifier {
           final headersJson = server.headers.isNotEmpty
               ? jsonEncode(server.headers)
               : null;
-          final transport =
-              server.transport == McpTransportType.sse ? 'sse' : 'http';
+          final transport = server.transport == McpTransportType.sse
+              ? 'sse'
+              : 'http';
           final result = rust_client.mcpListTools(
             url: server.url,
             headersJson: headersJson,
@@ -829,7 +835,8 @@ class McpProvider extends ChangeNotifier {
         final params = <McpParamSpec>[];
         Map<String, dynamic>? schemaJson;
         try {
-          final js = (toolMap['inputSchema'] as Map?)?.cast<String, dynamic>() ??
+          final js =
+              (toolMap['inputSchema'] as Map?)?.cast<String, dynamic>() ??
               const <String, dynamic>{};
           schemaJson = js;
           final props =
@@ -911,7 +918,9 @@ class McpProvider extends ChangeNotifier {
           final headersJson = server.headers.isNotEmpty
               ? jsonEncode(server.headers)
               : null;
-          final transport = server.transport == McpTransportType.sse ? 'sse' : 'http';
+          final transport = server.transport == McpTransportType.sse
+              ? 'sse'
+              : 'http';
           final resultJson = rust_client.mcpCallTool(
             url: server.url,
             headersJson: headersJson,

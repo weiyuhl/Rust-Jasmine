@@ -7,10 +7,7 @@ Map<String, dynamic> _copyChatCompletionMessage(Map<String, dynamic> m) {
     return result;
   } catch (_) {
     // Fallback for Rust panic — keep basic fields
-    return {
-      'role': m['role'] ?? 'user',
-      'content': m['content'] ?? '',
-    };
+    return {'role': m['role'] ?? 'user', 'content': m['content'] ?? ''};
   }
 }
 

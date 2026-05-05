@@ -296,9 +296,9 @@ class _SettingsMenu extends StatelessWidget {
         l10n.settingsPageHotkeys,
       ),
       (
-      _SettingsMenuItem.stats,
-      lucide.Lucide.ChartColumnBig,
-      l10n.settingsPageStatistics,
+        _SettingsMenuItem.stats,
+        lucide.Lucide.ChartColumnBig,
+        l10n.settingsPageStatistics,
       ),
       (
         _SettingsMenuItem.about,

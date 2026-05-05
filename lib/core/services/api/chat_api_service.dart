@@ -24,8 +24,6 @@ import '../model_override_payload_parser.dart';
 import 'provider_request_headers.dart';
 import '../../utils/multimodal_input_utils.dart';
 import '../../../../src/rust/api/chat_protocol_api.dart' as rust_chat;
-// agent_loop_api.dart: 待 StreamSink 实现工具回调后接入
-// import '../../../../src/rust/api/agent_loop_api.dart' as rust_agent;
 
 part 'chat_api_service_shims.dart';
 part 'providers/openai_common.dart';
@@ -222,7 +220,9 @@ class ChatApiService {
 
     if (allowRemoteImages && allowLocalImages && !keepRemoteMarkdownText) {
       try {
-        final parsedJson = jsonDecode(rust_chat.chatParseTextAndImages(raw: raw));
+        final parsedJson = jsonDecode(
+          rust_chat.chatParseTextAndImages(raw: raw),
+        );
         final parsedText = (parsedJson['text'] ?? '').toString();
         final imagesRaw = parsedJson['images'];
         if (imagesRaw is List) {

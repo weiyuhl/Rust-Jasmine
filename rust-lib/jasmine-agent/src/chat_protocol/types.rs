@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-/// SSE stream output chunk — mirrors Kelivo's ChatStreamChunk.
+/// SSE stream output chunk — mirrors Kelivo's RustChatChunk.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ChatStreamChunk {
+pub struct RustChatChunk {
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning: Option<String>,
@@ -19,9 +19,9 @@ pub struct ChatStreamChunk {
     pub tool_results: Option<Vec<ToolResultInfo>>,
 }
 
-impl ChatStreamChunk {
+impl RustChatChunk {
     pub fn content_only(text: &str) -> Self {
-        ChatStreamChunk {
+        RustChatChunk {
             content: text.to_string(),
             reasoning: None,
             is_done: false,

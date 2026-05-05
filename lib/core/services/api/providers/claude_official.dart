@@ -22,7 +22,10 @@ Stream<ChatStreamChunk> _sendClaudeStream(
   try {
     url = Uri.parse(rust_chat.chatBuildClaudeUrl(baseUrl: config.baseUrl));
   } catch (_) {
-    final normalizedBase = config.baseUrl.trimRight().replaceAll(RegExp(r'/$'), '');
+    final normalizedBase = config.baseUrl.trimRight().replaceAll(
+      RegExp(r'/$'),
+      '',
+    );
     url = Uri.parse('$normalizedBase/messages');
   }
 
@@ -161,9 +164,11 @@ Stream<ChatStreamChunk> _sendClaudeStream(
   List<Map<String, dynamic>>? anthropicTools;
   if (tools != null && tools.isNotEmpty) {
     try {
-      final result = jsonDecode(
-        rust_chat.chatToClaudeToolsFormat(toolsJson: jsonEncode(tools)),
-      ) as List;
+      final result =
+          jsonDecode(
+                rust_chat.chatToClaudeToolsFormat(toolsJson: jsonEncode(tools)),
+              )
+              as List;
       anthropicTools = result.map((e) => e as Map<String, dynamic>).toList();
     } catch (_) {
       anthropicTools = [];
@@ -176,7 +181,8 @@ Stream<ChatStreamChunk> _sendClaudeStream(
           'name': name,
           if ((fn['description'] ?? '').toString().isNotEmpty)
             'description': fn['description'],
-          'input_schema': fn['parameters'] ?? <String, dynamic>{'type': 'object'},
+          'input_schema':
+              fn['parameters'] ?? <String, dynamic>{'type': 'object'},
         });
       }
     }
@@ -515,13 +521,17 @@ Stream<ChatStreamChunk> _sendClaudeStream(
         if (line.isEmpty || !line.startsWith('data:')) continue;
 
         final sseResult = rust_chat.chatParseSseLine(line: line);
-        final data = (sseResult != null) ? sseResult : line.substring(5).trimLeft();
+        final data = (sseResult != null)
+            ? sseResult
+            : line.substring(5).trimLeft();
         try {
           final obj = jsonDecode(data);
           // Try Rust Claude event parser for type classification
           String type;
           try {
-            final rustEvent = jsonDecode(rust_chat.chatParseClaudeEvent(jsonStr: data));
+            final rustEvent = jsonDecode(
+              rust_chat.chatParseClaudeEvent(jsonStr: data),
+            );
             type = switch (rustEvent as Map<String, dynamic>) {
               {'ContentBlockStart': var _} => 'content_block_start',
               {'ContentBlockDelta': var _} => 'content_block_delta',
