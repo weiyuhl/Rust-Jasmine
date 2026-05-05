@@ -171,15 +171,33 @@ pub fn build_images_url(base_url: &str) -> String {
 // ── internal helpers ──
 
 fn should_omit_temperature_for_reasoning(
-    _model_id: &str,
+    model_id: &str,
     thinking_budget: Option<i32>,
     is_reasoning: bool,
 ) -> bool {
-    // Some reasoning models (e.g., GPT-5) disallow temperature when reasoning is on
-    is_reasoning
-        && thinking_budget
-            .map(|b| b > 0)
-            .unwrap_or(false)
+    if !is_reasoning {
+        return false;
+    }
+    let reasoning_on = thinking_budget.map(|b| b != 0).unwrap_or(false);
+    if !reasoning_on {
+        return false;
+    }
+    // GPT-5.2/5.4: temperature only allowed when effort is auto
+    let lower = model_id.to_lowercase();
+    if lower.starts_with("gpt-5.2") || lower.starts_with("gpt-5.4") {
+        let effort = effort_for_budget(thinking_budget);
+        return effort != "auto";
+    }
+    // Claude adaptive-only models (Mythos, 4.7): always omit when reasoning
+    if lower.contains("mythos") || lower.contains("claude-4-7") {
+        return true;
+    }
+    // GPT-5: omit for non-auto efforts
+    if lower.starts_with("gpt-5") {
+        let effort = effort_for_budget(thinking_budget);
+        return effort != "auto";
+    }
+    false
 }
 
 /// Map thinking budget (tokens) to effort level.
